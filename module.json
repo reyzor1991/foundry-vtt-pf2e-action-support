@@ -15,7 +15,17 @@
     "pf2e-action-support.js"
   ],
   "styles": [],
-  "packs": [],
+  "packs": [
+    {
+      "label": "Action Support",
+      "name": "action-support",
+      "path": "packs/action-support.db",
+      "system": "pf2e",
+      "private": false,
+      "type": "Item",
+      "flags": {}
+    }
+  ],
   "manifest": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/releases/latest/download/module.json",
   "download": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/releases/latest/download/pf2e-action-support.zip",
   "url": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support",
@@ -34,7 +44,7 @@
         "type": "system",
         "manifest": "https://github.com/foundryvtt/pf2e/releases/latest/download/system.json",
         "compatibility": {
-          "minimum": "4.7.0",
+          "minimum": "5.0.2",
           "verified": "5.0.2"
         }
       }
