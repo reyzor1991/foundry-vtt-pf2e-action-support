@@ -44,6 +44,11 @@ function actorsWithEffect(eff) {
     return game.combat.turns.filter(cc=>hasEffect(cc.actor, eff)).map(cc=>cc.actor);
 }
 
+function deleteEffectFromActor(a, eff) {
+    let eff_id = a.itemTypes.effect.find(c => eff === c.slug)._id
+    a.deleteEmbeddedDocuments("Item", [eff_id])
+}
+
 function deleteFlatFootedTumbleBehindFromActor(a) {
     let eff_id = a.itemTypes.effect.find(c => "effect-flat-footed-tumble-behind" === c.slug)._id
     a.deleteEmbeddedDocuments("Item", [eff_id])
@@ -54,19 +59,43 @@ function deleteFlatFootedTumbleBehind() {
     .forEach(a => deleteFlatFootedTumbleBehindFromActor(a));
 }
 
+async function setEffectToActor(actor, eff) {
+    const source = (await fromUuid(eff)).toObject();
+    source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: eff } });
+
+    await actor.createEmbeddedDocuments("Item", [source]);
+}
+
 Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
     if (game?.combats?.active) {
         if (messageType(message, 'skill-check') && message?.target?.actor) {
             if (hasOption(message, "action:tumble-through")) {
                 if (anySuccessMessageOutcome(message)) {
                     if (actorFeat(message?.actor, "tumble-behind-rogue") && !hasEffect(message.target.actor, "effect-flat-footed-tumble-behind")) {
-
-                        const source = (await fromUuid(effect_flat_footed)).toObject();
-                        source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: effect_flat_footed } });
-
-                        await message.target.actor.createEmbeddedDocuments("Item", [source]);
+                        setEffectToActor(message.target.actor, effect_flat_footed)
+                    }
+                    if (actorFeat(message?.actor, "panache") && !hasEffect(message.actor, "effect-panache")) {
+                        setEffectToActor(message.actor, effect_panache)
                     }
                 }
+            }
+            if (hasOption(message, "action:demoralize")) {
+                if (successMessageOutcome(message)) {
+                    message.target.actor.increaseCondition("frightened", {value: 1 });
+                } else if (criticalSuccessMessageOutcome(message)) {
+                    message.target.actor.increaseCondition("frightened", {value: 2 });
+                }
+                if (anySuccessMessageOutcome(message)) {
+                    if (actorFeat(message?.actor, "panache") && !hasEffect(message.actor, "effect-panache")) {
+                        setEffectToActor(message.actor, effect_panache)
+                    }
+                }
+            }
+        } else if (messageType(message, "damage-roll")) {
+            if (message?.item?.isMelee && hasEffect(message.actor, "effect-panache") && hasOption(message, "finisher")
+                && (hasOption(message, "agile") || hasOption(message, "finesse"))
+            ) {
+                deleteEffectFromActor(message.actor, "effect-panache")
             }
         }
 
