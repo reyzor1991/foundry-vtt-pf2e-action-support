@@ -66,6 +66,14 @@ async function setEffectToActor(actor, eff) {
     await actor.createEmbeddedDocuments("Item", [source]);
 }
 
+async function applyDamage(actor, token, formula) {
+    const DamageRoll = CONFIG.Dice.rolls.find((r) => r.name === "DamageRoll")
+    let roll = new DamageRoll(formula);
+    await roll.evaluate({async: true});
+    actor.applyDamage({damage:roll, token:token})
+    roll.toMessage({speaker: {alias: actor.prototypeToken.name}});
+}
+
 Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
     if (game?.combats?.active) {
         if (messageType(message, 'skill-check') && message?.target?.actor) {
@@ -89,6 +97,42 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     if (actorFeat(message?.actor, "panache") && !hasEffect(message.actor, "effect-panache")) {
                         setEffectToActor(message.actor, effect_panache)
                     }
+                }
+            }
+            if (hasOption(message, "action:disarm")) {
+                if (successMessageOutcome(message) && message?.target) {
+                    setEffectToActor(message.target.actor, effect_panache)
+                } else if (criticalFailureMessageOutcome(message)) {
+                    message.actor.increaseCondition("flat-footed");
+                }
+            }
+            if (hasOption(message, "action:feint")) {
+                if (anySuccessMessageOutcome(message) && message?.target) {
+                    message.target.actor.increaseCondition("flat-footed");
+                } else if (criticalFailureMessageOutcome(message)) {
+                    message.actor.increaseCondition("flat-footed");
+                }
+            }
+            if (hasOption(message, "action:high-jump") || hasOption(message, "action:long-jump") || hasOption(message, "action:shove")) {
+                if (criticalFailureMessageOutcome(message)) {
+                    message.actor.increaseCondition("prone");
+                }
+            }
+            if (hasOption(message, "action:subsist")) {
+                if (criticalFailureMessageOutcome(message)) {
+                    setEffectToActor(message.actor, effect_adverse_subsist_situation)
+                }
+            }
+            if (hasOption(message, "action:tamper")) {
+                if (criticalFailureMessageOutcome(message)) {
+                    applyDamage(message.actor, message.token, `${message.actor.level}[fire]`)
+                }
+            }
+            if (hasOption(message, "action:grapple")) {
+                if (criticalSuccessMessageOutcome(message) && message?.target) {
+                    message.target.actor.increaseCondition("restrained");
+                } else if (successMessageOutcome(message) && message?.target) {
+                    message.target.actor.increaseCondition("grabbed");
                 }
             }
         } else if (messageType(message, "damage-roll")) {
