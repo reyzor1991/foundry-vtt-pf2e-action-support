@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.4
+
+### New feature
+- Decrease Frequency of Action
+
 ## Version 0.0.3
 
 ### New feature

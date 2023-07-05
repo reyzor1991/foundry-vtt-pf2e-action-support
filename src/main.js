@@ -1,5 +1,17 @@
 import "./const.js";
 
+Hooks.once("init", () => {
+    game.settings.register("pf2e-action-support", "decreaseFrequency", {
+        name: "Decrease Frequency of Action",
+        hint: "Decrease Frequency of Action when action post in chat",
+        scope: "world",
+        config: false,
+        default: 5,
+        type: Number,
+    });
+});
+
+
 function failureMessageOutcome(message) {
     return "failure" == message?.flags?.pf2e?.context?.outcome;
 }
@@ -145,6 +157,17 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 
         if (messageType(message, "attack-roll") && message?.target?.actor && hasEffect(message.target.actor, "effect-flat-footed-tumble-behind")) {
             deleteFlatFootedTumbleBehindFromActor(message.target.actor);
+        }
+    }
+
+    if (game.settings.get("pf2e-action-support", "decreaseFrequency")) {
+        if (message?.actor) {
+            let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+            if (_obj?.system?.frequency?.value > 0) {
+                _obj.update({
+                    "system.frequency.value": _obj?.system?.frequency?.value - 1
+                });
+            }
         }
     }
 });
