@@ -5,9 +5,9 @@ Hooks.once("init", () => {
         name: "Decrease Frequency of Action",
         hint: "Decrease Frequency of Action when action post in chat",
         scope: "world",
-        config: false,
-        default: 5,
-        type: Number,
+        config: true,
+        default: false,
+        type: Boolean,
     });
 });
 
