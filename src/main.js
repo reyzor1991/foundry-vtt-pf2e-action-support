@@ -1,5 +1,7 @@
 import "./const.js";
 
+export var socketlibSocket = undefined;
+
 Hooks.once("init", () => {
     game.settings.register("pf2e-action-support", "decreaseFrequency", {
         name: "Decrease Frequency of Action",
@@ -9,8 +11,42 @@ Hooks.once("init", () => {
         default: false,
         type: Boolean,
     });
+    game.settings.register("pf2e-action-support", "useSocket", {
+        name: "Use socket",
+        hint: "Use socket to set effects to token as GM",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
 });
 
+async function createEffects(data) {
+    const actor = await fromUuid(data.actorUuid);
+    const source = (await fromUuid(data.eff)).toObject();
+    source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: data.eff } });
+    await actor.createEmbeddedDocuments("Item", [source]);
+}
+
+async function deleteEffects(data) {
+    const actor = await fromUuid(data.actorUuid);
+    let effect = actor.itemTypes.effect.find(c => data.eff === c.slug)
+    actor.deleteEmbeddedDocuments("Item", [effect._id])
+}
+
+async function increaseConditions(data) {
+    const actor = await fromUuid(data.actorUuid);
+    let valueObj = data?.value ? {'value': data?.value } : {}
+
+    actor.increaseCondition(data.condition, valueObj);
+}
+
+Hooks.once('setup', function () {
+  socketlibSocket = globalThis.socketlib.registerModule("pf2e-action-support");
+  socketlibSocket.register("createEffects", createEffects);
+  socketlibSocket.register("deleteEffects", deleteEffects);
+  socketlibSocket.register("increaseConditions", increaseConditions);
+})
 
 function failureMessageOutcome(message) {
     return "failure" == message?.flags?.pf2e?.context?.outcome;
@@ -56,26 +92,56 @@ function actorsWithEffect(eff) {
     return game.combat.turns.filter(cc=>hasEffect(cc.actor, eff)).map(cc=>cc.actor);
 }
 
-function deleteEffectFromActor(a, eff) {
-    let eff_id = a.itemTypes.effect.find(c => eff === c.slug)._id
-    a.deleteEmbeddedDocuments("Item", [eff_id])
+function sendNotificationChatMessage(actor, content) {
+    var whispers = ChatMessage.getWhisperRecipients("GM").map((u) => u.id).concat(game.user.id);
+
+    ChatMessage.create({
+        type: CONST.CHAT_MESSAGE_TYPES.OOC,
+        content: content,
+        whisper: whispers
+    });
 }
 
-function deleteFlatFootedTumbleBehindFromActor(a) {
-    let eff_id = a.itemTypes.effect.find(c => "effect-flat-footed-tumble-behind" === c.slug)._id
-    a.deleteEmbeddedDocuments("Item", [eff_id])
+function deleteEffectFromActor(actor, eff) {
+    let effect = actor.itemTypes.effect.find(c => eff === c.slug)
+
+    if (3 == actor.ownership[game.user.id]) {
+        actor.deleteEmbeddedDocuments("Item", [effect._id])
+    } else if (game.settings.get("pf2e-action-support", "useSocket")) {
+        socketlibSocket._sendRequest("deleteEffects", [{'actorUuid': actor.uuid, 'eff': eff}], 0)
+    } else {
+        sendNotificationChatMessage(actor, `Need delete ${effect.name} effect from ${actor.name}`);
+    }
+}
+
+async function setEffectToActor(actor, eff) {
+    if (3 == actor.ownership[game.user.id]) {
+        const source = (await fromUuid(eff)).toObject();
+        source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: eff } });
+
+        await actor.createEmbeddedDocuments("Item", [source]);
+    } else if (game.settings.get("pf2e-action-support", "useSocket")) {
+        socketlibSocket._sendRequest("createEffects", [{'actorUuid': actor.uuid, 'eff': eff}], 0)
+    } else {
+        sendNotificationChatMessage(actor, `Need add @UUID[${eff}] effect to ${actor.name}`);
+    }
+}
+
+async function increaseConditionForTarget(message, condition, value=undefined) {
+    let valueObj = value ? {'value': value } : {}
+
+    if (3 == message.target.actor.ownership[game.user.id]) {
+        message.target.actor.increaseCondition(condition, valueObj);
+    } else if (game.settings.get("pf2e-action-support", "useSocket")) {
+        socketlibSocket._sendRequest("increaseConditions", [{'actorUuid': message.target.actor.uuid, 'value': value, 'condition': condition}], 0)
+    } else {
+        sendNotificationChatMessage(message.target.actor, `Set condition ${condition} ${value??''} to ${message.target.actor.name}`);
+    }
 }
 
 function deleteFlatFootedTumbleBehind() {
     actorsWithEffect("effect-flat-footed-tumble-behind")
-    .forEach(a => deleteFlatFootedTumbleBehindFromActor(a));
-}
-
-async function setEffectToActor(actor, eff) {
-    const source = (await fromUuid(eff)).toObject();
-    source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: eff } });
-
-    await actor.createEmbeddedDocuments("Item", [source]);
+        .forEach(a => deleteEffectFromActor(a, "effect-flat-footed-tumble-behind"));
 }
 
 async function applyDamage(actor, token, formula) {
@@ -101,9 +167,9 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             }
             if (hasOption(message, "action:demoralize")) {
                 if (successMessageOutcome(message)) {
-                    message.target.actor.increaseCondition("frightened", {value: 1 });
+                    increaseConditionForTarget(message, "frightened", 1);
                 } else if (criticalSuccessMessageOutcome(message)) {
-                    message.target.actor.increaseCondition("frightened", {value: 2 });
+                    increaseConditionForTarget(message, "frightened", 2);
                 }
                 if (anySuccessMessageOutcome(message)) {
                     if (actorFeat(message?.actor, "panache") && !hasEffect(message.actor, "effect-panache")) {
@@ -113,14 +179,14 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             }
             if (hasOption(message, "action:disarm")) {
                 if (successMessageOutcome(message) && message?.target) {
-                    setEffectToActor(message.target.actor, effect_panache)
+                    setEffectToActor(message.target.actor, effect_disarm_success)
                 } else if (criticalFailureMessageOutcome(message)) {
                     message.actor.increaseCondition("flat-footed");
                 }
             }
             if (hasOption(message, "action:feint")) {
                 if (anySuccessMessageOutcome(message) && message?.target) {
-                    message.target.actor.increaseCondition("flat-footed");
+                    increaseConditionForTarget(message, "flat-footed");
                 } else if (criticalFailureMessageOutcome(message)) {
                     message.actor.increaseCondition("flat-footed");
                 }
@@ -142,9 +208,9 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             }
             if (hasOption(message, "action:grapple")) {
                 if (criticalSuccessMessageOutcome(message) && message?.target) {
-                    message.target.actor.increaseCondition("restrained");
+                    increaseConditionForTarget(message, "restrained");
                 } else if (successMessageOutcome(message) && message?.target) {
-                    message.target.actor.increaseCondition("grabbed");
+                    increaseConditionForTarget(message, "grabbed");
                 }
             }
         } else if (messageType(message, "damage-roll")) {
@@ -156,7 +222,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         }
 
         if (messageType(message, "attack-roll") && message?.target?.actor && hasEffect(message.target.actor, "effect-flat-footed-tumble-behind")) {
-            deleteFlatFootedTumbleBehindFromActor(message.target.actor);
+            deleteEffectFromActor(message.target.actor, "effect-flat-footed-tumble-behind");
         }
     }
 
