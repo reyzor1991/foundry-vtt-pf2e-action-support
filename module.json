@@ -36,7 +36,7 @@
   "changelog": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/blob/master/CHANGELOG.md",
   "compatibility": {
     "minimum": "11",
-    "verified": "11.304"
+    "verified": "11.305"
   },
   "relationships": {
     "systems": [
