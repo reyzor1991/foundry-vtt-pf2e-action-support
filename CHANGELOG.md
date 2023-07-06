@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 0.0.4
+## Version 0.0.5
 
 ### New feature
 - Add socket supporting
