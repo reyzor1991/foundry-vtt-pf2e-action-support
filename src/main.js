@@ -229,7 +229,9 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
     if (game.settings.get("pf2e-action-support", "decreaseFrequency")) {
         if (message?.actor) {
             let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
-            if (_obj?.system?.frequency?.value > 0) {
+            if (_obj?.system?.frequency?.value == 0) {
+               sendNotificationChatMessage(message.actor, `Action sent to chat with 0 uses left.`);
+            } else {
                 _obj.update({
                     "system.frequency.value": _obj?.system?.frequency?.value - 1
                 });

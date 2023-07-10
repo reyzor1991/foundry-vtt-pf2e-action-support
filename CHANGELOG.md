@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.7
+
+### New feature
+- Add notification when an action is used after it's run out
+
 ## Version 0.0.6
 
 ### New feature
