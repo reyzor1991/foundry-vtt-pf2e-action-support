@@ -244,4 +244,15 @@ Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
 
 Hooks.on('combatRound', async (combat, updateData, updateOptions) => {
     deleteFlatFootedTumbleBehind();
+
+    game.combat.turns.map(cc=>cc.actor)
+        .forEach(a => {
+            Object.values(a?.itemTypes).flat(1).forEach(i => {
+                if (i?.system?.frequency?.per == "round" || i?.system?.frequency?.per == "turn") {
+                    i.update({
+                        "system.frequency.value": i.system.frequency.max
+                    });
+                }
+            })
+        })
 });

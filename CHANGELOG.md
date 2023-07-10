@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.6
+
+### New feature
+- Update Round/Turn Frequency of Action
+
 ## Version 0.0.5
 
 ### New feature
