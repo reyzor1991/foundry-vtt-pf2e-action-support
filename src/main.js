@@ -154,44 +154,61 @@ async function applyDamage(actor, token, formula) {
 
 Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
     if (game?.combats?.active) {
-        if (messageType(message, 'skill-check') && message?.target?.actor) {
-            if (hasOption(message, "action:tumble-through")) {
-                if (anySuccessMessageOutcome(message)) {
-                    if (actorFeat(message?.actor, "tumble-behind-rogue") && !hasEffect(message.target.actor, "effect-flat-footed-tumble-behind")) {
-                        setEffectToActor(message.target.actor, effect_flat_footed)
-                    }
-                    if (actorFeat(message?.actor, "panache") && !hasEffect(message.actor, "effect-panache")) {
-                        setEffectToActor(message.actor, effect_panache)
-                    }
-                }
-            }
-            if (hasOption(message, "action:demoralize")) {
-                if (successMessageOutcome(message)) {
-                    increaseConditionForTarget(message, "frightened", 1);
-                } else if (criticalSuccessMessageOutcome(message)) {
-                    increaseConditionForTarget(message, "frightened", 2);
-                }
-                if (anySuccessMessageOutcome(message)) {
-                    if (actorFeat(message?.actor, "panache") && !hasEffect(message.actor, "effect-panache")) {
-                        setEffectToActor(message.actor, effect_panache)
+        if (messageType(message, 'skill-check')) {
+
+            if (message?.target) {
+                if (hasOption(message, "action:tumble-through")) {
+                    if (anySuccessMessageOutcome(message)) {
+                        if (actorFeat(message?.actor, "tumble-behind-rogue") && !hasEffect(message.target.actor, "effect-flat-footed-tumble-behind")) {
+                            setEffectToActor(message.target.actor, effect_flat_footed)
+                        }
+                        if (actorFeat(message?.actor, "panache") && !hasEffect(message.actor, "effect-panache")) {
+                            setEffectToActor(message.actor, effect_panache)
+                        }
                     }
                 }
-            }
-            if (hasOption(message, "action:disarm")) {
-                if (successMessageOutcome(message) && message?.target) {
-                    setEffectToActor(message.target.actor, effect_disarm_success)
-                } else if (criticalFailureMessageOutcome(message)) {
-                    message.actor.increaseCondition("flat-footed");
+
+                if (hasOption(message, "action:demoralize")) {
+                    if (successMessageOutcome(message)) {
+                        increaseConditionForTarget(message, "frightened", 1);
+                    } else if (criticalSuccessMessageOutcome(message)) {
+                        increaseConditionForTarget(message, "frightened", 2);
+                    }
+                    if (anySuccessMessageOutcome(message)) {
+                        if (actorFeat(message?.actor, "panache") && !hasEffect(message.actor, "effect-panache")) {
+                            setEffectToActor(message.actor, effect_panache)
+                        }
+                    }
+                }
+
+                if (hasOption(message, "action:disarm")) {
+                    if (successMessageOutcome(message)) {
+                        setEffectToActor(message.target.actor, effect_disarm_success)
+                    } else if (criticalFailureMessageOutcome(message)) {
+                        message.actor.increaseCondition("flat-footed");
+                    }
+                }
+
+                if (hasOption(message, "action:feint")) {
+                    if (anySuccessMessageOutcome(message) && message?.target) {
+                        increaseConditionForTarget(message, "flat-footed");
+                    } else if (criticalFailureMessageOutcome(message)) {
+                        message.actor.increaseCondition("flat-footed");
+                    }
+                }
+
+                if (hasOption(message, "action:grapple")) {
+                    if (criticalSuccessMessageOutcome(message) && message?.target) {
+                        increaseConditionForTarget(message, "restrained");
+                    } else if (successMessageOutcome(message) && message?.target) {
+                        increaseConditionForTarget(message, "grabbed");
+                    }
                 }
             }
-            if (hasOption(message, "action:feint")) {
-                if (anySuccessMessageOutcome(message) && message?.target) {
-                    increaseConditionForTarget(message, "flat-footed");
-                } else if (criticalFailureMessageOutcome(message)) {
-                    message.actor.increaseCondition("flat-footed");
-                }
-            }
-            if (hasOption(message, "action:high-jump") || hasOption(message, "action:long-jump") || hasOption(message, "action:shove")) {
+
+            if (hasOption(message, "action:high-jump") || hasOption(message, "action:long-jump")
+                || hasOption(message, "action:shove") || hasOption(message, "action:climb")
+            ) {
                 if (criticalFailureMessageOutcome(message)) {
                     message.actor.increaseCondition("prone");
                 }
@@ -199,18 +216,13 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             if (hasOption(message, "action:subsist")) {
                 if (criticalFailureMessageOutcome(message)) {
                     setEffectToActor(message.actor, effect_adverse_subsist_situation)
+                } else if (failureMessageOutcome(message)) {
+                    message.actor.increaseCondition("fatigued");
                 }
             }
             if (hasOption(message, "action:tamper")) {
                 if (criticalFailureMessageOutcome(message)) {
                     applyDamage(message.actor, message.token, `${message.actor.level}[fire]`)
-                }
-            }
-            if (hasOption(message, "action:grapple")) {
-                if (criticalSuccessMessageOutcome(message) && message?.target) {
-                    increaseConditionForTarget(message, "restrained");
-                } else if (successMessageOutcome(message) && message?.target) {
-                    increaseConditionForTarget(message, "grabbed");
                 }
             }
         } else if (messageType(message, "damage-roll")) {
@@ -223,6 +235,25 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 
         if (messageType(message, "attack-roll") && message?.target?.actor && hasEffect(message.target.actor, "effect-flat-footed-tumble-behind")) {
             deleteEffectFromActor(message.target.actor, "effect-flat-footed-tumble-behind");
+        }
+
+        if (message?.flags?.pf2e?.origin?.type == "action") {
+            let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+            if (_obj.slug == "drop-prone" || _obj.slug == "crawl") {
+                message.actor.increaseCondition("prone");
+            } else if (_obj.slug == "conduct-energy") {
+                setEffectToActor(message.actor, effect_conduct_energy)
+            } else if (_obj.slug == "daydream-trance") {
+                setEffectToActor(message.actor, effect_daydream_trance)
+            } else if (_obj.slug == "energy-shot") {
+                setEffectToActor(message.actor, effect_energy_shot)
+            } else if (_obj.slug == "entitys-resurgence") {
+                setEffectToActor(message.actor, effect_entitys_resurgence)
+            } else if (_obj.slug == "fade-into-daydreams") {
+                message.actor.increaseCondition("concealed");
+            } else if (_obj.slug == "follow-the-expert") {
+                setEffectToActor(message.actor, effect_follow_the_expert)
+            }
         }
     }
 

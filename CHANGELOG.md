@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 0.0.8
+
+### New feature
+- Add support Drop Prone Action
+- Add support Climb Action
+- Add support Conduct Energy Action
+- Add support Crawl Action
+- Add support Daydream Trance Action
+- Add support Energy Shot Action
+- Add support Entity's Resurgence Action
+- Add support Fade Into Daydreams Action
+- Add support Follow the Expert Action
+
 ## Version 0.0.7
 
 ### New feature
