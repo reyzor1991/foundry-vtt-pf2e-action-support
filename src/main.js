@@ -25,6 +25,9 @@ async function createEffects(data) {
     const actor = await fromUuid(data.actorUuid);
     const source = (await fromUuid(data.eff)).toObject();
     source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: data.eff } });
+    if (data.objData) {
+        source.flags = mergeObject(source.flags, data.objData);
+    }
     await actor.createEmbeddedDocuments("Item", [source]);
 }
 
@@ -34,17 +37,33 @@ async function deleteEffects(data) {
     actor.deleteEmbeddedDocuments("Item", [effect._id])
 }
 
+async function updateObjects(data) {
+    var _obj = await fromUuid(data.id);
+    _obj.update(data.data);
+}
+
+async function deleteEffectsById(data) {
+    const actor = await fromUuid(data.actorUuid);
+    let effect = actor.itemTypes.effect.find(c => data.effId === c.id)
+    actor.deleteEmbeddedDocuments("Item", [effect._id])
+}
+
 async function increaseConditions(data) {
     const actor = await fromUuid(data.actorUuid);
     let valueObj = data?.value ? {'value': data?.value } : {}
 
     actor.increaseCondition(data.condition, valueObj);
 }
+async function isActorHeldEquipment(actor, item) {
+    return actor?.itemTypes?.equipment?.find(a=>a.isHeld && a.slug == item)
+}
 
 Hooks.once('setup', function () {
   socketlibSocket = globalThis.socketlib.registerModule("pf2e-action-support");
   socketlibSocket.register("createEffects", createEffects);
   socketlibSocket.register("deleteEffects", deleteEffects);
+  socketlibSocket.register("deleteEffectsById", deleteEffectsById);
+  socketlibSocket.register("updateObjects", updateObjects);
   socketlibSocket.register("increaseConditions", increaseConditions);
 })
 
@@ -92,6 +111,14 @@ function actorsWithEffect(eff) {
     return game.combat.turns.filter(cc=>hasEffect(cc.actor, eff)).map(cc=>cc.actor);
 }
 
+async function treatWounds(actor, target) {
+    if (actorFeat(actor, "continual-recovery")) {//10 min
+        setEffectToActor(target, effect_treat_wounds_immunity_minutes)
+    } else {
+        setEffectToActor(target, "Compendium.pf2e.feat-effects.Lb4q2bBAgxamtix5")
+    }
+}
+
 function sendNotificationChatMessage(actor, content) {
     var whispers = ChatMessage.getWhisperRecipients("GM").map((u) => u.id).concat(game.user.id);
 
@@ -114,14 +141,26 @@ function deleteEffectFromActor(actor, eff) {
     }
 }
 
-async function setEffectToActor(actor, eff) {
+function deleteEffectById(actor, effId) {
+    if (3 == actor.ownership[game.user.id]) {
+        actor.deleteEmbeddedDocuments("Item", [effId])
+    } else if (game.settings.get("pf2e-action-support", "useSocket")) {
+        socketlibSocket._sendRequest("deleteEffectsById", [{'actorUuid': actor.uuid, 'effId': effId}], 0)
+    } else {
+        sendNotificationChatMessage(actor, `Need delete effect with id ${effId} from ${actor.name}`);
+    }
+}
+
+async function setEffectToActor(actor, eff, objData=undefined) {
     if (3 == actor.ownership[game.user.id]) {
         const source = (await fromUuid(eff)).toObject();
         source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: eff } });
-
+        if (objData) {
+            source.flags = mergeObject(source.flags, objData);
+        }
         await actor.createEmbeddedDocuments("Item", [source]);
     } else if (game.settings.get("pf2e-action-support", "useSocket")) {
-        socketlibSocket._sendRequest("createEffects", [{'actorUuid': actor.uuid, 'eff': eff}], 0)
+        socketlibSocket._sendRequest("createEffects", [{'actorUuid': actor.uuid, 'eff': eff, "objData": objData}], 0)
     } else {
         sendNotificationChatMessage(actor, `Need add @UUID[${eff}] effect to ${actor.name}`);
     }
@@ -142,6 +181,45 @@ async function increaseConditionForTarget(message, condition, value=undefined) {
 function deleteFlatFootedTumbleBehind() {
     actorsWithEffect("effect-flat-footed-tumble-behind")
         .forEach(a => deleteEffectFromActor(a, "effect-flat-footed-tumble-behind"));
+}
+
+function deleteRestrainedUntilAttackerEnd(attackerId) {
+    actorsWithEffect("effect-restrained-until-end-of-attacker-next-turn")
+        .forEach(actor => {
+            actor.itemTypes.effect.filter(c => "effect-restrained-until-end-of-attacker-next-turn" === c.slug)
+            .forEach(effect => {
+                if (effect?.flags?.attacker == attackerId) {
+                    if (effect.flags["attacker-turn"] == 1) {
+                        deleteEffectById(actor, effect.id)
+                    } else {
+                        let data = {"flags.attacker-turn": effect.flags["attacker-turn"] - 1};
+                        if (3 == actor.ownership[game.user.id]) {
+                            effect.update(data);
+                        }else {
+                            socketlibSocket._sendRequest("updateObjects", [{id: effect.uuid, data:data}], 0)
+                        }
+                    }
+                }
+            })
+        });
+    actorsWithEffect("effect-grabbed-until-end-of-attacker-next-turn")
+        .forEach(actor => {
+            actor.itemTypes.effect.filter(c => "effect-grabbed-until-end-of-attacker-next-turn" === c.slug)
+            .forEach(effect => {
+                if (effect?.flags?.attacker == attackerId) {
+                    if (effect.flags["attacker-turn"] == 1) {
+                        deleteEffectById(actor, effect.id)
+                    } else {
+                        let data = {"flags.attacker-turn": effect.flags["attacker-turn"] - 1};
+                        if (3 == actor.ownership[game.user.id]) {
+                            effect.update(data);
+                        }else {
+                            socketlibSocket._sendRequest("updateObjects", [{id: effect.uuid, data:data}], 0)
+                        }
+                    }
+                }
+            })
+        });
 }
 
 async function applyDamage(actor, token, formula) {
@@ -185,7 +263,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     if (successMessageOutcome(message)) {
                         setEffectToActor(message.target.actor, effect_disarm_success)
                     } else if (criticalFailureMessageOutcome(message)) {
-                        message.actor.increaseCondition("flat-footed");
+                        setEffectToActor(message.actor, effect_flat_footed_start_turn)
                     }
                 }
 
@@ -199,9 +277,18 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 
                 if (hasOption(message, "action:grapple")) {
                     if (criticalSuccessMessageOutcome(message) && message?.target) {
-                        increaseConditionForTarget(message, "restrained");
+                        setEffectToActor(message.target.actor, effect_restrained_end_attacker_next_turn, {"attacker-turn": 2, attacker: message.actor.id})
                     } else if (successMessageOutcome(message) && message?.target) {
-                        increaseConditionForTarget(message, "grabbed");
+                        setEffectToActor(message.target.actor, effect_grabbed_end_attacker_next_turn, {"attacker-turn": 2, attacker: message.actor.id})
+                    }
+                }
+            } else if (hasOption(message, "action:treat-wounds") && hasOption(message, "feat:battle-medicine")) {
+                if (game.user.targets.size == 1) {
+                    const [first] = game.user.targets;
+                    if (isActorHeldEquipment(first.actor, "battle-medics-baton")) {//1 hour
+                        setEffectToActor(first.actor, effect_battle_medicine_immunity_hour)
+                    } else {
+                        setEffectToActor(first.actor, "Compendium.pf2e.feat-effects.Item.2XEYQNZTCGpdkyR6")
                     }
                 }
             }
@@ -250,12 +337,24 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             } else if (_obj.slug == "entitys-resurgence") {
                 setEffectToActor(message.actor, effect_entitys_resurgence)
             } else if (_obj.slug == "fade-into-daydreams") {
-                message.actor.increaseCondition("concealed");
+                setEffectToActor(message.actor, effect_concealed_start_turn)
             } else if (_obj.slug == "follow-the-expert") {
                 setEffectToActor(message.actor, effect_follow_the_expert)
             }
         }
+    } else {
+        if (messageType(message, 'skill-check') && hasOption(message, "action:treat-wounds") && message?.flavor == message?.flags?.pf2e?.unsafe) {
+            if (game.user.targets.size == 1) {
+                const [first] = game.user.targets;
+                treatWounds(message.actor, first.actor);
+            } else if (actorFeat(message.actor, "ward-medic")) {
+                game.user.targets.forEach(a => {
+                    treatWounds(message.actor, a.actor);
+                });
+            }
+        }
     }
+
 
     if (game.settings.get("pf2e-action-support", "decreaseFrequency")) {
         if (message?.actor) {
@@ -273,10 +372,13 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 
 Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
     deleteFlatFootedTumbleBehind();
+    deleteRestrainedUntilAttackerEnd(combat.combatant.actor.id)
 });
 
 Hooks.on('combatRound', async (combat, updateData, updateOptions) => {
     deleteFlatFootedTumbleBehind();
+
+    deleteRestrainedUntilAttackerEnd(combat.combatant.actor.name)
 
     game.combat.turns.map(cc=>cc.actor)
         .forEach(a => {

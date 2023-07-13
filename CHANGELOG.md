@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.0.9
+
+### New feature
+- Add support Battle Medicine Action
+- Add support Treat Wounds Action
+- Add more flexable effects
+
 ## Version 0.0.8
 
 ### New feature
