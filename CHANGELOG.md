@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.0.11
+
+### New feature
+- Add support Stand Action
+- Add support Scout Action
+- Add support Trip Action
+- Add support Swashbucklers Styles
+
 ## Version 0.0.10
 
 ### New feature

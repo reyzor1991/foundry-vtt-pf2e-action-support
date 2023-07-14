@@ -22,8 +22,8 @@ Hooks.once("init", () => {
 });
 
 async function createEffects(data) {
-    const actor = await fromUuid(data.actorUuid);
-    const source = (await fromUuid(data.eff)).toObject();
+    let actor = await fromUuid(data.actorUuid);
+    let source = (await fromUuid(data.eff)).toObject();
     source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: data.eff } });
     if (data.objData) {
         source.flags = mergeObject(source.flags, data.objData);
@@ -32,7 +32,7 @@ async function createEffects(data) {
 }
 
 async function deleteEffects(data) {
-    const actor = await fromUuid(data.actorUuid);
+    let actor = await fromUuid(data.actorUuid);
     let effect = actor.itemTypes.effect.find(c => data.eff === c.slug)
     actor.deleteEmbeddedDocuments("Item", [effect._id])
 }
@@ -43,17 +43,25 @@ async function updateObjects(data) {
 }
 
 async function deleteEffectsById(data) {
-    const actor = await fromUuid(data.actorUuid);
+    let actor = await fromUuid(data.actorUuid);
     let effect = actor.itemTypes.effect.find(c => data.effId === c.id)
     actor.deleteEmbeddedDocuments("Item", [effect._id])
 }
 
 async function increaseConditions(data) {
-    const actor = await fromUuid(data.actorUuid);
+    let actor = await fromUuid(data.actorUuid);
     let valueObj = data?.value ? {'value': data?.value } : {}
 
     actor.increaseCondition(data.condition, valueObj);
 }
+
+async function applyDamages(data) {
+    let actor = await fromUuid(data.actorUuid);
+    let token = await fromUuid(data.tokenUuid);
+
+    applyDamage(actor, token, data.formula);
+}
+
 function isActorHeldEquipment(actor, item) {
     return actor?.itemTypes?.equipment?.find(a=>a.isHeld && a.slug == item)
 }
@@ -65,6 +73,7 @@ Hooks.once('setup', function () {
   socketlibSocket.register("deleteEffectsById", deleteEffectsById);
   socketlibSocket.register("updateObjects", updateObjects);
   socketlibSocket.register("increaseConditions", increaseConditions);
+  socketlibSocket.register("applyDamages", applyDamages);
 })
 
 function failureMessageOutcome(message) {
@@ -153,7 +162,7 @@ function deleteEffectById(actor, effId) {
 
 async function setEffectToActor(actor, eff, objData=undefined) {
     if (3 == actor.ownership[game.user.id]) {
-        const source = (await fromUuid(eff)).toObject();
+        let source = (await fromUuid(eff)).toObject();
         source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: eff } });
         if (objData) {
             source.flags = mergeObject(source.flags, objData);
@@ -223,11 +232,15 @@ function deleteRestrainedUntilAttackerEnd(attackerId) {
 }
 
 async function applyDamage(actor, token, formula) {
-    const DamageRoll = CONFIG.Dice.rolls.find((r) => r.name === "DamageRoll")
-    let roll = new DamageRoll(formula);
-    await roll.evaluate({async: true});
-    actor.applyDamage({damage:roll, token:token})
-    roll.toMessage({speaker: {alias: actor.prototypeToken.name}});
+    if (3 == actor.ownership[game.user.id]) {
+        let DamageRoll = CONFIG.Dice.rolls.find((r) => r.name === "DamageRoll")
+        let roll = new DamageRoll(formula);
+        await roll.evaluate({async: true});
+        actor.applyDamage({damage:roll, token:token})
+        roll.toMessage({speaker: {alias: actor.prototypeToken.name}});
+    } else {
+        socketlibSocket._sendRequest("applyDamages", [{actorUuid: actor.uuid, tokenUuid: token.uuid, formula: formula}], 0)
+    }
 }
 
 Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
@@ -246,17 +259,22 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     }
                 }
 
-                if (hasOption(message, "action:demoralize")) {
+                if (hasOption(message, "action:demoralize") && !hasEffect(message?.target?.actor, "effect-demoralize-immunity-minutes")) {
                     if (successMessageOutcome(message)) {
                         increaseConditionForTarget(message, "frightened", 1);
                     } else if (criticalSuccessMessageOutcome(message)) {
                         increaseConditionForTarget(message, "frightened", 2);
                     }
-                    if (anySuccessMessageOutcome(message)) {
-                        if (actorFeat(message?.actor, "panache") && !hasEffect(message.actor, "effect-panache")) {
+                    if (anySuccessMessageOutcome(message) && actorFeat(message.actor, "braggart")) {
+                        if (!hasEffect(message.actor, "effect-panache")) {
                             setEffectToActor(message.actor, effect_panache)
                         }
                     }
+                    setEffectToActor(message?.target?.actor, effect_demoralize_immunity_minutes)
+                }
+
+                if (hasOption(message, "action:perform") && actorFeat(message?.actor, "battledancer") && !hasEffect(message.actor, "effect-panache")) {
+                    setEffectToActor(message.actor, effect_panache)
                 }
 
                 if (hasOption(message, "action:disarm")) {
@@ -270,8 +288,19 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 if (hasOption(message, "action:feint")) {
                     if (anySuccessMessageOutcome(message) && message?.target) {
                         increaseConditionForTarget(message, "flat-footed");
+                        if (actorFeat(message?.actor, "fencer") && !hasEffect(message.actor, "effect-panache")){
+                            setEffectToActor(message.actor, effect_panache)
+                        }
                     } else if (criticalFailureMessageOutcome(message)) {
                         message.actor.increaseCondition("flat-footed");
+                    }
+                }
+
+                if (hasOption(message, "action:create-a-diversion")) {
+                    if (anySuccessMessageOutcome(message)) {
+                        if (actorFeat(message?.actor, "fencer") && !hasEffect(message.actor, "effect-panache")){
+                            setEffectToActor(message.actor, effect_panache)
+                        }
                     }
                 }
 
@@ -281,10 +310,46 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     } else if (successMessageOutcome(message) && message?.target) {
                         setEffectToActor(message.target.actor, effect_grabbed_end_attacker_next_turn, {"attacker-turn": 2, attacker: message.actor.id})
                     }
+                    if (anySuccessMessageOutcome(message) && actorFeat(message?.actor, "gymnast") && !hasEffect(message.actor, "effect-panache")) {
+                        setEffectToActor(message.actor, effect_panache)
+                    }
+                }
+
+                if (hasOption(message, "action:shove")) {
+                    if (anySuccessMessageOutcome(message) && actorFeat(message?.actor, "gymnast") && !hasEffect(message.actor, "effect-panache")) {
+                        setEffectToActor(message.actor, effect_panache)
+                    }
+                }
+
+                if (hasOption(message, "action:bon-mot")) {
+                    if (anySuccessMessageOutcome(message)) {
+                        if (actorFeat(message?.actor, "wit") && !hasEffect(message.actor, "effect-panache")) {
+                            setEffectToActor(message.actor, effect_panache)
+                        }
+                        if (successMessageOutcome(message)) {
+                            setEffectToActor(message.target.actor, "Compendium.pf2e.feat-effects.Item.GoSls6SKCFmSoDxT")
+                        } else {
+                            setEffectToActor(message.target.actor, "Compendium.pf2e.feat-effects.Item.CtrZFI3RV0yPNzTv")
+                        }
+                    } else if (criticalFailureMessageOutcome(message)) {
+                        setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.GoSls6SKCFmSoDxT")
+                    }
+                }
+
+                if (hasOption(message, "action:trip")) {
+                    if (anySuccessMessageOutcome(message)) {
+                        if (actorFeat(message?.actor, "gymnast") && !hasEffect(message.actor, "effect-panache")) {
+                            setEffectToActor(message.actor, effect_panache)
+                        }
+                        increaseConditionForTarget(message, "prone");
+                        if (criticalSuccessMessageOutcome(message)) {
+                            applyDamage(message?.target?.actor,message?.target?.token, `1d6[bludgeoning]`)
+                        }
+                    }
                 }
             } else if (hasOption(message, "action:treat-wounds") && hasOption(message, "feat:battle-medicine") && message?.flavor == message?.flags?.pf2e?.unsafe) {
                 if (game.user.targets.size == 1) {
-                    const [first] = game.user.targets;
+                    let [first] = game.user.targets;
                     if (isActorHeldEquipment(message.actor, "battle-medics-baton") || actorFeat(message.actor, "forensic-medicine-methodology")) {//1 hour
                         setEffectToActor(first.actor, effect_battle_medicine_immunity_hour)
                     } else {
@@ -294,7 +359,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             }
 
             if (hasOption(message, "action:high-jump") || hasOption(message, "action:long-jump")
-                || hasOption(message, "action:shove") || hasOption(message, "action:climb")
+                || hasOption(message, "action:shove") || hasOption(message, "action:climb") || hasOption(message, "action:trip")
             ) {
                 if (criticalFailureMessageOutcome(message)) {
                     message.actor.increaseCondition("prone");
@@ -330,6 +395,8 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 message.actor.increaseCondition("prone");
             } else if (_obj.slug == "conduct-energy") {
                 setEffectToActor(message.actor, effect_conduct_energy)
+            } else if (_obj.slug == "stand") {
+                message.actor.decreaseCondition("prone");
             } else if (_obj.slug == "daydream-trance") {
                 setEffectToActor(message.actor, effect_daydream_trance)
             } else if (_obj.slug == "energy-shot") {
@@ -345,7 +412,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
     } else {
         if (messageType(message, 'skill-check') && hasOption(message, "action:treat-wounds") && message?.flavor == message?.flags?.pf2e?.unsafe) {
             if (game.user.targets.size == 1) {
-                const [first] = game.user.targets;
+                let [first] = game.user.targets;
                 treatWounds(message.actor, first.actor);
             } else if (actorFeat(message.actor, "ward-medic")) {
                 game.user.targets.forEach(a => {
@@ -354,7 +421,6 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             }
         }
     }
-
 
     if (game.settings.get("pf2e-action-support", "decreaseFrequency")) {
         if (message?.actor) {
@@ -365,6 +431,18 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 });
             } else if (_obj?.system?.frequency?.value == 0) {
                sendNotificationChatMessage(message.actor, `Action sent to chat with 0 uses left.`);
+            }
+        }
+    }
+
+
+    if (message?.flags?.pf2e?.origin?.type == "action") {
+        let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+        if (_obj.slug == "scout") {
+            if (actorFeat(message.actor, "incredible-scout")) {
+                setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.la8rWwUtReElgTS6")
+            } else {
+                setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.EMqGwUi3VMhCjTlF")
             }
         }
     }
