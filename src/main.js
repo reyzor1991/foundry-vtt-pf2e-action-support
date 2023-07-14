@@ -54,7 +54,7 @@ async function increaseConditions(data) {
 
     actor.increaseCondition(data.condition, valueObj);
 }
-async function isActorHeldEquipment(actor, item) {
+function isActorHeldEquipment(actor, item) {
     return actor?.itemTypes?.equipment?.find(a=>a.isHeld && a.slug == item)
 }
 
@@ -282,10 +282,10 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                         setEffectToActor(message.target.actor, effect_grabbed_end_attacker_next_turn, {"attacker-turn": 2, attacker: message.actor.id})
                     }
                 }
-            } else if (hasOption(message, "action:treat-wounds") && hasOption(message, "feat:battle-medicine")) {
+            } else if (hasOption(message, "action:treat-wounds") && hasOption(message, "feat:battle-medicine") && message?.flavor == message?.flags?.pf2e?.unsafe) {
                 if (game.user.targets.size == 1) {
                     const [first] = game.user.targets;
-                    if (isActorHeldEquipment(first.actor, "battle-medics-baton")) {//1 hour
+                    if (isActorHeldEquipment(message.actor, "battle-medics-baton") || actorFeat(message.actor, "forensic-medicine-methodology")) {//1 hour
                         setEffectToActor(first.actor, effect_battle_medicine_immunity_hour)
                     } else {
                         setEffectToActor(first.actor, "Compendium.pf2e.feat-effects.Item.2XEYQNZTCGpdkyR6")

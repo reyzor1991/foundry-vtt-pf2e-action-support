@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.10
+
+### New feature
+- Update support Battle Medicine Action
+
 ## Version 0.0.9
 
 ### New feature
