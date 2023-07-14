@@ -74,7 +74,13 @@ Hooks.once('setup', function () {
   socketlibSocket.register("updateObjects", updateObjects);
   socketlibSocket.register("increaseConditions", increaseConditions);
   socketlibSocket.register("applyDamages", applyDamages);
+  socketlibSocket.register("createFeintEffectOnTarget", _socketCreateFeintEffectOnTarget);
 })
+
+async function _socketCreateFeintEffectOnTarget(effect, targetId) {
+    let target = await fromUuid(targetId);
+    await target.createEmbeddedDocuments("Item", [effect]);
+}
 
 function failureMessageOutcome(message) {
     return "failure" == message?.flags?.pf2e?.context?.outcome;
@@ -112,8 +118,16 @@ function hasOption(message, opt) {
     return message?.flags?.pf2e?.context?.options?.includes(opt);
 }
 
+function hasEffectStart(actor, eff) {
+    return actor?.itemTypes?.effect?.find((c => c.slug.startsWith(eff)))
+}
+
 function hasEffect(actor, eff) {
-    return actor && actor?.itemTypes?.effect?.find((c => eff === c.slug))
+    return actor?.itemTypes?.effect?.find((c => eff === c.slug))
+}
+
+function hasEffects(actor, eff) {
+    return actor?.itemTypes?.effect?.filter((c => eff === c.slug))
 }
 
 function actorsWithEffect(eff) {
@@ -160,6 +174,35 @@ function deleteEffectById(actor, effId) {
     }
 }
 
+async function setFeintEffect(actor, target, isCrit=false) {
+    let effect = (await fromUuid(isCrit?effect_feint_critical_success:effect_feint_success)).toObject();
+    effect.flags = mergeObject(effect.flags ?? {}, { core: { sourceId: effect.id } });
+    if (isCrit) {
+        effect.flags = mergeObject(effect.flags, {"attacker-turn": 2, attacker: actor.id});
+    }
+    effect.system.slug = effect.system.slug.replace("attacker", actor.id)
+    effect.name += ` ${actor.name}`
+
+    let aEffect = (await fromUuid(isCrit?effect_feint_crit_success_attacker_target:effect_feint_success_attacker_target)).toObject();
+    aEffect.system.slug = aEffect.system.slug.replace("attacker", actor.id).replace("target", target.id)
+
+    aEffect.system.rules[0].predicate[0] = aEffect.system.rules[0].predicate[0].replace("attacker", actor.id);
+    aEffect.system.rules[0].predicate[1] = aEffect.system.rules[0].predicate[1].replace("attacker", actor.id).replace("target", target.id)
+    aEffect.name += ` ${target.name}`
+
+    if (3 == actor.ownership[game.user.id]) {
+        await actor.createEmbeddedDocuments("Item", [aEffect]);
+    } else {
+        socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, actor.id], 0)
+    }
+
+    if (3 == target.ownership[game.user.id]) {
+        await target.createEmbeddedDocuments("Item", [effect]);
+    } else {
+        socketlibSocket._sendRequest("createFeintEffectOnTarget", [effect, target.id], 0)
+    }
+}
+
 async function setEffectToActor(actor, eff, objData=undefined) {
     if (3 == actor.ownership[game.user.id]) {
         let source = (await fromUuid(eff)).toObject();
@@ -187,48 +230,22 @@ async function increaseConditionForTarget(message, condition, value=undefined) {
     }
 }
 
-function deleteFlatFootedTumbleBehind() {
-    actorsWithEffect("effect-flat-footed-tumble-behind")
-        .forEach(a => deleteEffectFromActor(a, "effect-flat-footed-tumble-behind"));
-}
-
-function deleteRestrainedUntilAttackerEnd(attackerId) {
-    actorsWithEffect("effect-restrained-until-end-of-attacker-next-turn")
-        .forEach(actor => {
-            actor.itemTypes.effect.filter(c => "effect-restrained-until-end-of-attacker-next-turn" === c.slug)
-            .forEach(effect => {
-                if (effect?.flags?.attacker == attackerId) {
-                    if (effect.flags["attacker-turn"] == 1) {
-                        deleteEffectById(actor, effect.id)
-                    } else {
-                        let data = {"flags.attacker-turn": effect.flags["attacker-turn"] - 1};
-                        if (3 == actor.ownership[game.user.id]) {
-                            effect.update(data);
-                        }else {
-                            socketlibSocket._sendRequest("updateObjects", [{id: effect.uuid, data:data}], 0)
-                        }
-                    }
+function deleteEffectUntilAttackerEnd(actor, eff, attackerId, isFinal=false) {
+    actor.itemTypes.effect.filter(c => eff === c.slug)
+    .forEach(effect => {
+        if (effect?.flags?.attacker == attackerId) {
+            if (effect.flags["attacker-turn"] == 1 || isFinal) {
+                deleteEffectById(actor, effect.id)
+            } else {
+                let data = {"flags.attacker-turn": effect.flags["attacker-turn"] - 1};
+                if (3 == actor.ownership[game.user.id]) {
+                    effect.update(data);
+                }else {
+                    socketlibSocket._sendRequest("updateObjects", [{id: effect.uuid, data:data}], 0)
                 }
-            })
-        });
-    actorsWithEffect("effect-grabbed-until-end-of-attacker-next-turn")
-        .forEach(actor => {
-            actor.itemTypes.effect.filter(c => "effect-grabbed-until-end-of-attacker-next-turn" === c.slug)
-            .forEach(effect => {
-                if (effect?.flags?.attacker == attackerId) {
-                    if (effect.flags["attacker-turn"] == 1) {
-                        deleteEffectById(actor, effect.id)
-                    } else {
-                        let data = {"flags.attacker-turn": effect.flags["attacker-turn"] - 1};
-                        if (3 == actor.ownership[game.user.id]) {
-                            effect.update(data);
-                        }else {
-                            socketlibSocket._sendRequest("updateObjects", [{id: effect.uuid, data:data}], 0)
-                        }
-                    }
-                }
-            })
-        });
+            }
+        }
+    })
 }
 
 async function applyDamage(actor, token, formula) {
@@ -287,7 +304,11 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 
                 if (hasOption(message, "action:feint")) {
                     if (anySuccessMessageOutcome(message) && message?.target) {
-                        increaseConditionForTarget(message, "flat-footed");
+                        if (criticalSuccessMessageOutcome(message)) {
+                            setFeintEffect(message.actor, message.target.actor, true)
+                        } else {
+                            setFeintEffect(message.actor, message.target.actor)
+                        }
                         if (actorFeat(message?.actor, "fencer") && !hasEffect(message.actor, "effect-panache")){
                             setEffectToActor(message.actor, effect_panache)
                         }
@@ -336,6 +357,17 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     }
                 }
 
+                if (hasOption(message, "action:escape") && anySuccessMessageOutcome(message)) {
+                    let rest = hasEffects(message.actor, "effect-restrained-until-end-of-attacker-next-turn")
+                    let grab = hasEffects(message.actor, "effect-grabbed-until-end-of-attacker-next-turn")
+                    rest.filter(a=>a?.flags?.attacker == message.target.actor.id).forEach(a => {
+                        deleteEffectById(message.actor, a.id)
+                    });
+                    grab.filter(a=>a?.flags?.attacker == message.target.actor.id).forEach(a => {
+                        deleteEffectById(message.actor, a.id)
+                    });
+                }
+
                 if (hasOption(message, "action:trip")) {
                     if (anySuccessMessageOutcome(message)) {
                         if (actorFeat(message?.actor, "gymnast") && !hasEffect(message.actor, "effect-panache")) {
@@ -375,6 +407,22 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             if (hasOption(message, "action:tamper")) {
                 if (criticalFailureMessageOutcome(message)) {
                     applyDamage(message.actor, message.token, `${message.actor.level}[fire]`)
+                }
+            }
+        } else if (messageType(message, "attack-roll") && message?.item?.isMelee) {
+            let cqq = hasEffectStart(message?.target?.actor, "effect-feint-critical-success");
+            if (cqq) {
+                deleteEffectUntilAttackerEnd(message?.target?.actor, cqq.slug, message.actor.id, true)
+                if (hasEffect(message.actor, `effect-feint-critical-success-${message.actor.id}-${message?.target?.actor.id}`)) {
+                    deleteEffectFromActor(message.actor, `effect-feint-critical-success-${message.actor.id}-${message?.target?.actor.id}`)
+                }
+            }
+
+            let qq = hasEffectStart(message?.target?.actor, "effect-feint-success");
+            if (qq) {
+                deleteEffectFromActor(message?.target?.actor, qq.slug, message.actor.id, true)
+                if (hasEffect(message.actor, `effect-feint-success-${message.actor.id}-${message?.target?.actor.id}`)) {
+                    deleteEffectFromActor(message.actor, `effect-feint-success-${message.actor.id}-${message?.target?.actor.id}`)
                 }
             }
         } else if (messageType(message, "damage-roll")) {
@@ -449,14 +497,51 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 });
 
 Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
-    deleteFlatFootedTumbleBehind();
-    deleteRestrainedUntilAttackerEnd(combat.combatant.actor.id)
+     game.combat.turns.forEach(cc => {
+        if (hasEffect(cc.actor, "effect-flat-footed-tumble-behind")) {
+            deleteEffectFromActor(cc.actor, "effect-flat-footed-tumble-behind")
+        }
+        if (hasEffect(cc.actor, "effect-restrained-until-end-of-attacker-next-turn")) {
+            deleteEffectUntilAttackerEnd(cc.actor, "effect-restrained-until-end-of-attacker-next-turn", combat.combatant.actor.id)
+        }
+        if (hasEffect(cc.actor, "effect-grabbed-until-end-of-attacker-next-turn")) {
+            deleteEffectUntilAttackerEnd(cc.actor, "effect-grabbed-until-end-of-attacker-next-turn", combat.combatant.actor.id)
+        }
+        //
+        let cqq = hasEffectStart(cc.actor, "effect-feint-critical-success");
+        if (cqq) {
+            deleteEffectUntilAttackerEnd(cc.actor, cqq.slug, combat.combatant.actor.id)
+        }
+
+        let qq = hasEffectStart(cc.actor, "effect-feint-success");
+        if (qq) {
+            deleteEffectFromActor(cc.actor, qq.slug)
+        }
+     });
 });
 
 Hooks.on('combatRound', async (combat, updateData, updateOptions) => {
-    deleteFlatFootedTumbleBehind();
+    game.combat.turns.forEach(cc => {
+        if (hasEffect(cc.actor, "effect-flat-footed-tumble-behind")) {
+            deleteEffectFromActor(cc.actor, "effect-flat-footed-tumble-behind")
+        }
+        if (hasEffect(cc.actor, "effect-restrained-until-end-of-attacker-next-turn")) {
+            deleteEffectUntilAttackerEnd(cc.actor, "effect-restrained-until-end-of-attacker-next-turn", combat.combatant.actor.id)
+        }
+        if (hasEffect(cc.actor, "effect-grabbed-until-end-of-attacker-next-turn")) {
+            deleteEffectUntilAttackerEnd(cc.actor, "effect-grabbed-until-end-of-attacker-next-turn", combat.combatant.actor.id)
+        }
+        //
+        let cqq = hasEffectStart(cc.actor, "effect-feint-critical-success");
+        if (cqq) {
+            deleteEffectUntilAttackerEnd(cc.actor, cqq.slug, combat.combatant.actor.id)
+        }
 
-    deleteRestrainedUntilAttackerEnd(combat.combatant.actor.name)
+        let qq = hasEffectStart(cc.actor, "effect-feint-success");
+        if (qq) {
+            deleteEffectFromActor(cc.actor, qq.slug)
+        }
+    });
 
     game.combat.turns.map(cc=>cc.actor)
         .forEach(a => {

@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.0.12
+
+### New feature
+- Update Feint Action handling
+- Add support Escape Action
+
 ## Version 0.0.11
 
 ### New feature

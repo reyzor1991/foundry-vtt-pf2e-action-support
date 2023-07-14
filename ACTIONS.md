@@ -22,6 +22,7 @@
 - Tamper
 - Grapple
 - Trip
+- Escape
 
 
 - Swashbucklers Style - All

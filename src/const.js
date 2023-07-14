@@ -14,5 +14,9 @@ export const effect_daydream_trance = "Compendium.pf2e.feat-effects.Item.RATDyLy
 export const effect_energy_shot = "Compendium.pf2e.feat-effects.Item.zocU4IYIlWwRKUuE";
 export const effect_entitys_resurgence = "Compendium.pf2e.feat-effects.Item.yr5ey5qC8dXH749T";
 export const effect_follow_the_expert = "Compendium.pf2e.other-effects.Item.VCSpuc3Tf3XWMkd3";
+export const effect_feint_success = "Compendium.pf2e-action-support.action-support.Item.P6DGk2h38xE8O0pw";
+export const effect_feint_critical_success = "Compendium.pf2e-action-support.action-support.Item.lwcyhD03jVchmPGm";
+export const effect_feint_success_attacker_target = "Compendium.pf2e-action-support.action-support.Item.XcJAldj3qsmLKjSL";
+export const effect_feint_crit_success_attacker_target = "Compendium.pf2e-action-support.action-support.Item.jfn0eHEAnoxNI7YS";
 
 export const frightened_2_condition = "@UUID[Compendium.pf2e.conditionitems.Item.TBSHQspnbcqxsmjL]{Frightened 2}";
