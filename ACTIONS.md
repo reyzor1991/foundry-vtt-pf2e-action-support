@@ -21,6 +21,7 @@
 - Subsist
 - Tamper
 - Grapple
+- Trip
 
 
 - Swashbucklers Style - All
