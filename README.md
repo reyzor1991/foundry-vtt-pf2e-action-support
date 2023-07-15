@@ -25,5 +25,5 @@
 ### List of actions:
 See [ACTIONS.md](./ACTIONS.md)
 
-https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/assets/6688366/19107595-fa4d-4648-905f-f302d7eb0d4a
 
+https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/assets/6688366/bc0c87d9-0636-4568-9cb0-0337a024b3a8
