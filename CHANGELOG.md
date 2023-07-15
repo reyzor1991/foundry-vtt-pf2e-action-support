@@ -1,5 +1,22 @@
 # Changelog
 
+## Version 0.0.13
+
+### New feature
+- Handling of Accept Echo Action
+- Handling of Anadi Venom Action
+- Handling of Arcane Cascade Action
+- Handling of Bend Time Action
+- Handling of Calculate Threats Action
+- Handling of Call Upon the Brightness Action
+- Handling of Catharsis Action
+- Handling of Clue In Action
+- Handling of Harrow the Fiend Action
+- Handling of Jinx Action
+- Handling of Recall Under Pressure Action
+- Handling of Tail Toxin Action
+- Handling of Tenacious Stance Action
+
 ## Version 0.0.12
 
 ### New feature

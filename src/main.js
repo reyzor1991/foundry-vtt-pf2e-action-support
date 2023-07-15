@@ -439,22 +439,16 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 
         if (message?.flags?.pf2e?.origin?.type == "action") {
             let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+
+            let eff = actionEffectMap[_obj.slug]
+            if (eff) {
+                setEffectToActor(message.actor, eff)
+            }
+
             if (_obj.slug == "drop-prone" || _obj.slug == "crawl") {
                 message.actor.increaseCondition("prone");
-            } else if (_obj.slug == "conduct-energy") {
-                setEffectToActor(message.actor, effect_conduct_energy)
             } else if (_obj.slug == "stand") {
                 message.actor.decreaseCondition("prone");
-            } else if (_obj.slug == "daydream-trance") {
-                setEffectToActor(message.actor, effect_daydream_trance)
-            } else if (_obj.slug == "energy-shot") {
-                setEffectToActor(message.actor, effect_energy_shot)
-            } else if (_obj.slug == "entitys-resurgence") {
-                setEffectToActor(message.actor, effect_entitys_resurgence)
-            } else if (_obj.slug == "fade-into-daydreams") {
-                setEffectToActor(message.actor, effect_concealed_start_turn)
-            } else if (_obj.slug == "follow-the-expert") {
-                setEffectToActor(message.actor, effect_follow_the_expert)
             }
         }
     } else {
@@ -466,6 +460,18 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 game.user.targets.forEach(a => {
                     treatWounds(message.actor, a.actor);
                 });
+            }
+        }
+    }
+
+    if (messageType(message, "saving-throw")) {
+        if (hasOption(message, 'action:jinx')) {
+            if (anySuccessMessageOutcome(message)) {
+                setEffectToActor(message.actor, effect_jinx_immunity)
+            } else if (criticalFailureMessageOutcome(message) && !hasEffect(message.actor, "effect-jinx-immunity")) {
+                setEffectToActor(message.actor, effect_jinx_clumsy2)
+            } else if (failureMessageOutcome(message) && !hasEffect(message.actor, "effect-jinx-immunity")) {
+                setEffectToActor(message.actor, effect_jinx_clumsy1)
             }
         }
     }
@@ -492,6 +498,8 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             } else {
                 setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.EMqGwUi3VMhCjTlF")
             }
+        } else if (_obj.slug == "accept-echo") {
+            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.2ca1ZuqQ7VkunAh3")
         }
     }
 });

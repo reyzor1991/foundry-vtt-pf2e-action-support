@@ -18,5 +18,28 @@ export const effect_feint_success = "Compendium.pf2e-action-support.action-suppo
 export const effect_feint_critical_success = "Compendium.pf2e-action-support.action-support.Item.lwcyhD03jVchmPGm";
 export const effect_feint_success_attacker_target = "Compendium.pf2e-action-support.action-support.Item.XcJAldj3qsmLKjSL";
 export const effect_feint_crit_success_attacker_target = "Compendium.pf2e-action-support.action-support.Item.jfn0eHEAnoxNI7YS";
+export const effect_bend_time = "Compendium.pf2e-action-support.action-support.Item.w4iqlhWrlHLlOiYP";
+export const effect_jinx_immunity = "Compendium.pf2e-action-support.action-support.Item.DGGVvtjm7r8yhSKG";
+export const effect_jinx_clumsy1 = "Compendium.pf2e-action-support.action-support.Item.aEhh2kWTcKJacdHe";
+export const effect_jinx_clumsy2 = "Compendium.pf2e-action-support.action-support.Item.MkWyAtPU3CAFpgdQ";
 
-export const frightened_2_condition = "@UUID[Compendium.pf2e.conditionitems.Item.TBSHQspnbcqxsmjL]{Frightened 2}";
+export const actionEffectMap = {
+    "conduct-energy": effect_conduct_energy,
+    "daydream-trance": effect_daydream_trance,
+    "energy-shot": effect_energy_shot,
+    "entitys-resurgence": effect_entitys_resurgence,
+    "fade-into-daydreams": effect_concealed_start_turn,
+    "follow-the-expert": effect_follow_the_expert,
+    "anadi-venom": "Compendium.pf2e.feat-effects.Item.gN1LbKYQgi8Fx98V",
+    "arcane-cascade": "Compendium.pf2e.feat-effects.Item.fsjO5oTKttsbpaKl",
+    "bend-time": effect_bend_time,
+    "blizzard-evasion": "Compendium.pf2e.feat-effects.Item.JF2xCqL6t4UJZtUi",
+    "calculate-threats": "Compendium.pf2e.feat-effects.Item.P6druSuWIVoLrXJR",
+    "call-upon-the-brightness": "Compendium.pf2e.feat-effects.Item.xPg5wzzKNxJy18rU",
+    "catharsis": "Compendium.pf2e.feat-effects.Item.JysvElDwGZ5ABQ6x",
+    "clue-in": "Compendium.pf2e.feat-effects.Item.vhSYlQiAQMLuXqoc",
+    "harrow-the-fiend": "Compendium.pf2e.feat-effects.Item.MSkspeBsbXm6LQ19",
+    "recall-under-pressure": "Compendium.pf2e.feat-effects.Item.CW4zphOOpeaLJIWc",
+    "tail-toxin": "Compendium.pf2e.feat-effects.Item.Q0DKJRnDuuUnLpvn",
+    "tenacious-stance": "Compendium.pf2e.feat-effects.Item.Ms6WPXRWfXb2KpG2",
+}

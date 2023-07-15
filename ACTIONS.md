@@ -23,6 +23,19 @@
 - Grapple
 - Trip
 - Escape
+- Accept Echo
+- Anadi Venom
+- Arcane Cascade
+- Bend Time
+- Calculate Threats
+- Call Upon the Brightness
+- Catharsis
+- Clue In
+- Harrow the Fiend
+- Jinx
+- Recall Under Pressure
+- Tail Toxin
+- Tenacious Stance
 
 
 - Swashbucklers Style - All
