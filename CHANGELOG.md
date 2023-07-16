@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 0.0.17
+
+### New feature
+- Handling of Grab Action
+- Handling of Aberrant Whispers Spell
+- Handling of Adaptive Ablation Spell
+- Handling of Agile Feet Spell
+- Handling of Ancestral Form Spell
+- Handling of Angelic Wings Spell
+- Handling of Anticipate Peril Spell
+
 ## Version 0.0.16
 
 ### New feature

@@ -22,8 +22,14 @@ export const effect_bend_time = "Compendium.pf2e-action-support.action-support.I
 export const effect_jinx_immunity = "Compendium.pf2e-action-support.action-support.Item.DGGVvtjm7r8yhSKG";
 export const effect_jinx_clumsy1 = "Compendium.pf2e-action-support.action-support.Item.aEhh2kWTcKJacdHe";
 export const effect_jinx_clumsy2 = "Compendium.pf2e-action-support.action-support.Item.MkWyAtPU3CAFpgdQ";
+export const effect_aberrant_whispers_immunity = "Compendium.pf2e-action-support.action-support.Item.zt5GIv9435SF0fYn";
 
 export const spellEffectMap = {
+    'adaptive-ablation': ['Compendium.pf2e.spell-effects.Item.6GAztnHuQSwAp1k1'],
+    'agile-feet': ['Compendium.pf2e.spell-effects.Item.y9PJdDYFemhk6Z5o'],
+    'ancestral-form': ['Compendium.pf2e.spell-effects.Item.l8HkOKfiUqd3BUwT'],
+    'angelic-wings': ['Compendium.pf2e.spell-effects.Item.iZYjxY0qYvg5yPP3'],
+    'armor-of-bones': ['Compendium.pf2e.spell-effects.Item.6BjslHgY01cNbKp5'],
 }
 
 export const actionEffectMap = {

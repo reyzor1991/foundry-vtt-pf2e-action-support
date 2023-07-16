@@ -38,7 +38,18 @@
 - Tenacious Stance
 - Guidance
 - Rage
+- Grab
 
 
+- Stabilize Spell
+- Aberrant Whispers Spell
+- Adaptive Ablation Spell
+- Agile Feet Spell
+- Ancestral Form spell
+- Angelic Wings Spell
+- Anticipate Peril Spell
+
+
+- Medic Dedication
 - Swashbucklers Style - All
 - Tumble Behind (Rogue) feat
