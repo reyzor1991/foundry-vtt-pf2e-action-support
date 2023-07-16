@@ -36,6 +36,7 @@
 - Recall Under Pressure
 - Tail Toxin
 - Tenacious Stance
+- Guidance
 
 
 - Swashbucklers Style - All

@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.0.14
+
+### New feature
+- Applying "Effect: Guidance" to targets when use action
+- Deleting "Effect: Guidance" when it was used or turn ends
+- Applying "Effect: Scouting" to targets when use action
+- Deleting "Effect: Scouting" when encounter ends
+- Handling of Stabilize Spell - remove Dying condition from target
+
 ## Version 0.0.13
 
 ### New feature

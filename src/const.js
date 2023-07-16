@@ -23,6 +23,9 @@ export const effect_jinx_immunity = "Compendium.pf2e-action-support.action-suppo
 export const effect_jinx_clumsy1 = "Compendium.pf2e-action-support.action-support.Item.aEhh2kWTcKJacdHe";
 export const effect_jinx_clumsy2 = "Compendium.pf2e-action-support.action-support.Item.MkWyAtPU3CAFpgdQ";
 
+export const spellEffectMap = {
+}
+
 export const actionEffectMap = {
     "conduct-energy": effect_conduct_energy,
     "daydream-trance": effect_daydream_trance,
