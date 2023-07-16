@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.16
+
+### New feature
+- Handling of Medic Dedication
+
 ## Version 0.0.15
 
 ### New feature

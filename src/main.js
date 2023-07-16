@@ -23,7 +23,7 @@ Hooks.once("init", () => {
 
 
 Hooks.on('deleteItem', async (effect, data, id) => {
-    if (effect.slug == "spell-effect-guidance") {
+    if (effect.slug == "spell-effect-guidance" && !hasEffect(effect.actor, "effect-guidance-immunity")) {
         setEffectToActor(effect.actor, "Compendium.pf2e.spell-effects.Item.3LyOkV25p7wA181H");
     }
 });
@@ -137,6 +137,10 @@ function hasEffect(actor, eff) {
     return actor?.itemTypes?.effect?.find((c => eff === c.slug))
 }
 
+function hasAnyEffects(actor, effs) {
+    return actor?.itemTypes?.effect?.filter((c => effs.includes(c.slug)))
+}
+
 function hasEffects(actor, eff) {
     return actor?.itemTypes?.effect?.filter((c => eff === c.slug))
 }
@@ -145,11 +149,42 @@ function actorsWithEffect(eff) {
     return game.combat.turns.filter(cc=>hasEffect(cc.actor, eff)).map(cc=>cc.actor);
 }
 
-async function treatWounds(actor, target) {
-    if (actorFeat(actor, "continual-recovery")) {//10 min
-        setEffectToActor(target, effect_treat_wounds_immunity_minutes)
+async function treatWounds(message, target) {
+    let _bm = hasEffect(target, "effect-treat-wounds-immunity-minutes")
+    let _bm1 = hasEffect(target, "effect-treat-wounds-immunity")
+
+    _bm = _bm?.system?.context?.origin?.actor == message.actor.uuid ? true : false;
+    _bm1 = _bm1?.system?.context?.origin?.actor == message.actor.uuid ? true : false;
+
+
+    let applyTreatWoundsImmunity = true;
+
+    if (_bm || _bm1) {
+        if (actorFeat(message.actor, "medic-dedication")) {
+            let immuns = hasAnyEffects(target, ["effect-treat-wounds-immunity-minutes", "effect-treat-wounds-immunity"]);
+            if (immuns.length > 1) {
+                applyTreatWoundsImmunity = false;
+                if (message.actor.system.skills.med.rank >= 3) {
+                    let minV = Math.min(...immuns.map(a=>game.time.worldTime - a.system.start.value))
+                    if (minV >= 3600) {
+                        applyTreatWoundsImmunity = true;
+                    }
+                }
+            }
+        } else {
+            applyTreatWoundsImmunity = false;
+        }
+    }
+
+    if (applyTreatWoundsImmunity) {
+        let optName = `(${message.actor.name})`;
+        if (actorFeat(message.actor, "continual-recovery")) {//10 min
+            effectWithActorNextTurn(message, target, effect_treat_wounds_immunity_minutes, optName)
+        } else {
+            effectWithActorNextTurn(message, target, "Compendium.pf2e.feat-effects.Lb4q2bBAgxamtix5", optName)
+        }
     } else {
-        setEffectToActor(target, "Compendium.pf2e.feat-effects.Lb4q2bBAgxamtix5")
+        ui.notifications.info(`${target.name} has Treat Wounds Immunity`);
     }
 }
 
@@ -402,10 +437,41 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             } else if (hasOption(message, "action:treat-wounds") && hasOption(message, "feat:battle-medicine") && message?.flavor == message?.flags?.pf2e?.unsafe) {
                 if (game.user.targets.size == 1) {
                     let [first] = game.user.targets;
-                    if (isActorHeldEquipment(message.actor, "battle-medics-baton") || actorFeat(message.actor, "forensic-medicine-methodology")) {//1 hour
-                        setEffectToActor(first.actor, effect_battle_medicine_immunity_hour)
+
+                    let _bm = hasEffect(first.actor, "effect-battle-medicine-immunity")
+                    let _bm1 = hasEffect(first.actor, "effect-battle-medicine-immunity-hour")
+
+                    _bm = _bm?.system?.context?.origin?.actor == message.actor.uuid ? true : false;
+                    _bm1 = _bm1?.system?.context?.origin?.actor == message.actor.uuid ? true : false;
+
+                    let applyTreatWoundsImmunity = true;
+
+                    if (_bm || _bm1) {
+                        if (actorFeat(message.actor, "medic-dedication")) {
+                            let immuns = hasAnyEffects(first.actor, ["effect-battle-medicine-immunity", "effect-battle-medicine-immunity-hour"]);
+                            if (immuns.length > 1) {
+                                applyTreatWoundsImmunity = false;
+                                if (message.actor.system.skills.med.rank >= 3) {
+                                    let minV = Math.min(...immuns.map(a=>game.time.worldTime - a.system.start.value))
+                                    if (minV >= 3600) {
+                                        applyTreatWoundsImmunity = true;
+                                    }
+                                }
+                            }
+                        } else {
+                            applyTreatWoundsImmunity = false;
+                        }
+                    }
+
+                    if (applyTreatWoundsImmunity) {
+                        let optName = `(${message.actor.name})`;
+                        if (isActorHeldEquipment(message.actor, "battle-medics-baton") || actorFeat(message.actor, "forensic-medicine-methodology")) {//1 hour
+                            effectWithActorNextTurn(message, first.actor, effect_battle_medicine_immunity_hour, optName)
+                        } else {
+                            effectWithActorNextTurn(message, first.actor, "Compendium.pf2e.feat-effects.Item.2XEYQNZTCGpdkyR6", optName)
+                        }
                     } else {
-                        setEffectToActor(first.actor, "Compendium.pf2e.feat-effects.Item.2XEYQNZTCGpdkyR6")
+                        ui.notifications.info(`${first.actor.name} has Battle Medicine Immunity`);
                     }
                 }
             }
@@ -451,9 +517,16 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             ) {
                 deleteEffectFromActor(message.actor, "effect-panache")
             }
+            if (hasOption(message, "target:effect:flat-footed-tumble-behind")) {
+                deleteEffectFromActor(message.target.actor, "effect-flat-footed-tumble-behind");
+            }
         }
 
-        if (messageType(message, "attack-roll") && message?.target?.actor && hasEffect(message.target.actor, "effect-flat-footed-tumble-behind")) {
+        if (messageType(message, "attack-roll")
+            && message?.target?.actor
+            && hasEffect(message.target.actor, "effect-flat-footed-tumble-behind")
+            && anyFailureMessageOutcome(message)
+        ) {
             deleteEffectFromActor(message.target.actor, "effect-flat-footed-tumble-behind");
         }
 
@@ -482,10 +555,10 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         if (messageType(message, 'skill-check') && hasOption(message, "action:treat-wounds") && message?.flavor == message?.flags?.pf2e?.unsafe) {
             if (game.user.targets.size == 1) {
                 let [first] = game.user.targets;
-                treatWounds(message.actor, first.actor);
+                treatWounds(message, first.actor);
             } else if (actorFeat(message.actor, "ward-medic")) {
                 game.user.targets.forEach(a => {
-                    treatWounds(message.actor, a.actor);
+                    treatWounds(message, a.actor);
                 });
             }
         }
@@ -545,7 +618,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 
         if (_obj.slug == "guidance") {
             game.user.targets.forEach(tt => {
-                if (!hasEffect(tt.actor, "effect-guidance-immunity")) {
+                if (!hasEffect(tt.actor, "effect-guidance-immunity") && !hasEffect(tt.actor, "spell-effect-guidance")) {
                     guidanceEffect(message, tt.actor)
                 }
             });
@@ -583,7 +656,7 @@ async function guidanceEffect(message, target) {
     }
 }
 
-async function effectWithActorNextTurn(message, target, uuid) {
+async function effectWithActorNextTurn(message, target, uuid, optionalName=undefined) {
     let aEffect = (await fromUuid(uuid)).toObject();
 
     aEffect.system.context = mergeObject(aEffect.system.context ?? {}, {
@@ -596,7 +669,9 @@ async function effectWithActorNextTurn(message, target, uuid) {
         "target": null
     });
     aEffect.system.start.initiative = null;
-
+    if (optionalName) {
+        aEffect.name += ` ${optionalName}`
+    }
 
     if (3 == target.ownership[game.user.id]) {
         target.createEmbeddedDocuments("Item", [aEffect]);
@@ -615,6 +690,9 @@ Hooks.on("deleteCombat", function (combat, delta) {
 Hooks.on('combatRound', async (combat, updateData, updateOptions) => {
     game.combat.turns.map(cc=>cc.actor)
         .forEach(a => {
+            if (hasEffect(a.actor, "effect-flat-footed-tumble-behind")) {
+                deleteEffectFromActor(cc.actor, "effect-flat-footed-tumble-behind")
+            }
             Object.values(a?.itemTypes).flat(1).forEach(i => {
                 if (i?.system?.frequency?.per == "round" || i?.system?.frequency?.per == "turn") {
                     i.update({
@@ -623,4 +701,13 @@ Hooks.on('combatRound', async (combat, updateData, updateOptions) => {
                 }
             })
         })
+
+});
+
+Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
+     game.combat.turns.forEach(cc => {
+        if (hasEffect(cc.actor, "effect-flat-footed-tumble-behind")) {
+            deleteEffectFromActor(cc.actor, "effect-flat-footed-tumble-behind")
+        }
+    })
 });
