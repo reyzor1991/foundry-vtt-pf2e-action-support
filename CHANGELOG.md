@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.15
+
+### New feature
+- Applying "Effect: Rage" when use action
+
 ## Version 0.0.14
 
 ### New feature

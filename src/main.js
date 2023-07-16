@@ -69,6 +69,10 @@ async function applyDamages(data) {
     applyDamage(actor, token, data.formula);
 }
 
+function hasCondition(actor, con) {
+    return actor?.itemTypes?.condition?.find((c => c.type == "condition" && con === c.slug))
+}
+
 function isActorHeldEquipment(actor, item) {
     return actor?.itemTypes?.equipment?.find(a=>a.isHeld && a.slug == item)
 }
@@ -529,6 +533,12 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 
         } else if (_obj.slug == "accept-echo") {
             setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.2ca1ZuqQ7VkunAh3")
+        }
+    } else if (message?.flags?.pf2e?.origin?.type == "feat") {
+        let feat = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+
+        if (feat.slug == "rage" && !hasCondition(message.actor, "fatigued") && !hasEffect(message.actor, "effect-rage")) {
+            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.z3uyCMBddrPK5umr")
         }
     } else if (message?.flags?.pf2e?.origin?.type == "spell") {
         let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));

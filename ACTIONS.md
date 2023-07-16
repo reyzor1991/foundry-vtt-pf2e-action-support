@@ -37,6 +37,7 @@
 - Tail Toxin
 - Tenacious Stance
 - Guidance
+- Rage
 
 
 - Swashbucklers Style - All
