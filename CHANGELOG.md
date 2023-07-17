@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.0.18
+
+### New feature
+- Handling of Arcane Countermeasure Spell to target
+- Handling of Augment Summoning Spell to target
+- Handling of Arcane Athletic Rush
+
 ## Version 0.0.17
 
 ### New feature

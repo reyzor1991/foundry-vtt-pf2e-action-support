@@ -654,12 +654,26 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             });
         } else if  (_obj.slug == "stabilize") {
             game.user.targets.forEach(tt => {
-                tt.actor.toggleCondition("dying")
+                if (hasCondition(tt.actor)) {
+                    tt.actor.toggleCondition("dying")
+                }
             });
         } else if  (_obj.slug == "anticipate-peril") {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, 'spell-effect-anticipate-peril')) {
                     setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.4ag0OHKfjROmR4Pm")
+                }
+            });
+        } else if  (_obj.slug == "arcane-countermeasure") {
+            game.user.targets.forEach(tt => {
+                if (!hasEffect(tt.actor, 'spell-effect-arcane-countermeasure')) {
+                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.14m4s0FeRSqRlHwL")
+                }
+            });
+        } else if  (_obj.slug == "augment-summoning") {
+            game.user.targets.forEach(tt => {
+                if (!hasEffect(tt.actor, 'spell-effect-augment-summoning')) {
+                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.UtIOWubq7akdHMOh")
                 }
             });
         }
@@ -671,21 +685,6 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 });
 
 async function deleteFeintEffects(message) {
-    let aef = hasEffect(message.actor, `effect-feint-critical-success-${message.actor.id}-${message?.target?.actor.id}`)
-    let tef = hasEffect(message.target.actor, `effect-feint-critical-success-${message.actor.id}`)
-    if (aef && tef) {
-        if (3 == aef.ownership[game.user.id]) {
-            aef.delete()
-        } else {
-            socketlibSocket._sendRequest("deleteEffect", [aef.uuid], 0)
-        }
-        if (3 == tef.ownership[game.user.id]) {
-            tef.delete()
-        } else {
-            socketlibSocket._sendRequest("deleteEffect", [tef.uuid], 0)
-        }
-    }
-
     aef = hasEffect(message.actor, `effect-feint-success-${message.actor.id}-${message?.target?.actor.id}`)
     tef = hasEffect(message.target.actor, `effect-feint-success-${message.actor.id}`)
     if (aef && tef) {
