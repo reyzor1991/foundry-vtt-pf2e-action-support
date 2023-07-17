@@ -93,7 +93,13 @@ Hooks.once('setup', function () {
   socketlibSocket.register("increaseConditions", increaseConditions);
   socketlibSocket.register("applyDamages", applyDamages);
   socketlibSocket.register("createFeintEffectOnTarget", _socketCreateFeintEffectOnTarget);
+  socketlibSocket.register("deleteEffect", _socketDeleteEffect);
 })
+
+async function _socketDeleteEffect(targetId) {
+    let target = await fromUuid(targetId);
+    target.delete()
+}
 
 async function _socketCreateFeintEffectOnTarget(effect, targetId) {
     let target = await fromUuid(targetId);
@@ -668,15 +674,31 @@ async function deleteFeintEffects(message) {
     let aef = hasEffect(message.actor, `effect-feint-critical-success-${message.actor.id}-${message?.target?.actor.id}`)
     let tef = hasEffect(message.target.actor, `effect-feint-critical-success-${message.actor.id}`)
     if (aef && tef) {
-        aef.delete()
-        tef.delete()
+        if (3 == aef.ownership[game.user.id]) {
+            aef.delete()
+        } else {
+            socketlibSocket._sendRequest("deleteEffect", [aef.uuid], 0)
+        }
+        if (3 == tef.ownership[game.user.id]) {
+            tef.delete()
+        } else {
+            socketlibSocket._sendRequest("deleteEffect", [tef.uuid], 0)
+        }
     }
 
     aef = hasEffect(message.actor, `effect-feint-success-${message.actor.id}-${message?.target?.actor.id}`)
     tef = hasEffect(message.target.actor, `effect-feint-success-${message.actor.id}`)
     if (aef && tef) {
-        aef.delete()
-        tef.delete()
+        if (3 == aef.ownership[game.user.id]) {
+            aef.delete()
+        } else {
+            socketlibSocket._sendRequest("deleteEffect", [aef.uuid], 0)
+        }
+        if (3 == tef.ownership[game.user.id]) {
+            tef.delete()
+        } else {
+            socketlibSocket._sendRequest("deleteEffect", [tef.uuid], 0)
+        }
     }
 }
 
