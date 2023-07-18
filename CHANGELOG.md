@@ -1,11 +1,19 @@
 # Changelog
 
+## Version 0.0.19
+
+### New feature
+- Fix issue with Treat Wounds Immunity
+- Handling of Shield Spell
+- Handling of Vital Beacon Spell
+- Handling of Treat Disease Action
+
 ## Version 0.0.18
 
 ### New feature
 - Handling of Arcane Countermeasure Spell to target
 - Handling of Augment Summoning Spell to target
-- Handling of Arcane Athletic Rush
+- Handling of Athletic Rush
 
 ## Version 0.0.17
 

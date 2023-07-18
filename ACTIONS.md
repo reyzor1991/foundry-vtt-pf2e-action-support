@@ -39,6 +39,7 @@
 - Guidance
 - Rage
 - Grab
+- Treat Disease
 
 
 - Stabilize Spell
@@ -48,6 +49,8 @@
 - Ancestral Form spell
 - Angelic Wings Spell
 - Anticipate Peril Spell
+- Shield Spell
+- Vital Beacon Spell
 
 
 - Medic Dedication

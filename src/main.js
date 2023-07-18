@@ -166,35 +166,13 @@ async function treatWounds(message, target) {
     let _bm = hasEffect(target, "effect-treat-wounds-immunity-minutes")
     let _bm1 = hasEffect(target, "effect-treat-wounds-immunity")
 
-    _bm = _bm?.system?.context?.origin?.actor == message.actor.uuid ? true : false;
-    _bm1 = _bm1?.system?.context?.origin?.actor == message.actor.uuid ? true : false;
-
-
-    let applyTreatWoundsImmunity = true;
-
-    if (_bm || _bm1) {
-        if (actorFeat(message.actor, "medic-dedication")) {
-            let immuns = hasAnyEffects(target, ["effect-treat-wounds-immunity-minutes", "effect-treat-wounds-immunity"]);
-            if (immuns.length > 1) {
-                applyTreatWoundsImmunity = false;
-                if (message.actor.system.skills.med.rank >= 3) {
-                    let minV = Math.min(...immuns.map(a=>game.time.worldTime - a.system.start.value))
-                    if (minV >= 3600) {
-                        applyTreatWoundsImmunity = true;
-                    }
-                }
-            }
-        } else {
-            applyTreatWoundsImmunity = false;
-        }
-    }
+    let applyTreatWoundsImmunity = _bm || _bm1 ? false : true;
 
     if (applyTreatWoundsImmunity) {
-        let optName = `(${message.actor.name})`;
         if (actorFeat(message.actor, "continual-recovery")) {//10 min
-            effectWithActorNextTurn(message, target, effect_treat_wounds_immunity_minutes, optName)
+            setEffectToActor(target, effect_treat_wounds_immunity_minutes)
         } else {
-            effectWithActorNextTurn(message, target, "Compendium.pf2e.feat-effects.Lb4q2bBAgxamtix5", optName)
+            setEffectToActor(target, "Compendium.pf2e.feat-effects.Lb4q2bBAgxamtix5")
         }
     } else {
         ui.notifications.info(`${target.name} has Treat Wounds Immunity`);
@@ -575,14 +553,28 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             })
         }
     } else {
-        if (messageType(message, 'skill-check') && hasOption(message, "action:treat-wounds") && message?.flavor == message?.flags?.pf2e?.unsafe) {
-            if (game.user.targets.size == 1) {
-                let [first] = game.user.targets;
-                treatWounds(message, first.actor);
-            } else if (actorFeat(message.actor, "ward-medic")) {
-                game.user.targets.forEach(a => {
-                    treatWounds(message, a.actor);
-                });
+        if (messageType(message, 'skill-check')) {
+            if (hasOption(message, "action:treat-wounds") && message?.flavor == message?.flags?.pf2e?.unsafe) {
+                if (game.user.targets.size == 1) {
+                    let [first] = game.user.targets;
+                    treatWounds(message, first.actor);
+                } else if (actorFeat(message.actor, "ward-medic")) {
+                    game.user.targets.forEach(a => {
+                        treatWounds(message, a.actor);
+                    });
+                }
+            } else if (hasOption(message, "action:treat-disease") && message?.flavor == message?.flags?.pf2e?.unsafe) {
+                if (game.user.targets.size > 1) {
+                    let [first] = game.user.targets;
+
+                    if (criticalSuccessMessageOutcome(message)) {
+                        setEffectToActor(first, "Compendium.pf2e.equipment-effects.Item.id20P4pj7zDKeLmy")
+                    } else if (successMessageOutcome(message)) {
+                        setEffectToActor(first, "Compendium.pf2e.equipment-effects.Item.Ee2xfKX1yyqGIDZj")
+                    } else if (criticalFailureMessageOutcome(message)) {
+                        setEffectToActor(first, "Compendium.pf2e.equipment-effects.Item.5oYKYXAexr0vhx84")
+                    }
+                }
             }
         }
     }
@@ -652,6 +644,11 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     guidanceEffect(message, tt.actor)
                 }
             });
+        } else if  (_obj.slug == "vital-beacon") {
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.WWtSEJGwKY4bQpUn")
+        } else if  (_obj.slug == "shield" && !hasEffect(message.actor, "effect-shield-immunity")) {
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.Jemq5UknGdMO7b73")
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.QF6RDlCoTvkVHRo4")
         } else if  (_obj.slug == "stabilize") {
             game.user.targets.forEach(tt => {
                 if (hasCondition(tt.actor)) {

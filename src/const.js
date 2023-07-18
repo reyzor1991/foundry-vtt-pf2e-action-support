@@ -30,7 +30,7 @@ export const spellEffectMap = {
     'ancestral-form': ['Compendium.pf2e.spell-effects.Item.l8HkOKfiUqd3BUwT'],
     'angelic-wings': ['Compendium.pf2e.spell-effects.Item.iZYjxY0qYvg5yPP3'],
     'armor-of-bones': ['Compendium.pf2e.spell-effects.Item.6BjslHgY01cNbKp5'],
-    'athletic-rush': ['Compendium.pf2e.spells-srd.Item.UGJzJRJDoonfWqqI'],
+    'athletic-rush': ['Compendium.pf2e.spell-effects.Item.57lnrCzGUcNUBP2O'],
 }
 
 export const actionEffectMap = {
