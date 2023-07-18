@@ -31,10 +31,10 @@ Hooks.once("init", () => {
 
 Hooks.on('deleteItem', async (effect, data, id) => {
     if (effect.slug == "spell-effect-guidance" && !hasEffect(effect.actor, "effect-guidance-immunity")) {
-        setEffectToActor(effect.actor, "Compendium.pf2e.spell-effects.Item.3LyOkV25p7wA181H");
+        setEffectToActor(effect.actor, "Compendium.pf2e.spell-effects.3LyOkV25p7wA181H");
     }
     if (effect.slug == "spell-effect-shield" && !hasEffect(effect.actor, "effect-shield-immunity")) {
-        setEffectToActor(effect.actor, "Compendium.pf2e.spell-effects.Item.QF6RDlCoTvkVHRo4")
+        setEffectToActor(effect.actor, "Compendium.pf2e.spell-effects.QF6RDlCoTvkVHRo4")
     }
 });
 
@@ -425,12 +425,12 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                             setEffectToActor(message.actor, effect_panache)
                         }
                         if (successMessageOutcome(message)) {
-                            setEffectToActor(message.target.actor, "Compendium.pf2e.feat-effects.Item.GoSls6SKCFmSoDxT")
+                            setEffectToActor(message.target.actor, "Compendium.pf2e.feat-effects.GoSls6SKCFmSoDxT")
                         } else {
-                            setEffectToActor(message.target.actor, "Compendium.pf2e.feat-effects.Item.CtrZFI3RV0yPNzTv")
+                            setEffectToActor(message.target.actor, "Compendium.pf2e.feat-effects.CtrZFI3RV0yPNzTv")
                         }
                     } else if (criticalFailureMessageOutcome(message)) {
-                        setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.GoSls6SKCFmSoDxT")
+                        setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.GoSls6SKCFmSoDxT")
                     }
                 }
 
@@ -490,7 +490,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                         if (isActorHeldEquipment(message.actor, "battle-medics-baton") || actorFeat(message.actor, "forensic-medicine-methodology")) {//1 hour
                             effectWithActorNextTurn(message, first.actor, effect_battle_medicine_immunity_hour, optName)
                         } else {
-                            effectWithActorNextTurn(message, first.actor, "Compendium.pf2e.feat-effects.Item.2XEYQNZTCGpdkyR6", optName)
+                            effectWithActorNextTurn(message, first.actor, "Compendium.pf2e.feat-effects.2XEYQNZTCGpdkyR6", optName)
                         }
                     } else {
                         ui.notifications.info(`${first.actor.name} has Battle Medicine Immunity`);
@@ -572,24 +572,24 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             })
 
             if (_obj.slug == "inspire-courage") {
-                let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")
+                let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.MRmGlGAFd3tSJioo")
                 if (aura) {
-                    setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")
+                    setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.MRmGlGAFd3tSJioo")
                 } else {
                     game.user.targets.forEach(tt => {
                         if (!hasEffect(tt.actor, 'spell-effect-inspire-courage')) {
-                            setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.beReeFroAx24hj83")
+                            setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.beReeFroAx24hj83")
                         }
                     });
                 }
             } else if (_obj.slug == "inspire-defense") {
-                let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")
+                let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.89T07EBAgn78RBbJ")
                 if (aura) {
-                    setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")
+                    setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.89T07EBAgn78RBbJ")
                 } else {
                     game.user.targets.forEach(tt => {
                         if (!hasEffect(tt.actor, 'spell-effect-inspire-courage')) {
-                            setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.DLwTvjjnqs2sNGuG")
+                            setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.DLwTvjjnqs2sNGuG")
                         }
                     });
                 }
@@ -611,11 +611,11 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     let [first] = game.user.targets;
 
                     if (criticalSuccessMessageOutcome(message)) {
-                        setEffectToActor(first, "Compendium.pf2e.equipment-effects.Item.id20P4pj7zDKeLmy")
+                        setEffectToActor(first, "Compendium.pf2e.equipment-effects.id20P4pj7zDKeLmy")
                     } else if (successMessageOutcome(message)) {
-                        setEffectToActor(first, "Compendium.pf2e.equipment-effects.Item.Ee2xfKX1yyqGIDZj")
+                        setEffectToActor(first, "Compendium.pf2e.equipment-effects.Ee2xfKX1yyqGIDZj")
                     } else if (criticalFailureMessageOutcome(message)) {
-                        setEffectToActor(first, "Compendium.pf2e.equipment-effects.Item.5oYKYXAexr0vhx84")
+                        setEffectToActor(first, "Compendium.pf2e.equipment-effects.5oYKYXAexr0vhx84")
                     }
                 }
             }
@@ -660,23 +660,23 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         if (_obj.slug == "scout") {
             let sc = actorFeat(message.actor, "incredible-scout");
             if (sc) {
-                setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.la8rWwUtReElgTS6")
+                setEffectToActor(message.actor, "Compendium.pf2e.other-effects.la8rWwUtReElgTS6")
             } else {
-                setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.EMqGwUi3VMhCjTlF")
+                setEffectToActor(message.actor, "Compendium.pf2e.other-effects.EMqGwUi3VMhCjTlF")
             }
 
             game.user.targets.forEach(tt => {
-                setEffectToActor(tt.actor, sc ? "Compendium.pf2e.other-effects.Item.la8rWwUtReElgTS6" : "Compendium.pf2e.other-effects.Item.EMqGwUi3VMhCjTlF")
+                setEffectToActor(tt.actor, sc ? "Compendium.pf2e.other-effects.la8rWwUtReElgTS6" : "Compendium.pf2e.other-effects.EMqGwUi3VMhCjTlF")
             })
 
         } else if (_obj.slug == "accept-echo") {
-            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.2ca1ZuqQ7VkunAh3")
+            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.2ca1ZuqQ7VkunAh3")
         }
     } else if (message?.flags?.pf2e?.origin?.type == "feat") {
         let feat = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
 
         if (feat.slug == "rage" && !hasCondition(message.actor, "fatigued") && !hasEffect(message.actor, "effect-rage")) {
-            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.z3uyCMBddrPK5umr")
+            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.z3uyCMBddrPK5umr")
         }
     } else if (message?.flags?.pf2e?.origin?.type == "spell") {
         let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
@@ -688,9 +688,9 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 }
             });
         } else if  (_obj.slug == "vital-beacon" && !hasEffect(message.actor, "spell-effect-vital-beacon")) {
-            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.WWtSEJGwKY4bQpUn", message?.item?.level)
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.WWtSEJGwKY4bQpUn", message?.item?.level)
         } else if  (_obj.slug == "shield" && !hasEffect(message.actor, "effect-shield-immunity")) {
-            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.Jemq5UknGdMO7b73", message?.item?.level)
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Jemq5UknGdMO7b73", message?.item?.level)
         } else if  (_obj.slug == "stabilize") {
             game.user.targets.forEach(tt => {
                 if (hasCondition(tt.actor)) {
@@ -700,48 +700,48 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         } else if  (_obj.slug == "anticipate-peril") {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, 'spell-effect-anticipate-peril')) {
-                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.4ag0OHKfjROmR4Pm", message?.item?.level)
+                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.4ag0OHKfjROmR4Pm", message?.item?.level)
                 }
             });
         } else if  (_obj.slug == "arcane-countermeasure") {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, 'spell-effect-arcane-countermeasure')) {
-                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.14m4s0FeRSqRlHwL")
+                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.14m4s0FeRSqRlHwL")
                 }
             });
         } else if  (_obj.slug == "augment-summoning") {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, 'spell-effect-augment-summoning')) {
-                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.UtIOWubq7akdHMOh")
+                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.UtIOWubq7akdHMOh")
                 }
             });
         } else if (_obj.slug == "protective-ward") {
-            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.5p3bKvWsJgo83FS1")
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.5p3bKvWsJgo83FS1")
         } else if (_obj.slug == "bane") {
-            let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.YcyN7BDbL0Nt3CFN")
+            let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.YcyN7BDbL0Nt3CFN")
             if (aura) {
-                setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.YcyN7BDbL0Nt3CFN")
+                setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.YcyN7BDbL0Nt3CFN")
             } else {
                 game.user.targets.forEach(tt => {
                     if (!hasEffect(tt.actor, 'spell-effect-bane')) {
-                        setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.UTLp7omqsiC36bso")
+                        setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.UTLp7omqsiC36bso")
                     }
                 });
             }
         } else if (_obj.slug == "bless") {
-            let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.BqkDxiAi0q6Uaar4")
+            let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.BqkDxiAi0q6Uaar4")
             if (aura) {
-                setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.BqkDxiAi0q6Uaar4")
+                setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.BqkDxiAi0q6Uaar4")
             } else {
                 game.user.targets.forEach(tt => {
                     if (!hasEffect(tt.actor, 'spell-effect-bless')) {
-                        setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.Gqy7K6FnbLtwGpud")
+                        setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Gqy7K6FnbLtwGpud")
                     }
                 });
             }
         } else if (_obj.slug == "mirror-image") {
             if (!hasEffect(message.actor, 'spell-effect-mirror-image')) {
-                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.0PO5mFRhh9HxGAtv")
+                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.0PO5mFRhh9HxGAtv")
             }
         }
     }
@@ -769,7 +769,7 @@ async function deleteFeintEffects(message) {
 }
 
 async function guidanceEffect(message, target) {
-    let aEffect = (await fromUuid("Compendium.pf2e.spell-effects.Item.3qHKBDF7lrHw8jFK")).toObject();
+    let aEffect = (await fromUuid("Compendium.pf2e.spell-effects.3qHKBDF7lrHw8jFK")).toObject();
 
     aEffect.system.context = mergeObject(aEffect.system.context ?? {}, {
         "origin": {
