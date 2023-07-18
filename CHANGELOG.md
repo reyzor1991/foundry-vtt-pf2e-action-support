@@ -1,5 +1,26 @@
 # Changelog
 
+## Version 0.0.23
+
+### New feature
+- Handling of True Strike Spell
+- Handling of See Invisibility Spell
+- Handling of Mage Armor Spell
+- Handling of Darkvision Spell
+- Handling of Longstrider Spell
+- Handling of Death Ward Spell to target
+- Handling of Fly Spell to target
+- Handling of Protection Spell to target
+- Handling of Heroism Spell to target
+- Handling of Stoneskin Spell to target
+- Handling of Energy aegis Spell to target
+- Handling of Blur Spell to target
+- Handling of Regenerate Spell to target
+- Handling of Didactic Strike Feat to targets
+- Handling of Reactive Shield Feat
+- Handling of Smite Evil Feat
+- Handling of Heaven's thunder Feat
+
 ## Version 0.0.22
 
 ### New feature

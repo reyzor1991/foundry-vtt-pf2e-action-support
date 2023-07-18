@@ -42,29 +42,50 @@
 - Treat Disease
 - Tumble Through
 
+
 ### Spells
-- Stabilize Spell
-- Aberrant Whispers Spell
-- Adaptive Ablation Spell
-- Agile Feet Spell
-- Ancestral Form spell
-- Angelic Wings Spell
-- Anticipate Peril Spell
-- Shield Spell
-- Vital Beacon Spell
-- Protective Ward Spell
-- Bane Spell (Using the Workbench aura if available, if not apply PF2e system effect to targets)
-- Bane Bless (Using the Workbench aura if available, if not apply PF2e system effect to targets)
-- Inspire Courage Spell (Using the Workbench aura if available, if not apply PF2e system effect to targets)
-- Inspire Defense Spell (Using the Workbench aura if available, if not apply PF2e system effect to targets)
-- Mirror Image Spell
+
+- Stabilize
+- Aberrant Whispers
+- Adaptive Ablation
+- Agile Feet
+- Ancestral Form
+- Angelic Wings
+- Anticipate Peril
+- Shield
+- Vital Beacon
+- Protective Ward
+- Bane (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Bless (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Inspire Courage (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Inspire Defense (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Mirror Image
+- True Strike
+- See Invisibility
+- Mage Armor
+- Darkvision
+- Longstrider
+- Blur to target
+- Fly to target
+- Protection to target
+- Energy aegis to target
+- Stoneskin to target
+- Regenerate to target
+- Heroism to target
+- Death Ward to target
 
 
 ### 3rd party
+
 - Lichen's Tenacity 
 - Rose's Tranquility
 
 ### Feats
+
 - Medic Dedication
 - Swashbucklers Style - All Styles (add Panache when Tumble Through or specific action of style)
-- Tumble Behind (Rogue) feat
+- Tumble Behind (Rogue)
+- Didactic Strike
+- Reactive Shield
+- Smite Evil
+- Heaven's thunder

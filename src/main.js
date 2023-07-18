@@ -30,11 +30,13 @@ Hooks.once("init", () => {
 
 
 Hooks.on('deleteItem', async (effect, data, id) => {
-    if (effect.slug == "spell-effect-guidance" && !hasEffect(effect.actor, "effect-guidance-immunity")) {
-        setEffectToActor(effect.actor, "Compendium.pf2e.spell-effects.Item.3LyOkV25p7wA181H");
-    }
-    if (effect.slug == "spell-effect-shield" && !hasEffect(effect.actor, "effect-shield-immunity")) {
-        setEffectToActor(effect.actor, "Compendium.pf2e.spell-effects.Item.QF6RDlCoTvkVHRo4")
+    if (game.user.isGM) {
+        if (effect.slug == "spell-effect-guidance" && !hasEffect(effect.actor, "effect-guidance-immunity")) {
+            setEffectToActor(effect.actor, "Compendium.pf2e.spell-effects.Item.3LyOkV25p7wA181H");
+        }
+        if (effect.slug == "spell-effect-shield" && !hasEffect(effect.actor, "effect-shield-immunity")) {
+            setEffectToActor(effect.actor, "Compendium.pf2e.spell-effects.Item.QF6RDlCoTvkVHRo4")
+        }
     }
 });
 
@@ -42,7 +44,7 @@ async function createEffects(data) {
     let actor = await fromUuid(data.actorUuid);
     let source = (await fromUuid(data.eff)).toObject();
     source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: data.eff } });
-    if (level) {
+    if (data.level) {
         source.system.level = {'value': level};
     }
     await actor.createEmbeddedDocuments("Item", [source]);
@@ -87,16 +89,23 @@ function isActorHeldEquipment(actor, item) {
     return actor?.itemTypes?.equipment?.find(a=>a.isHeld && a.slug == item)
 }
 
+let setupSocket = () => {
+  if (globalThis.socketlib) {
+      socketlibSocket = globalThis.socketlib.registerModule("pf2e-action-support");
+      socketlibSocket.register("createEffects", createEffects);
+      socketlibSocket.register("deleteEffects", deleteEffects);
+      socketlibSocket.register("deleteEffectsById", deleteEffectsById);
+      socketlibSocket.register("updateObjects", updateObjects);
+      socketlibSocket.register("increaseConditions", increaseConditions);
+      socketlibSocket.register("applyDamages", applyDamages);
+      socketlibSocket.register("createFeintEffectOnTarget", _socketCreateFeintEffectOnTarget);
+      socketlibSocket.register("deleteEffect", _socketDeleteEffect);
+  }
+  return !!globalThis.socketlib
+}
+
 Hooks.once('setup', function () {
-  socketlibSocket = globalThis.socketlib.registerModule("pf2e-action-support");
-  socketlibSocket.register("createEffects", createEffects);
-  socketlibSocket.register("deleteEffects", deleteEffects);
-  socketlibSocket.register("deleteEffectsById", deleteEffectsById);
-  socketlibSocket.register("updateObjects", updateObjects);
-  socketlibSocket.register("increaseConditions", increaseConditions);
-  socketlibSocket.register("applyDamages", applyDamages);
-  socketlibSocket.register("createFeintEffectOnTarget", _socketCreateFeintEffectOnTarget);
-  socketlibSocket.register("deleteEffect", _socketDeleteEffect);
+    if (!setupSocket()) console.error('Error: Unable to set up socket lib for PF2e Action Support')
 })
 
 async function _socketDeleteEffect(targetId) {
@@ -167,6 +176,10 @@ function hasEffects(actor, eff) {
 
 function actorsWithEffect(eff) {
     return game.combat.turns.filter(cc=>hasEffect(cc.actor, eff)).map(cc=>cc.actor);
+}
+
+function adjacentEnemy(firstT, secondT) {
+    return (firstT instanceof Token ? firstT : firstT.object).distanceTo((secondT instanceof Token ? secondT : secondT.object)) <= 5
 }
 
 async function treatWounds(message, target) {
@@ -304,6 +317,20 @@ async function increaseConditionForTarget(message, condition, value=undefined) {
     }
 }
 
+async function setEffectToActorOrTarget(message, effectUUID, spellName) {
+    if (game.user.targets.size == 0) {
+        setEffectToActor(message.actor, effectUUID, message?.item?.level)
+    } else if (game.user.targets.size == 1) {
+        if (adjacentEnemy(message.token, game.user.targets.first())) {
+            setEffectToActor(game.user.targets.first().actor, effectUUID, message?.item?.level)
+        } else {
+            ui.notifications.info(`${message.actor.name} chose target that not in touch range for ${spellName} spell`);
+        }
+    } else {
+        ui.notifications.info(`${message.actor.name} chose incorrect count of targets for ${spellName} spell`);
+    }
+}
+
 function deleteEffectUntilAttackerEnd(actor, eff, attackerId, isFinal=false) {
     actor.itemTypes.effect.filter(c => eff === c.slug)
     .forEach(effect => {
@@ -336,6 +363,22 @@ async function applyDamage(actor, token, formula) {
 
 Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
     if (game?.combats?.active) {
+        // maybe delete shield because it was used?
+        if ("appliedDamage" in message?.flags?.pf2e && !message?.flags?.pf2e?.appliedDamage?.isHealing) {
+            //maybe absorb
+            //shield absorb
+            let shieldEff = hasEffect(message.actor, "spell-effect-shield");
+            if (shieldEff) {
+                if (message?.content.includes("shield") && message?.content.includes("absorb")) {
+                    if (3 == shieldEff.ownership[game.user.id]) {
+                        shieldEff.delete()
+                    } else {
+                        socketlibSocket._sendRequest("deleteEffect", [shieldEff.uuid], 0)
+                    }
+                }
+            }
+        }
+
         if (messageType(message, 'skill-check')) {
 
             if (message?.target) {
@@ -671,12 +714,30 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 
         } else if (_obj.slug == "accept-echo") {
             setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.2ca1ZuqQ7VkunAh3")
+        } else if (_obj.slug == "devise-a-stratagem") {
+            if (actorFeat(message.actor, "didactic-strike")) {
+                if (game.user.targets.size == 0) {
+                    ui.notifications.info(`${message.actor.name} forgot to choose up to 10 allies`);
+                } else {
+                    game.user.targets.forEach(tt => {
+                        if (!hasEffect(tt.actor, 'effect-didactic-strike')) {
+                            setEffectToActor(tt.actor, "Compendium.pf2e.feat-effects.Item.72THfaqak0F4XnON")
+                        }
+                    });
+                }
+            }
         }
     } else if (message?.flags?.pf2e?.origin?.type == "feat") {
         let feat = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
 
         if (feat.slug == "rage" && !hasCondition(message.actor, "fatigued") && !hasEffect(message.actor, "effect-rage")) {
             setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.z3uyCMBddrPK5umr")
+        } else if (feat.slug == "reactive-shield") {
+            (await fromUuid("Compendium.pf2e.action-macros.4hfQEMiEOBbqelAh")).execute()
+        } else if (feat.slug == "smite-evil") {
+            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.AlnxieIRjqNqsdVu")
+        } else if (feat.slug == "heavens-thunder") {
+            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.L9g3EMCT3imX650b")
         }
     } else if (message?.flags?.pf2e?.origin?.type == "spell") {
         let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
@@ -697,6 +758,33 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     tt.actor.toggleCondition("dying")
                 }
             });
+        } else if  (_obj.slug == "blur") {
+            if (game.user.targets.size == 0) {
+                increaseConditionForActor(message, "concealed");
+            } else if (game.user.targets.size == 1) {
+                if (adjacentEnemy(message.token, game.user.targets.first())) {
+                    increaseConditionForActor({'actor': game.user.targets.first().actor}, "concealed");
+                } else {
+                    ui.notifications.info(`${message.actor.name} chose target that not in touch range for Blur spell`);
+                }
+            } else {
+                ui.notifications.info(`${message.actor.name} chose incorrect count of targets for Blur spell`);
+            }
+
+        } else if  (_obj.slug == "death-ward") {
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.s6CwkSsMDGfUmotn", "Blur")
+        } else if  (_obj.slug == "fly") {
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.MuRBCiZn5IKeaoxi", "Fly")
+        } else if  (_obj.slug == "protection") {
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.RawLEPwyT5CtCZ4D", "Protection")
+        }  else if  (_obj.slug == "stoneskin") {
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.JHpYudY14g0H4VWU", "Stoneskin")
+        }  else if  (_obj.slug == "energy-aegis") {
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.4Lo2qb5PmavSsLNk", "Energy Aegis")
+        }  else if  (_obj.slug == "regenerate") {
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.dXq7z633ve4E0nlX", "Regenerate")
+        }   else if  (_obj.slug == "heroism") {
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.l9HRQggofFGIxEse", "Heroism")
         } else if  (_obj.slug == "anticipate-peril") {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, 'spell-effect-anticipate-peril')) {
@@ -742,6 +830,44 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         } else if (_obj.slug == "mirror-image") {
             if (!hasEffect(message.actor, 'spell-effect-mirror-image')) {
                 setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.0PO5mFRhh9HxGAtv")
+            }
+        } else if (_obj.slug == "see-invisibility") {
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.T5bk6UH7yuYog1Fp", message?.item?.level)
+        } else if (_obj.slug == "mage-armor") {
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.qkwb5DD3zmKwvbk0", message?.item?.level)
+        } else if (_obj.slug == "darkvision") {
+            if (message?.item?.level >= 5) {
+                if (game.user.targets.size == 0) {
+                    setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.inNfTmtWpsxeGBI9", message?.item?.level)
+                } else if (game.user.targets.size == 1) {
+                    if (adjacentEnemy(message.token, game.user.targets.first())) {
+                        setEffectToActor(game.user.targets.first().actor, "Compendium.pf2e.spell-effects.Item.inNfTmtWpsxeGBI9", message?.item?.level)
+                    } else {
+                        ui.notifications.info(`${message.actor.name} chose target that not in touch range for Darkvision spell`);
+                    }
+                } else {
+                    ui.notifications.info(`${message.actor.name} chose incorrect count of targets for Darkvision spell`);
+                }
+            } else if (message?.item?.level >= 3) {
+                if (game.user.targets.size == 0) {
+                    setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.IXS15IQXYCZ8vsmX", message?.item?.level)
+                } else if (game.user.targets.size == 1) {
+                    if (adjacentEnemy(message.token, game.user.targets.first())) {
+                        setEffectToActor(game.user.targets.first().actor, "Compendium.pf2e.spell-effects.Item.IXS15IQXYCZ8vsmX", message?.item?.level)
+                    } else {
+                        ui.notifications.info(`${message.actor.name} chose target that not in touch range for Darkvision spell`);
+                    }
+                } else {
+                    ui.notifications.info(`${message.actor.name} chose incorrect count of targets for Darkvision spell`);
+                }
+            } else {
+                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.IXS15IQXYCZ8vsmX", message?.item?.level)
+            }
+        } else if (_obj.slug == "longstrider") {
+            if (message?.item?.level >= 2) {
+                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.7vIUF5zbvHzVcJA0", message?.item?.level)
+            } else {
+                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.PQHP7Oph3BQX1GhF", message?.item?.level)
             }
         }
     }
