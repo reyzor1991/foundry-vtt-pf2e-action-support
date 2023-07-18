@@ -27,7 +27,7 @@
     }
   ],
   "socket": true,
-  "manifest": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/releases/latest/download/module.json",
+  "manifest": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/releases/download/0.0.1-v10/module.json",
   "download": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/releases/latest/download/pf2e-action-support.zip",
   "url": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support",
   "license": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/blob/master/LICENSE",
