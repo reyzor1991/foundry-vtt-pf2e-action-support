@@ -35,8 +35,9 @@
   "bugs": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/issues",
   "changelog": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/blob/master/CHANGELOG.md",
   "compatibility": {
-    "minimum": "11",
-    "verified": "11.305"
+    "minimum": "10",
+    "verified": "10.303",
+    "maximum": "10.303"
   },
   "relationships": {
     "systems": [
@@ -45,8 +46,8 @@
         "type": "system",
         "manifest": "https://github.com/foundryvtt/pf2e/releases/latest/download/system.json",
         "compatibility": {
-          "minimum": "5.0.2",
-          "verified": "5.1.0"
+          "minimum": "4.12.9",
+          "verified": "4.12.9"
         }
       }
     ]
