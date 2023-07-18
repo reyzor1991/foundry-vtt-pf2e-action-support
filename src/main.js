@@ -42,8 +42,8 @@ async function createEffects(data) {
     let actor = await fromUuid(data.actorUuid);
     let source = (await fromUuid(data.eff)).toObject();
     source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: data.eff } });
-    if (data.objData) {
-        source.flags = mergeObject(source.flags, data.objData);
+    if (level) {
+        source.system.level = {'value': level};
     }
     await actor.createEmbeddedDocuments("Item", [source]);
 }
@@ -153,6 +153,10 @@ function hasEffect(actor, eff) {
     return actor?.itemTypes?.effect?.find((c => eff === c.slug))
 }
 
+function hasEffectBySourceId(actor, eff) {
+    return actor?.itemTypes?.effect?.find((c => eff === c.sourceId))
+}
+
 function hasAnyEffects(actor, effs) {
     return actor?.itemTypes?.effect?.filter((c => effs.includes(c.slug)))
 }
@@ -253,16 +257,24 @@ async function setFeintEffect(message, isCrit=false) {
     }
 }
 
-async function setEffectToActor(actor, eff, objData=undefined) {
+async function setEffectToActor(actor, eff, level=undefined) {
     if (3 == actor.ownership[game.user.id]) {
-        let source = (await fromUuid(eff)).toObject();
-        source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: eff } });
-        if (objData) {
-            source.flags = mergeObject(source.flags, objData);
+        let source = await fromUuid(eff)
+        let withBa = hasEffectBySourceId(actor, eff);
+        if (withBa && withBa.system.badge) {
+            withBa.update({
+                "system.badge.value": withBa.system.badge.value += 1
+            })
+        } else {
+            source = source.toObject();
+            source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: eff } });
+            if (level) {
+                source.system.level = {'value': level};
+            }
+            await actor.createEmbeddedDocuments("Item", [source]);
         }
-        await actor.createEmbeddedDocuments("Item", [source]);
     } else if (game.settings.get("pf2e-action-support", "useSocket")) {
-        socketlibSocket._sendRequest("createEffects", [{'actorUuid': actor.uuid, 'eff': eff, "objData": objData}], 0)
+        socketlibSocket._sendRequest("createEffects", [{'actorUuid': actor.uuid, 'eff': eff, "level": level}], 0)
     } else {
         sendNotificationChatMessage(actor, `Need add @UUID[${eff}] effect to ${actor.name}`);
     }
@@ -552,8 +564,36 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 
             let effs = spellEffectMap[_obj.slug] ?? []
             effs.forEach(eff => {
-                setEffectToActor(message.actor, eff)
+                setEffectToActor(message.actor, eff, message?.item?.level)
             })
+
+            if (_obj.slug == "inspire-courage") {
+                let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")
+                if (aura) {
+                    setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")
+                } else {
+                    game.user.targets.forEach(tt => {
+                        if (!hasEffect(tt.actor, 'spell-effect-inspire-courage')) {
+                            setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.beReeFroAx24hj83")
+                        }
+                    });
+                }
+            } else if (_obj.slug == "inspire-defense") {
+                let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")
+                if (aura) {
+                    setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")
+                } else {
+                    game.user.targets.forEach(tt => {
+                        if (!hasEffect(tt.actor, 'spell-effect-inspire-courage')) {
+                            setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.DLwTvjjnqs2sNGuG")
+                        }
+                    });
+                }
+            } else if (_obj.slug == "lichens-tenacity" || _obj.slug == "lichen-tenacity") {
+                setEffectToActor(message.actor, "Compendium.botanical-bestiary.effects.AwLeak2GPIH6E4b5")
+            } else if (_obj.slug == "roses-tranquility"||_obj.slug == "rose-tranquility") {
+                setEffectToActor(message.actor, "Compendium.botanical-bestiary.effects.DwxpHXwlTPuXq2wT")
+            }
         }
     } else {
         if (messageType(message, 'skill-check')) {
@@ -647,10 +687,10 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     guidanceEffect(message, tt.actor)
                 }
             });
-        } else if  (_obj.slug == "vital-beacon") {
-            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.WWtSEJGwKY4bQpUn")
+        } else if  (_obj.slug == "vital-beacon" && !hasEffect(message.actor, "spell-effect-vital-beacon")) {
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.WWtSEJGwKY4bQpUn", message?.item?.level)
         } else if  (_obj.slug == "shield" && !hasEffect(message.actor, "effect-shield-immunity")) {
-            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.Jemq5UknGdMO7b73")
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.Jemq5UknGdMO7b73", message?.item?.level)
         } else if  (_obj.slug == "stabilize") {
             game.user.targets.forEach(tt => {
                 if (hasCondition(tt.actor)) {
@@ -660,7 +700,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         } else if  (_obj.slug == "anticipate-peril") {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, 'spell-effect-anticipate-peril')) {
-                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.4ag0OHKfjROmR4Pm")
+                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.4ag0OHKfjROmR4Pm", message?.item?.level)
                 }
             });
         } else if  (_obj.slug == "arcane-countermeasure") {
@@ -675,6 +715,34 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.UtIOWubq7akdHMOh")
                 }
             });
+        } else if (_obj.slug == "protective-ward") {
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.5p3bKvWsJgo83FS1")
+        } else if (_obj.slug == "bane") {
+            let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.YcyN7BDbL0Nt3CFN")
+            if (aura) {
+                setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.YcyN7BDbL0Nt3CFN")
+            } else {
+                game.user.targets.forEach(tt => {
+                    if (!hasEffect(tt.actor, 'spell-effect-bane')) {
+                        setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.UTLp7omqsiC36bso")
+                    }
+                });
+            }
+        } else if (_obj.slug == "bless") {
+            let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.BqkDxiAi0q6Uaar4")
+            if (aura) {
+                setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.BqkDxiAi0q6Uaar4")
+            } else {
+                game.user.targets.forEach(tt => {
+                    if (!hasEffect(tt.actor, 'spell-effect-bless')) {
+                        setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.Gqy7K6FnbLtwGpud")
+                    }
+                });
+            }
+        } else if (_obj.slug == "mirror-image") {
+            if (!hasEffect(message.actor, 'spell-effect-mirror-image')) {
+                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.0PO5mFRhh9HxGAtv")
+            }
         }
     }
 
@@ -713,8 +781,9 @@ async function guidanceEffect(message, target) {
         "target": null
     });
     aEffect.system.start.initiative = null;
-
-
+    if (message?.item?.level) {
+        aEffect.system.level = {'value': message?.item?.level};
+    }
     if (3 == target.ownership[game.user.id]) {
         target.createEmbeddedDocuments("Item", [aEffect]);
     } else {

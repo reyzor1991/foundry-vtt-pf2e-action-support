@@ -1,4 +1,4 @@
-# Actions:
+### Actions:
 
 - Stand
 - Scout
@@ -40,8 +40,9 @@
 - Rage
 - Grab
 - Treat Disease
+- Tumble Through
 
-
+### Spells
 - Stabilize Spell
 - Aberrant Whispers Spell
 - Adaptive Ablation Spell
@@ -51,8 +52,19 @@
 - Anticipate Peril Spell
 - Shield Spell
 - Vital Beacon Spell
+- Protective Ward Spell
+- Bane Spell (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Bane Bless (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Inspire Courage Spell (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Inspire Defense Spell (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Mirror Image Spell
 
 
+### 3rd party
+- Lichen's Tenacity 
+- Rose's Tranquility
+
+### Feats
 - Medic Dedication
-- Swashbucklers Style - All
+- Swashbucklers Style - All Styles (add Panache when Tumble Through or specific action of style)
 - Tumble Behind (Rogue) feat

@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 0.0.21
+
+### New feature
+- Fix issue with Heightened spells
+- Handling of Protective Ward Spell 
+- Handling of Bane Spell (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Handling of Bless Spell (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Handling of Inspire Courage Spell (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Handling of Inspire Defense Spell (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Handling of Mirror Image Spell 
+- Lichen's Tenacity Spell
+- Rose's Tranquility Spell
+
 ## Version 0.0.19
 
 ### New feature
@@ -13,7 +26,7 @@
 ### New feature
 - Handling of Arcane Countermeasure Spell to target
 - Handling of Augment Summoning Spell to target
-- Handling of Athletic Rush
+- Handling of Athletic Rush Spell
 
 ## Version 0.0.17
 
