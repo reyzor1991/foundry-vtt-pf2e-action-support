@@ -10,7 +10,7 @@
 ![](https://img.shields.io/github/downloads-pre/reyzor1991/foundry-vtt-pf2e-action-support/latest/total)
 ![](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fpf2e-action-support&colorB=4aa94a)
 
-[Version]: https://img.shields.io/badge/Version-0.0.19-yellow?style=flat-square
+[Version]: https://img.shields.io/badge/Version-0.0.20-yellow?style=flat-square
 [Version URL]: https://github.com/reyzor1991/foundry-vtt-pf2e-action-support
 
 ### Module which automate work with actions:

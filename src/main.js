@@ -33,6 +33,9 @@ Hooks.on('deleteItem', async (effect, data, id) => {
     if (effect.slug == "spell-effect-guidance" && !hasEffect(effect.actor, "effect-guidance-immunity")) {
         setEffectToActor(effect.actor, "Compendium.pf2e.spell-effects.Item.3LyOkV25p7wA181H");
     }
+    if (effect.slug == "spell-effect-shield" && !hasEffect(effect.actor, "effect-shield-immunity")) {
+        setEffectToActor(effect.actor, "Compendium.pf2e.spell-effects.Item.QF6RDlCoTvkVHRo4")
+    }
 });
 
 async function createEffects(data) {
@@ -648,7 +651,6 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.WWtSEJGwKY4bQpUn")
         } else if  (_obj.slug == "shield" && !hasEffect(message.actor, "effect-shield-immunity")) {
             setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.Jemq5UknGdMO7b73")
-            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.QF6RDlCoTvkVHRo4")
         } else if  (_obj.slug == "stabilize") {
             game.user.targets.forEach(tt => {
                 if (hasCondition(tt.actor)) {
