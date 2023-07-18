@@ -558,6 +558,10 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 game.user.targets.forEach(a => {
                     effectWithActorNextTurn(message, a.actor, effect_grabbed_end_attacker_next_turn)
                 });
+            } else if (_obj?.sourceId == "Item.hqsDRpzHAWEagLDO") {
+                setEffectToActor(message.actor, "Compendium.botanical-bestiary.effects.AwLeak2GPIH6E4b5")
+            } else if (_obj?.sourceId ==  "Item.PUAigKSydzY9Ii10") {
+                setEffectToActor(message.actor, "Compendium.botanical-bestiary.effects.DwxpHXwlTPuXq2wT")
             }
         } else if (message?.flags?.pf2e?.origin?.type == "spell") {
             let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
@@ -589,10 +593,6 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                         }
                     });
                 }
-            } else if (_obj.slug == "lichens-tenacity" || _obj.slug == "lichen-tenacity") {
-                setEffectToActor(message.actor, "Compendium.botanical-bestiary.effects.AwLeak2GPIH6E4b5")
-            } else if (_obj.slug == "roses-tranquility"||_obj.slug == "rose-tranquility") {
-                setEffectToActor(message.actor, "Compendium.botanical-bestiary.effects.DwxpHXwlTPuXq2wT")
             }
         }
     } else {

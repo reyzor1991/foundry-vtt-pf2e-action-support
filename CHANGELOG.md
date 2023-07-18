@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.22
+
+### New feature
+- Use Lichen's Tenacity & Rose's Tranquility as action not a spell
+
 ## Version 0.0.21
 
 ### New feature
