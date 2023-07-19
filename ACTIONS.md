@@ -73,6 +73,8 @@
 - Regenerate to target
 - Heroism to target
 - Death Ward to target
+- Spectral Hand
+- Soothe
 
 
 ### 3rd party
@@ -89,3 +91,5 @@
 - Reactive Shield
 - Smite Evil
 - Heaven's thunder
+- Intimidating Strike
+- Reach Spell

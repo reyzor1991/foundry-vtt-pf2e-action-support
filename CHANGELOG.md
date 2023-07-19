@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.0.25
+
+### New feature
+- Handling of Intimidating Strike Feat
+- Handling of Reach Spell Feat
+- Handling of Spectral Hand Spell
+- Handling of Soothe Spell
+
 ## Version 0.0.24
 
 ### New feature

@@ -81,6 +81,10 @@ async function applyDamages(data) {
     applyDamage(actor, token, data.formula);
 }
 
+function hasPermissions(item) {
+    return 3 == item.ownership[game.user.id] || game.user.isGM;
+}
+
 function hasCondition(actor, con) {
     return actor?.itemTypes?.condition?.find((c => c.type == "condition" && con === c.slug))
 }
@@ -178,8 +182,23 @@ function actorsWithEffect(eff) {
     return game.combat.turns.filter(cc=>hasEffect(cc.actor, eff)).map(cc=>cc.actor);
 }
 
-function adjacentEnemy(firstT, secondT) {
-    return (firstT instanceof Token ? firstT : firstT.object).distanceTo((secondT instanceof Token ? secondT : secondT.object)) <= 5
+function distanceIsCorrect(firstT, secondT, distance) {
+    return (firstT instanceof Token ? firstT : firstT.object).distanceTo((secondT instanceof Token ? secondT : secondT.object)) <= distance
+}
+
+function spellRange(spell) {
+    let s = spell?.system?.range?.value?.match(/\d+/g)
+    return s ? parseInt(s[0]) : 0;
+}
+
+function getSpellRange(actor, spell) {
+    let s = spellRange(spell)
+    if (hasEffect(actor, "effect-spectral-hand")) {
+        s = s > 120 ? s : 120;
+    } else if (hasEffect(actor, "effect-reach-spell")) {
+        s += 30;
+    }
+    return s == 0 ? 5 : s;
 }
 
 async function treatWounds(message, target) {
@@ -212,7 +231,7 @@ function sendNotificationChatMessage(actor, content) {
 function deleteEffectFromActor(actor, eff) {
     let effect = actor.itemTypes.effect.find(c => eff === c.slug)
     if (!effect) {return}
-    if (3 == actor.ownership[game.user.id]) {
+    if (hasPermissions(actor)) {
         actor.deleteEmbeddedDocuments("Item", [effect._id])
     } else if (game.settings.get("pf2e-action-support", "useSocket")) {
         socketlibSocket._sendRequest("deleteEffects", [{'actorUuid': actor.uuid, 'eff': eff}], 0)
@@ -222,7 +241,7 @@ function deleteEffectFromActor(actor, eff) {
 }
 
 function deleteEffectById(actor, effId) {
-    if (3 == actor.ownership[game.user.id]) {
+    if (hasPermissions(actor)) {
         actor.deleteEmbeddedDocuments("Item", [effId])
     } else if (game.settings.get("pf2e-action-support", "useSocket")) {
         socketlibSocket._sendRequest("deleteEffectsById", [{'actorUuid': actor.uuid, 'effId': effId}], 0)
@@ -257,13 +276,13 @@ async function setFeintEffect(message, isCrit=false) {
     aEffect.system.rules[0].predicate[1] = aEffect.system.rules[0].predicate[1].replace("attacker", actor.id).replace("target", target.id)
     aEffect.name += ` ${target.name}`
 
-    if (3 == actor.ownership[game.user.id]) {
+    if (hasPermissions(actor)) {
         await actor.createEmbeddedDocuments("Item", [aEffect]);
     } else {
         socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, actor.uuid], 0)
     }
 
-    if (3 == target.ownership[game.user.id]) {
+    if (hasPermissions(target)) {
         await target.createEmbeddedDocuments("Item", [effect]);
     } else {
         socketlibSocket._sendRequest("createFeintEffectOnTarget", [effect, target.uuid], 0)
@@ -271,7 +290,7 @@ async function setFeintEffect(message, isCrit=false) {
 }
 
 async function setEffectToActor(actor, eff, level=undefined) {
-    if (3 == actor.ownership[game.user.id]) {
+    if (hasPermissions(actor)) {
         let source = await fromUuid(eff)
         let withBa = hasEffectBySourceId(actor, eff);
         if (withBa && withBa.system.badge) {
@@ -296,7 +315,7 @@ async function setEffectToActor(actor, eff, level=undefined) {
 async function increaseConditionForActor(message, condition, value=undefined) {
     let valueObj = value ? {'value': value } : {}
 
-    if (3 == message.actor.ownership[game.user.id]) {
+    if (hasPermissions(message.actor)) {
         message.actor.increaseCondition(condition, valueObj);
     } else if (game.settings.get("pf2e-action-support", "useSocket")) {
         socketlibSocket._sendRequest("increaseConditions", [{'actorUuid': message.actor.uuid, 'value': value, 'condition': condition}], 0)
@@ -308,7 +327,7 @@ async function increaseConditionForActor(message, condition, value=undefined) {
 async function increaseConditionForTarget(message, condition, value=undefined) {
     let valueObj = value ? {'value': value } : {}
 
-    if (3 == message.target.actor.ownership[game.user.id]) {
+    if (hasPermissions(message.target.actor)) {
         message.target.actor.increaseCondition(condition, valueObj);
     } else if (game.settings.get("pf2e-action-support", "useSocket")) {
         socketlibSocket._sendRequest("increaseConditions", [{'actorUuid': message.target.actor.uuid, 'value': value, 'condition': condition}], 0)
@@ -317,14 +336,14 @@ async function increaseConditionForTarget(message, condition, value=undefined) {
     }
 }
 
-async function setEffectToActorOrTarget(message, effectUUID, spellName) {
+async function setEffectToActorOrTarget(message, effectUUID, spellName, spellRange) {
     if (game.user.targets.size == 0) {
         setEffectToActor(message.actor, effectUUID, message?.item?.level)
     } else if (game.user.targets.size == 1) {
-        if (adjacentEnemy(message.token, game.user.targets.first())) {
+        if (distanceIsCorrect(message.token, game.user.targets.first(), spellRange)) {
             setEffectToActor(game.user.targets.first().actor, effectUUID, message?.item?.level)
         } else {
-            ui.notifications.info(`${message.actor.name} chose target that not in touch range for ${spellName} spell`);
+            ui.notifications.info(`${message.actor.name} chose target that not in range for ${spellName} spell`);
         }
     } else {
         ui.notifications.info(`${message.actor.name} chose incorrect count of targets for ${spellName} spell`);
@@ -339,7 +358,7 @@ function deleteEffectUntilAttackerEnd(actor, eff, attackerId, isFinal=false) {
                 deleteEffectById(actor, effect.id)
             } else {
                 let data = {"flags.attacker-turn": effect.flags["attacker-turn"] - 1};
-                if (3 == actor.ownership[game.user.id]) {
+                if (hasPermissions(actor)) {
                     effect.update(data);
                 }else {
                     socketlibSocket._sendRequest("updateObjects", [{id: effect.uuid, data:data}], 0)
@@ -350,7 +369,7 @@ function deleteEffectUntilAttackerEnd(actor, eff, attackerId, isFinal=false) {
 }
 
 async function applyDamage(actor, token, formula) {
-    if (3 == actor.ownership[game.user.id]) {
+    if (hasPermissions(actor)) {
         let DamageRoll = CONFIG.Dice.rolls.find((r) => r.name === "DamageRoll")
         let roll = new DamageRoll(formula);
         await roll.evaluate({async: true});
@@ -370,7 +389,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             let shieldEff = hasEffect(message.actor, "spell-effect-shield");
             if (shieldEff) {
                 if (message?.content.includes("shield") && message?.content.includes("absorb")) {
-                    if (3 == shieldEff.ownership[game.user.id]) {
+                    if (hasPermissions(shieldEff)) {
                         shieldEff.delete()
                     } else {
                         socketlibSocket._sendRequest("deleteEffect", [shieldEff.uuid], 0)
@@ -562,6 +581,16 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             }
         } else if (messageType(message, "attack-roll") && message?.item?.isMelee && anyFailureMessageOutcome(message)) {
             deleteFeintEffects(message);
+        } else if (messageType(message, "attack-roll") && message?.item?.isMelee && anySuccessMessageOutcome(message)) {
+            let is = hasEffect(message?.actor, "effect-intimidating-strike")
+            if (is) {
+                if (criticalSuccessMessageOutcome(message)) {
+                    increaseConditionForTarget(message, "frightened", 2)
+                } else {
+                    increaseConditionForTarget(message, "frightened", 1)
+                }
+                deleteEffectById(message.actor, is.id)
+            }
         } else if (messageType(message, "damage-roll")) {
             if (message?.item?.isMelee && hasEffect(message.actor, "effect-panache") && hasOption(message, "finisher")
                 && (hasOption(message, "agile") || hasOption(message, "finesse"))
@@ -738,6 +767,10 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.AlnxieIRjqNqsdVu")
         } else if (feat.slug == "heavens-thunder") {
             setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.L9g3EMCT3imX650b")
+        } else if (feat.slug == "intimidating-strike") {
+            setEffectToActor(message.actor, effect_intimidating_strike)
+        } else if (feat.slug == "reach-spell") {
+            setEffectToActor(message.actor, effect_reach_spell)
         }
     } else if (message?.flags?.pf2e?.origin?.type == "spell") {
         let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
@@ -762,7 +795,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             if (game.user.targets.size == 0) {
                 increaseConditionForActor(message, "concealed");
             } else if (game.user.targets.size == 1) {
-                if (adjacentEnemy(message.token, game.user.targets.first())) {
+                if (distanceIsCorrect(message.token, game.user.targets.first(), getSpellRange(message.actor, _obj))) {
                     increaseConditionForActor({'actor': game.user.targets.first().actor}, "concealed");
                 } else {
                     ui.notifications.info(`${message.actor.name} chose target that not in touch range for Blur spell`);
@@ -772,19 +805,21 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             }
 
         } else if  (_obj.slug == "death-ward") {
-            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.s6CwkSsMDGfUmotn", "Blur")
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.s6CwkSsMDGfUmotn", "Blur", getSpellRange(message.actor, _obj))
         } else if  (_obj.slug == "fly") {
-            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.MuRBCiZn5IKeaoxi", "Fly")
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.MuRBCiZn5IKeaoxi", "Fly", getSpellRange(message.actor, _obj))
         } else if  (_obj.slug == "protection") {
-            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.RawLEPwyT5CtCZ4D", "Protection")
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.RawLEPwyT5CtCZ4D", "Protection", getSpellRange(message.actor, _obj))
         }  else if  (_obj.slug == "stoneskin") {
-            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.JHpYudY14g0H4VWU", "Stoneskin")
-        }  else if  (_obj.slug == "energy-aegis") {
-            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.4Lo2qb5PmavSsLNk", "Energy Aegis")
-        }  else if  (_obj.slug == "regenerate") {
-            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.dXq7z633ve4E0nlX", "Regenerate")
-        }   else if  (_obj.slug == "heroism") {
-            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.l9HRQggofFGIxEse", "Heroism")
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.JHpYudY14g0H4VWU", "Stoneskin", getSpellRange(message.actor, _obj))
+        } else if  (_obj.slug == "energy-aegis") {
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.4Lo2qb5PmavSsLNk", "Energy Aegis", getSpellRange(message.actor, _obj))
+        } else if  (_obj.slug == "regenerate") {
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.dXq7z633ve4E0nlX", "Regenerate", getSpellRange(message.actor, _obj))
+        } else if  (_obj.slug == "heroism") {
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.l9HRQggofFGIxEse", "Heroism", getSpellRange(message.actor, _obj))
+        } else if  (_obj.slug == "soothe") {
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.nkk4O5fyzrC0057i", "Soothe", getSpellRange(message.actor, _obj))
         } else if  (_obj.slug == "anticipate-peril") {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, 'spell-effect-anticipate-peril')) {
@@ -840,7 +875,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 if (game.user.targets.size == 0) {
                     setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.inNfTmtWpsxeGBI9", message?.item?.level)
                 } else if (game.user.targets.size == 1) {
-                    if (adjacentEnemy(message.token, game.user.targets.first())) {
+                    if (distanceIsCorrect(message.token, game.user.targets.first(), getSpellRange(message.actor, _obj))) {
                         setEffectToActor(game.user.targets.first().actor, "Compendium.pf2e.spell-effects.Item.inNfTmtWpsxeGBI9", message?.item?.level)
                     } else {
                         ui.notifications.info(`${message.actor.name} chose target that not in touch range for Darkvision spell`);
@@ -852,7 +887,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 if (game.user.targets.size == 0) {
                     setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.IXS15IQXYCZ8vsmX", message?.item?.level)
                 } else if (game.user.targets.size == 1) {
-                    if (adjacentEnemy(message.token, game.user.targets.first())) {
+                    if (distanceIsCorrect(message.token, game.user.targets.first(), getSpellRange(message.actor, _obj))) {
                         setEffectToActor(game.user.targets.first().actor, "Compendium.pf2e.spell-effects.Item.IXS15IQXYCZ8vsmX", message?.item?.level)
                     } else {
                         ui.notifications.info(`${message.actor.name} chose target that not in touch range for Darkvision spell`);
@@ -869,6 +904,8 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             } else {
                 setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.PQHP7Oph3BQX1GhF", message?.item?.level)
             }
+        } else if (_obj.slug == "spectral-hand") {
+            setEffectToActor(message.actor, effect_spectral_hand)
         }
     }
 
@@ -878,15 +915,15 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 });
 
 async function deleteFeintEffects(message) {
-    aef = hasEffect(message.actor, `effect-feint-success-${message.actor.id}-${message?.target?.actor.id}`)
-    tef = hasEffect(message.target.actor, `effect-feint-success-${message.actor.id}`)
+    let aef = hasEffect(message.actor, `effect-feint-success-${message.actor.id}-${message?.target?.actor.id}`)
+    let tef = hasEffect(message?.target?.actor, `effect-feint-success-${message.actor.id}`)
     if (aef && tef) {
-        if (3 == aef.ownership[game.user.id]) {
+        if (hasPermissions(aef)) {
             aef.delete()
         } else {
             socketlibSocket._sendRequest("deleteEffect", [aef.uuid], 0)
         }
-        if (3 == tef.ownership[game.user.id]) {
+        if (hasPermissions(tef)) {
             tef.delete()
         } else {
             socketlibSocket._sendRequest("deleteEffect", [tef.uuid], 0)
@@ -910,7 +947,7 @@ async function guidanceEffect(message, target) {
     if (message?.item?.level) {
         aEffect.system.level = {'value': message?.item?.level};
     }
-    if (3 == target.ownership[game.user.id]) {
+    if (hasPermissions(target)) {
         target.createEmbeddedDocuments("Item", [aEffect]);
     } else {
         socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, target.uuid], 0)
@@ -934,7 +971,7 @@ async function effectWithActorNextTurn(message, target, uuid, optionalName=undef
         aEffect.name += ` ${optionalName}`
     }
 
-    if (3 == target.ownership[game.user.id]) {
+    if (hasPermissions(target)) {
         target.createEmbeddedDocuments("Item", [aEffect]);
     } else {
         socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, target.uuid], 0)
