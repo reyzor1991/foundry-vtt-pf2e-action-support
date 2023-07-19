@@ -45,7 +45,7 @@ async function createEffects(data) {
     let source = (await fromUuid(data.eff)).toObject();
     source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: data.eff } });
     if (data.level) {
-        source.system.level = {'value': level};
+        source.system.level = {'value': data.level};
     }
     await actor.createEmbeddedDocuments("Item", [source]);
 }

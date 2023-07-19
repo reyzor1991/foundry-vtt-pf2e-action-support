@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.24
+
+### New feature
+- Fix issue with applying effects to creatures that you don't own
+
 ## Version 0.0.23
 
 ### New feature
