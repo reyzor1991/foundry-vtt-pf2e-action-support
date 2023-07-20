@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 0.0.26
+
+### New feature
+- Handling of Tanglefoot Bag (Add foot penalty to target)
+- Handling of Frost Vial (Add foot penalty to target)
+- Handling of Bottled Lightning (Add Flat-Footed to target)
+- Handling of Dread Ampoule (Add Frightened to target)
+- Handling of Ghost Charge (Add Enfeebled to target)
+- Handling of Thunderstone (Add Deafened to target)
+- Handling of Ray of Enfeeblement Spell (without change outcome on crit)
+
 ## Version 0.0.25
 
 ### New feature

@@ -75,6 +75,7 @@
 - Death Ward to target
 - Spectral Hand
 - Soothe
+- Ray of Enfeeblement (without change outcome on crit)
 
 
 ### 3rd party
@@ -93,3 +94,12 @@
 - Heaven's thunder
 - Intimidating Strike
 - Reach Spell
+
+### Items
+
+- Bottled Lightning
+- Dread Ampoule
+- Frost Vial
+- Ghost Charge
+- Tanglefoot Bag
+- Thunderstone

@@ -1,5 +1,8 @@
 export default const effect_flat_footed = "Compendium.pf2e-action-support.action-support.Item.Vh5E1Qgp34sTKfVs";
 export const effect_flat_footed_start_turn = "Compendium.pf2e-action-support.action-support.Item.YsNqG4OocHoErbc9";
+export const effect_enfeebled1_start_turn = "Compendium.pf2e-action-support.action-support.Item.9QvJm6xIKWjti3PD";
+export const effect_enfeebled2_start_turn = "Compendium.pf2e-action-support.action-support.Item.66Sg7uVVaIb3tOib";
+export const effect_immobilized1_round = "Compendium.pf2e-action-support.action-support.Item.FCKm1dZKZzF7Jkxl";
 export const effect_battle_medicine_immunity_hour = "Compendium.pf2e-action-support.action-support.Item.GMb4x4eHVGD9Tfzp";
 export const effect_treat_wounds_immunity_minutes = "Compendium.pf2e-action-support.action-support.Item.b1ILZ8YQvBd9XA2b";
 export const effect_demoralize_immunity_minutes = "Compendium.pf2e-action-support.action-support.Item.DFLW2gzu0PGeX6zu";
