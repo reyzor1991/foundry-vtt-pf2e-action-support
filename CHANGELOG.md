@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 0.0.27
+
+### New feature
+- Handling of Ray of Enfeeblement Spell (with change outcome on crit)
+- Handling of Skunk Bomb (Add conditions)
+- Handling of Necrotic Bomb (Add Sickened to target)
+- Handling of Monk's stances
+- Handling of Champion's stances
+- Handling of Fighter's stances
+- Handling of Rogue's stances
+- Handling of Bard's stances
+- Handling of Swashbuckler's stances
+
 ## Version 0.0.26
 
 ### New feature

@@ -75,7 +75,7 @@
 - Death Ward to target
 - Spectral Hand
 - Soothe
-- Ray of Enfeeblement (without change outcome on crit)
+- Ray of Enfeeblement
 
 
 ### 3rd party
@@ -94,6 +94,12 @@
 - Heaven's thunder
 - Intimidating Strike
 - Reach Spell
+- Monk's stances
+- Champion's stances
+- Fighter's stances
+- Rogue's stances
+- Bard's stances
+- Swashbuckler's stances
 
 ### Items
 
@@ -103,3 +109,5 @@
 - Ghost Charge
 - Tanglefoot Bag
 - Thunderstone
+- Skunk Bomb
+- Necrotic Bomb

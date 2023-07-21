@@ -623,6 +623,22 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 if (criticalSuccessMessageOutcome(message)) {
                     setEffectToActor(message.target.actor, effect_immobilized1_round)
                 }
+            } else if (hasOption(message, "item:necrotic-bomb-lesser")) {
+                if (criticalSuccessMessageOutcome(message)) {
+                    increaseConditionForTarget(message, "sickened", 1);
+                }
+            } else if (hasOption(message, "item:necrotic-bomb-moderate")) {
+                if (criticalSuccessMessageOutcome(message)) {
+                    increaseConditionForTarget(message, "sickened", 2);
+                }
+            } else if (hasOption(message, "item:necrotic-bomb-greater")) {
+                if (criticalSuccessMessageOutcome(message)) {
+                    increaseConditionForTarget(message, "sickened", 3);
+                }
+            } else if (hasOption(message, "item:necrotic-bomb-major")) {
+                if (criticalSuccessMessageOutcome(message)) {
+                    increaseConditionForTarget(message, "sickened", 4);
+                }
             }
 
         } else if (messageType(message, "damage-roll")) {
@@ -781,12 +797,36 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
             }
         } else if (hasOption(message, "item:ray-of-enfeeblement")) {
-            if (successMessageOutcome(message)) {
-                increaseConditionForActor(message, "enfeebled", 1);
-            } else if (failureMessageOutcome(message)) {
-                increaseConditionForActor(message, "enfeebled", 2);
-            } else if (criticalFailureMessageOutcome(message)) {
+            let isCrit=false;
+            let lastMsgs = game.messages.contents.slice(-10).reverse();
+            for (var m in lastMsgs) {
+                if (messageType(lastMsgs[m], "spell-attack-roll")
+                    && criticalSuccessMessageOutcome(lastMsgs[m])
+                    && hasOption(lastMsgs[m], "item:ray-of-enfeeblement")
+                    && lastMsgs[m]?.target?.actor?.id == message?.actor?.id) {
+                    isCrit = true;
+                }
+            }
+            if (criticalFailureMessageOutcome(message) || (failureMessageOutcome(message) && isCrit)) {
                 increaseConditionForActor(message, "enfeebled", 3);
+            } else if (failureMessageOutcome(message) || (successMessageOutcome(message) && isCrit)) {
+                increaseConditionForActor(message, "enfeebled", 2);
+            } else if (successMessageOutcome(message) || (criticalSuccessMessageOutcome(message) && isCrit)) {
+                increaseConditionForActor(message, "enfeebled", 1);
+            }
+        }  else if (
+            hasOption(message, "action:skunk-bomb-lesser")
+            || hasOption(message, "action:skunk-bomb-moderate")
+            || hasOption(message, "action:skunk-bomb-greater")
+            || hasOption(message, "action:skunk-bomb-major")
+        ) {
+            if (successMessageOutcome(message)) {
+                increaseConditionForActor(message, "sickened", 1);
+            } else if (failureMessageOutcome(message)) {
+                setEffectToActor(message.actor, effect_skunk_bomb_fail)
+            } else if (criticalFailureMessageOutcome(message)) {
+                setEffectToActor(message.actor, effect_skunk_bomb_cfail)
+                setEffectToActor(message.actor, effect_blinded1_round)
             }
         }
     }
@@ -841,15 +881,14 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.z3uyCMBddrPK5umr")
         } else if (feat.slug == "reactive-shield") {
             (await fromUuid("Compendium.pf2e.action-macros.4hfQEMiEOBbqelAh")).execute()
-        } else if (feat.slug == "smite-evil") {
-            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.AlnxieIRjqNqsdVu")
-        } else if (feat.slug == "heavens-thunder") {
-            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.L9g3EMCT3imX650b")
-        } else if (feat.slug == "intimidating-strike") {
-            setEffectToActor(message.actor, effect_intimidating_strike)
-        } else if (feat.slug == "reach-spell") {
-            setEffectToActor(message.actor, effect_reach_spell)
         }
+
+        let effs = featEffectMap[feat.slug] ?? undefined;
+        if (effs) {
+            setEffectToActor(message.actor, effs)
+        }
+
+
     } else if (message?.flags?.pf2e?.origin?.type == "spell") {
         let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
 
