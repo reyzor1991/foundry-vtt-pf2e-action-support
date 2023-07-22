@@ -156,7 +156,7 @@ function hasOption(message, opt) {
 }
 
 function hasEffectStart(actor, eff) {
-    return actor?.itemTypes?.effect?.find((c => c.slug.startsWith(eff)))
+    return actor?.itemTypes?.effect?.find((c => c?.slug?.startsWith(eff)))
 }
 
 function hasEffect(actor, eff) {
@@ -427,7 +427,9 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     }
                 }
 
-                if (hasOption(message, "action:perform") && actorFeat(message?.actor, "battledancer") && !hasEffect(message.actor, "effect-panache")) {
+                if (anySuccessMessageOutcome(message) && hasOption(message, "action:perform")
+                    && actorFeat(message?.actor, "battledancer") && !hasEffect(message.actor, "effect-panache")
+                ) {
                     setEffectToActor(message.actor, effect_panache)
                 }
 
@@ -577,6 +579,18 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     applyDamage(message.actor, message.token, `${message.actor.level}[fire]`)
                 }
             }
+        } else if (messageType(message, "perception-check")) {
+            if (hasOption(message, "action:sense-motive")) {
+                if (actorFeat(message?.actor, "predictable")) {
+                    if (criticalSuccessMessageOutcome(message)) {
+                        setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.I4Ozf6mTnd3X0Oax")
+                    } else if (successMessageOutcome(message)) {
+                        setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.5v0ndPPMfZwhiVZF")
+                    } else if (criticalFailureMessageOutcome(message)) {
+                        setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.KgR1myc4OLzVxfxn")
+                    }
+                }
+            }
         } else if (messageType(message, "attack-roll") && message?.item?.isMelee && anyFailureMessageOutcome(message)) {
             deleteFeintEffects(message);
         } else if (messageType(message, "attack-roll") && anySuccessMessageOutcome(message)) {
@@ -638,6 +652,13 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             } else if (hasOption(message, "item:necrotic-bomb-major")) {
                 if (criticalSuccessMessageOutcome(message)) {
                     increaseConditionForTarget(message, "sickened", 4);
+                }
+            } else if (
+                hasOption(message, "item:boulder-seed")
+                || hasOption(message, "item:boulder-seed-greater")
+            ) {
+                if (criticalSuccessMessageOutcome(message)) {
+                    increaseConditionForTarget(message, "prone");
                 }
             }
 

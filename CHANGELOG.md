@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.0.28
+
+### New feature
+- Handling of Boulder Seed (Add Prone to target on crit)
+- Handling of Predictable Feat
+
 ## Version 0.0.27
 
 ### New feature

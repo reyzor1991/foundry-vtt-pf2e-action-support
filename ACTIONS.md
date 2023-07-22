@@ -100,6 +100,7 @@
 - Rogue's stances
 - Bard's stances
 - Swashbuckler's stances
+- Predictable
 
 ### Items
 
@@ -111,3 +112,4 @@
 - Thunderstone
 - Skunk Bomb
 - Necrotic Bomb
+- Boulder Seed
