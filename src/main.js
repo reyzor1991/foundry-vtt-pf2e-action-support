@@ -26,6 +26,16 @@ Hooks.once("init", () => {
         default: true,
         type: Boolean,
     });
+
+    let originGetRollContext = CONFIG.Actor.documentClass.prototype.getRollContext;
+    CONFIG.Actor.documentClass.prototype.getRollContext = async function(prefix) {
+        let r = await originGetRollContext.call(this, prefix);
+        if (r.options.has("first-attack") && !r.options.has(`target:effect:hunt-prey-${this.id}`)) {
+            r.options.delete("first-attack");
+        }
+        return r;
+    }
+
 });
 
 
@@ -670,9 +680,6 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 if (message?.item?.isMelee) {
                     deleteFeintEffects(message);
                 }
-                if (hasOption(message, "first-attack") && actorFeat(message.actor, "precision")) {
-                    message.actor.toggleRollOption("all", "first-attack")
-                }
             }
 
         } else if (messageType(message, "damage-roll")) {
@@ -680,7 +687,10 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 && hasDomain(message, "strike-damage")
                 && actorFeat(message.actor, "precision")
             ) {
-                message.actor.toggleRollOption("all", "first-attack")
+                let dd = hasEffects(message?.target?.actor, `effect-hunt-prey-${message.actor.id}`);
+                if (dd.some(d=>d.system?.context?.origin?.actor == message.actor.uuid)) {
+                    message.actor.toggleRollOption("all", "first-attack")
+                }
             }
             if (message?.item?.isMelee && hasEffect(message.actor, "effect-panache") && hasOption(message, "finisher")
                 && (hasOption(message, "agile") || hasOption(message, "finesse"))
@@ -893,6 +903,15 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 
         } else if (_obj.slug == "accept-echo") {
             setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.2ca1ZuqQ7VkunAh3")
+        }  else if (_obj.slug == "hunt-prey") {
+            game.combat.turns.map(cc=>cc.actor).forEach(a => {
+                let qq = hasEffects(a, `effect-hunt-prey-${message.actor.id}`)
+                .forEach(eff => {
+                    deleteEffectById(a, eff.id)
+                })
+            })
+
+            huntedPreyEffect(message, _obj);
         } else if (_obj.slug == "devise-a-stratagem") {
             if (actorFeat(message.actor, "didactic-strike")) {
                 if (game.user.targets.size == 0) {
@@ -1127,6 +1146,34 @@ async function effectWithActorNextTurn(message, target, uuid, optionalName=undef
         target.createEmbeddedDocuments("Item", [aEffect]);
     } else {
         socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, target.uuid], 0)
+    }
+}
+
+async function huntedPreyEffect(message, _obj) {
+    if (game.user.targets.size == 1) {
+        let aEffect = (await fromUuid(effect_hunt_prey)).toObject();
+        aEffect.name = aEffect.name.replace("Actor", message.actor.name)
+        aEffect.img = message.token.texture.src
+        aEffect.system.context = mergeObject(aEffect.system.context ?? {}, {
+            "origin": {
+                "actor": message.actor.uuid,
+                "item": message?.item?.uuid,
+                "token": message.token.uuid
+            },
+            "roll": null,
+            "target": null
+        });
+        aEffect.system.slug = aEffect.system.slug.replace("actor", message?.actor?.id)
+
+
+        let target = game.user.targets.first().actor;
+        if (hasPermissions(target)) {
+            target.createEmbeddedDocuments("Item", [aEffect]);
+        } else {
+            socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, target.uuid], 0)
+        }
+    } else {
+        ui.notifications.info(`${message.actor.name} need to chose target for ${_obj.name}`);
     }
 }
 

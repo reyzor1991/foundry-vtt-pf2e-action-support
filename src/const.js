@@ -32,6 +32,7 @@ export const effect_aberrant_whispers_immunity = "Compendium.pf2e-action-support
 export const effect_intimidating_strike = "Compendium.pf2e-action-support.action-support.Item.w9i0aY2IQ3jvCX9K";
 export const effect_reach_spell = "Compendium.pf2e-action-support.action-support.Item.jLxv3W9FgO2SbxVC";
 export const effect_spectral_hand = "Compendium.pf2e-action-support.action-support.Item.wArBvC6i6Das3r8I";
+export const effect_hunt_prey = "Compendium.pf2e-action-support.action-support.Item.a51AN6VfpW9b4ttm";
 
 export const spellEffectMap = {
     'adaptive-ablation': ['Compendium.pf2e.spell-effects.Item.6GAztnHuQSwAp1k1'],

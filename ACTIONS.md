@@ -102,6 +102,7 @@
 - Swashbuckler's stances
 - Predictable
 - Precision
+- Hunt Prey
 
 ### Items
 

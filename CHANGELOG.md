@@ -4,6 +4,7 @@
 
 ### New feature
 - Handling of Precision Feat
+- Handling of Hunt Prey Feat
 
 ## Version 0.0.28
 
