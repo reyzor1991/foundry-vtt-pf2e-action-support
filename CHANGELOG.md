@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.29
+
+### New feature
+- Handling of Precision Feat
+
 ## Version 0.0.28
 
 ### New feature

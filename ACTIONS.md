@@ -101,6 +101,7 @@
 - Bard's stances
 - Swashbuckler's stances
 - Predictable
+- Precision
 
 ### Items
 

@@ -155,6 +155,10 @@ function hasOption(message, opt) {
     return message?.flags?.pf2e?.context?.options?.includes(opt);
 }
 
+function hasDomain(message, opt) {
+    return message?.flags?.pf2e?.context?.domains?.includes(opt);
+}
+
 function hasEffectStart(actor, eff) {
     return actor?.itemTypes?.effect?.find((c => c?.slug?.startsWith(eff)))
 }
@@ -423,7 +427,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                                 setEffectToActor(message.actor, effect_panache)
                             }
                         }
-                        effectWithActorNextTurn(message, message?.target?.actor, effect_demoralize_immunity_minutes, `(${message.actor.name})`)
+                        effectWithActorNextTurn(message, message?.target?.actor, effect_demoralize_immunity_minutes, `(${message.actor.name})`, true)
                     }
                 }
 
@@ -550,9 +554,9 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     if (applyTreatWoundsImmunity) {
                         let optName = `(${message.actor.name})`;
                         if (isActorHeldEquipment(message.actor, "battle-medics-baton") || actorFeat(message.actor, "forensic-medicine-methodology")) {//1 hour
-                            effectWithActorNextTurn(message, first.actor, effect_battle_medicine_immunity_hour, optName)
+                            effectWithActorNextTurn(message, first.actor, effect_battle_medicine_immunity_hour, optName, true)
                         } else {
-                            effectWithActorNextTurn(message, first.actor, "Compendium.pf2e.feat-effects.Item.2XEYQNZTCGpdkyR6", optName)
+                            effectWithActorNextTurn(message, first.actor, "Compendium.pf2e.feat-effects.Item.2XEYQNZTCGpdkyR6", optName, true)
                         }
                     } else {
                         ui.notifications.info(`${first.actor.name} has Battle Medicine Immunity`);
@@ -591,78 +595,93 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     }
                 }
             }
-        } else if (messageType(message, "attack-roll") && message?.item?.isMelee && anyFailureMessageOutcome(message)) {
-            deleteFeintEffects(message);
-        } else if (messageType(message, "attack-roll") && anySuccessMessageOutcome(message)) {
-            if (message?.item?.isMelee) {
-                let is = hasEffect(message?.actor, "effect-intimidating-strike")
-                if (is) {
-                    if (criticalSuccessMessageOutcome(message)) {
-                        increaseConditionForTarget(message, "frightened", 2)
-                    } else {
-                        increaseConditionForTarget(message, "frightened", 1)
+        } else if (messageType(message, "attack-roll")) {
+            if (anySuccessMessageOutcome(message)) {
+                if (message?.item?.isMelee) {
+                    let is = hasEffect(message?.actor, "effect-intimidating-strike")
+                    if (is) {
+                        if (criticalSuccessMessageOutcome(message)) {
+                            increaseConditionForTarget(message, "frightened", 2)
+                        } else {
+                            increaseConditionForTarget(message, "frightened", 1)
+                        }
+                        deleteEffectById(message.actor, is.id)
                     }
-                    deleteEffectById(message.actor, is.id)
+                }
+
+                if (
+                    hasOption(message, "item:dread-ampoule-lesser")
+                    || hasOption(message, "item:dread-ampoule-moderate")
+                    || hasOption(message, "item:dread-ampoule-greater")
+                    || hasOption(message, "item:dread-ampoule-major")
+                ) {
+                    if (successMessageOutcome(message)) {
+                        increaseConditionForTarget(message, "frightened", 1);
+                    } else {
+                        increaseConditionForTarget(message, "frightened", 2);
+                    }
+                } else if (hasOption(message, "item:tanglefoot-bag-lesser")) {
+                    setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.fYZIanbYu0Vc4JEL")
+                    if (criticalSuccessMessageOutcome(message)) {
+                        setEffectToActor(message.target.actor, effect_immobilized1_round)
+                    }
+                } else if (hasOption(message, "item:tanglefoot-bag-moderate")) {
+                    setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.MEreOgnjoRiXPEuq")
+                    if (criticalSuccessMessageOutcome(message)) {
+                        setEffectToActor(message.target.actor, effect_immobilized1_round)
+                    }
+                } else if (hasOption(message, "item:tanglefoot-bag-greater")) {
+                    setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.csA4UAD2tQq7RjT8")
+                    if (criticalSuccessMessageOutcome(message)) {
+                        setEffectToActor(message.target.actor, effect_immobilized1_round)
+                    }
+                } else if (hasOption(message, "item:tanglefoot-bag-major")) {
+                    setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.ITAFsW3dQPupJ3DW")
+                    if (criticalSuccessMessageOutcome(message)) {
+                        setEffectToActor(message.target.actor, effect_immobilized1_round)
+                    }
+                } else if (hasOption(message, "item:necrotic-bomb-lesser")) {
+                    if (criticalSuccessMessageOutcome(message)) {
+                        increaseConditionForTarget(message, "sickened", 1);
+                    }
+                } else if (hasOption(message, "item:necrotic-bomb-moderate")) {
+                    if (criticalSuccessMessageOutcome(message)) {
+                        increaseConditionForTarget(message, "sickened", 2);
+                    }
+                } else if (hasOption(message, "item:necrotic-bomb-greater")) {
+                    if (criticalSuccessMessageOutcome(message)) {
+                        increaseConditionForTarget(message, "sickened", 3);
+                    }
+                } else if (hasOption(message, "item:necrotic-bomb-major")) {
+                    if (criticalSuccessMessageOutcome(message)) {
+                        increaseConditionForTarget(message, "sickened", 4);
+                    }
+                } else if (
+                    hasOption(message, "item:boulder-seed")
+                    || hasOption(message, "item:boulder-seed-greater")
+                ) {
+                    if (criticalSuccessMessageOutcome(message)) {
+                        increaseConditionForTarget(message, "prone");
+                    }
                 }
             }
 
-            if (
-                hasOption(message, "item:dread-ampoule-lesser")
-                || hasOption(message, "item:dread-ampoule-moderate")
-                || hasOption(message, "item:dread-ampoule-greater")
-                || hasOption(message, "item:dread-ampoule-major")
-            ) {
-                if (successMessageOutcome(message)) {
-                    increaseConditionForTarget(message, "frightened", 1);
-                } else {
-                    increaseConditionForTarget(message, "frightened", 2);
+            if (anyFailureMessageOutcome(message)) {
+                if (message?.item?.isMelee) {
+                    deleteFeintEffects(message);
                 }
-            } else if (hasOption(message, "item:tanglefoot-bag-lesser")) {
-                setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.fYZIanbYu0Vc4JEL")
-                if (criticalSuccessMessageOutcome(message)) {
-                    setEffectToActor(message.target.actor, effect_immobilized1_round)
-                }
-            } else if (hasOption(message, "item:tanglefoot-bag-moderate")) {
-                setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.MEreOgnjoRiXPEuq")
-                if (criticalSuccessMessageOutcome(message)) {
-                    setEffectToActor(message.target.actor, effect_immobilized1_round)
-                }
-            } else if (hasOption(message, "item:tanglefoot-bag-greater")) {
-                setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.csA4UAD2tQq7RjT8")
-                if (criticalSuccessMessageOutcome(message)) {
-                    setEffectToActor(message.target.actor, effect_immobilized1_round)
-                }
-            } else if (hasOption(message, "item:tanglefoot-bag-major")) {
-                setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.ITAFsW3dQPupJ3DW")
-                if (criticalSuccessMessageOutcome(message)) {
-                    setEffectToActor(message.target.actor, effect_immobilized1_round)
-                }
-            } else if (hasOption(message, "item:necrotic-bomb-lesser")) {
-                if (criticalSuccessMessageOutcome(message)) {
-                    increaseConditionForTarget(message, "sickened", 1);
-                }
-            } else if (hasOption(message, "item:necrotic-bomb-moderate")) {
-                if (criticalSuccessMessageOutcome(message)) {
-                    increaseConditionForTarget(message, "sickened", 2);
-                }
-            } else if (hasOption(message, "item:necrotic-bomb-greater")) {
-                if (criticalSuccessMessageOutcome(message)) {
-                    increaseConditionForTarget(message, "sickened", 3);
-                }
-            } else if (hasOption(message, "item:necrotic-bomb-major")) {
-                if (criticalSuccessMessageOutcome(message)) {
-                    increaseConditionForTarget(message, "sickened", 4);
-                }
-            } else if (
-                hasOption(message, "item:boulder-seed")
-                || hasOption(message, "item:boulder-seed-greater")
-            ) {
-                if (criticalSuccessMessageOutcome(message)) {
-                    increaseConditionForTarget(message, "prone");
+                if (hasOption(message, "first-attack") && actorFeat(message.actor, "precision")) {
+                    message.actor.toggleRollOption("all", "first-attack")
                 }
             }
 
         } else if (messageType(message, "damage-roll")) {
+            if (hasOption(message, "first-attack")
+                && hasDomain(message, "strike-damage")
+                && actorFeat(message.actor, "precision")
+            ) {
+                message.actor.toggleRollOption("all", "first-attack")
+            }
             if (message?.item?.isMelee && hasEffect(message.actor, "effect-panache") && hasOption(message, "finisher")
                 && (hasOption(message, "agile") || hasOption(message, "finesse"))
             ) {
@@ -702,14 +721,6 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             ) {
                 effectWithActorNextTurn(message, message.target.actor, effect_enfeebled2_start_turn)
             }
-        }
-
-        if (messageType(message, "attack-roll")
-            && message?.target?.actor
-            && hasEffect(message.target.actor, "effect-flat-footed-tumble-behind")
-            && anyFailureMessageOutcome(message)
-        ) {
-            deleteEffectFromActor(message.target.actor, "effect-flat-footed-tumble-behind");
         }
 
         if (message?.flags?.pf2e?.origin?.type == "action") {
@@ -1092,7 +1103,7 @@ async function guidanceEffect(message, target) {
     }
 }
 
-async function effectWithActorNextTurn(message, target, uuid, optionalName=undefined) {
+async function effectWithActorNextTurn(message, target, uuid, optionalName=undefined, ownerIcon=false) {
     let aEffect = (await fromUuid(uuid)).toObject();
 
     aEffect.system.context = mergeObject(aEffect.system.context ?? {}, {
@@ -1107,6 +1118,9 @@ async function effectWithActorNextTurn(message, target, uuid, optionalName=undef
     aEffect.system.start.initiative = null;
     if (optionalName) {
         aEffect.name += ` ${optionalName}`
+    }
+    if (ownerIcon) {
+        aEffect.img = message.token.texture.src
     }
 
     if (hasPermissions(target)) {
@@ -1144,6 +1158,12 @@ Hooks.on('combatRound', async (combat, updateData, updateOptions) => {
             })
         })
 
+    if (actorFeat(game.combat.turns[0].actor, "precision")) {
+        if (!game.combat.turns[0].actor.rollOptions?.["all"]?.["first-attack"]) {
+            game.combat.turns[0].actor.toggleRollOption("all", "first-attack")
+        }
+    }
+
 });
 
 Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
@@ -1156,4 +1176,10 @@ Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
             deleteEffectFromActor(cc.actor, qq.slug)
         }
     })
+
+    if (actorFeat(combat?.nextCombatant.actor, "precision")) {
+        if (!combat?.nextCombatant.actor.rollOptions?.["all"]?.["first-attack"]) {
+            combat?.nextCombatant.actor.toggleRollOption("all", "first-attack")
+        }
+    }
 });
