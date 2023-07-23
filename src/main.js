@@ -261,9 +261,9 @@ function deleteEffectById(actor, effId) {
     }
 }
 
-async function setFeintEffect(message, isCrit=false) {
-    let actor = message.actor;
-    let target = message.target.actor;
+async function setFeintEffect(message, isCrit=false, isCritFail=false) {
+    let actor = isCritFail?message.target.actor:message.actor;
+    let target = isCritFail?message.actor:message.target.actor;
 
     let effect = (await fromUuid(isCrit?effect_feint_critical_success:effect_feint_success)).toObject();
     effect.flags = mergeObject(effect.flags ?? {}, { core: { sourceId: effect.id } });
@@ -285,6 +285,8 @@ async function setFeintEffect(message, isCrit=false) {
 
     aEffect.system.rules[0].predicate[0] = aEffect.system.rules[0].predicate[0].replace("attacker", actor.id);
     aEffect.system.rules[0].predicate[1] = aEffect.system.rules[0].predicate[1].replace("attacker", actor.id).replace("target", target.id)
+    aEffect.system.rules[1].predicate[1] = aEffect.system.rules[1].predicate[1].replace("attacker", actor.id);
+    aEffect.system.rules[1].predicate[2] = aEffect.system.rules[1].predicate[2].replace("attacker", actor.id).replace("target", target.id)
     aEffect.name += ` ${target.name}`
 
     if (hasPermissions(actor)) {
@@ -297,6 +299,23 @@ async function setFeintEffect(message, isCrit=false) {
         await target.createEmbeddedDocuments("Item", [effect]);
     } else {
         socketlibSocket._sendRequest("createFeintEffectOnTarget", [effect, target.uuid], 0)
+    }
+
+    if (isCrit) {
+        let qq = hasEffect(actor, "effect-pistol-twirl")
+        if (qq) {
+            deleteEffectById(actor, qq.id)
+
+            qq = qq.toObject()
+            qq.system.duration.unit = "rounds"
+            qq.system.duration.value = 1
+
+            if (hasPermissions(actor)) {
+                await actor.createEmbeddedDocuments("Item", [qq]);
+            } else {
+                socketlibSocket._sendRequest("createFeintEffectOnTarget", [qq, actor.uuid], 0)
+            }
+        }
     }
 }
 
@@ -460,13 +479,13 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                         if (criticalSuccessMessageOutcome(message)) {
                             setFeintEffect(message, true)
                         } else {
-                            setFeintEffect(message)
+                            setFeintEffect(message, false)
                         }
                         if (actorFeat(message?.actor, "fencer") && !hasEffect(message.actor, "effect-panache")){
                             setEffectToActor(message.actor, effect_panache)
                         }
                     } else if (criticalFailureMessageOutcome(message)) {
-                        message.actor.increaseCondition("flat-footed");
+                        setFeintEffect(message, true, true)
                     }
                 }
 
@@ -932,6 +951,18 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.z3uyCMBddrPK5umr")
         } else if (feat.slug == "reactive-shield") {
             (await fromUuid("Compendium.pf2e.action-macros.4hfQEMiEOBbqelAh")).execute()
+        } else if (feat.slug == "pistol-twirl") {
+            let w = message.actor.itemTypes.weapon.find(a=>a.isRanged && a.handsHeld >= 1 && parseInt(a.hands) == 1)
+
+            if (w) {
+                if (w.ammo) {
+                    setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.VQlbBXSi4o6xZ9XM")
+                } else {
+                    ui.notifications.info(`${message.actor.name} not wielding a loaded one-handed ranged weapon.`);
+                }
+            } else {
+                ui.notifications.info(`${message.actor.name} not wielding a one-handed ranged weapon.`);
+            }
         }
 
         let effs = featEffectMap[feat.slug] ?? undefined;
@@ -1086,6 +1117,7 @@ async function deleteFeintEffects(message) {
     let aef = hasEffect(message.actor, `effect-feint-success-${message.actor.id}-${message?.target?.actor.id}`)
     let tef = hasEffect(message?.target?.actor, `effect-feint-success-${message.actor.id}`)
     if (aef && tef) {
+        deleteEffectFromActor(message.actor, "effect-pistol-twirl")
         if (hasPermissions(aef)) {
             aef.delete()
         } else {
@@ -1195,6 +1227,7 @@ Hooks.on('combatRound', async (combat, updateData, updateOptions) => {
             let qq = hasEffectStart(a.actor, "effect-feint-success");
             if (qq) {
                 deleteEffectFromActor(a.actor, qq.slug)
+                deleteEffectFromActor(cc.actor, "effect-pistol-twirl")
             }
             Object.values(a?.itemTypes).flat(1).forEach(i => {
                 if (i?.system?.frequency?.per == "round" || i?.system?.frequency?.per == "turn") {
@@ -1221,6 +1254,7 @@ Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
         let qq = hasEffectStart(cc.actor, "effect-feint-success");
         if (qq) {
             deleteEffectFromActor(cc.actor, qq.slug)
+            deleteEffectFromActor(cc.actor, "effect-pistol-twirl")
         }
     })
 

@@ -103,6 +103,7 @@
 - Predictable
 - Precision
 - Hunt Prey
+- Pistol Twirl
 
 ### Items
 

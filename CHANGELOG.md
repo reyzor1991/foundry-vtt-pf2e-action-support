@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.30
+
+### New feature
+- Handling of Pistol Twirl Feat
+
 ## Version 0.0.29
 
 ### New feature
