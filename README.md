@@ -10,22 +10,16 @@
 ![](https://img.shields.io/github/downloads-pre/reyzor1991/foundry-vtt-pf2e-action-support/latest/total)
 ![](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fpf2e-action-support&colorB=4aa94a)
 
-[Version]: https://img.shields.io/badge/Version-0.0.31-yellow?style=flat-square
+[Version]: https://img.shields.io/badge/Version-0.0.32-yellow?style=flat-square
 [Version URL]: https://github.com/reyzor1991/foundry-vtt-pf2e-action-support
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W2LF8UA)
 
-### Module which automate work with actions:
-- apply conditions/effects to  targets/actor depending on the roll result
-- delete effects when times out
-
+### Module which automate work with actions
 ### Updating frequency of spell/actions(decrease when using, updating when new round begin for round frequency)
-### Handling Treat Wounds/Battle Medicine actions
-
 ### Turn on Use socket option to automatically apply effects/conditions
 
 ### List of actions:
 See [ACTIONS.md](./ACTIONS.md)
 
-
-https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/assets/6688366/bc0c87d9-0636-4568-9cb0-0337a024b3a8
+### To get more info/examples visit [WIKI](https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/wiki)

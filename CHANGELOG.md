@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.0.32
+
+### New feature
+- Handling of Life Boost Spell
+- Handling of Resist energy Spell
+- Handling of Haste Spell
+- Handling of Dimension door Spell
+- Handling of Lay on hands Spell
+
 ## Version 0.0.31
 
 ### New feature

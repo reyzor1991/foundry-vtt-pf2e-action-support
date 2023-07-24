@@ -76,6 +76,11 @@
 - Spectral Hand
 - Soothe
 - Ray of Enfeeblement
+- Life Boost
+- Resist energy
+- Haste
+- Dimension Door
+- Lay on hands (Target gets buff if it's ally, undead gets debuff if fails saving-throw)
 
 
 ### 3rd party

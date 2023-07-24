@@ -366,8 +366,8 @@ async function increaseConditionForTarget(message, condition, value=undefined) {
     }
 }
 
-async function setEffectToActorOrTarget(message, effectUUID, spellName, spellRange) {
-    if (game.user.targets.size == 0) {
+async function setEffectToActorOrTarget(message, effectUUID, spellName, spellRange, onlyTarget=false) {
+    if (game.user.targets.size == 0 && !onlyTarget) {
         setEffectToActor(message.actor, effectUUID, message?.item?.level)
     } else if (game.user.targets.size == 1) {
         if (distanceIsCorrect(message.token, game.user.targets.first(), spellRange)) {
@@ -755,6 +755,10 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 || hasOption(message, "item:ghost-charge-major")
             ) {
                 effectWithActorNextTurn(message, message.target.actor, effect_enfeebled2_start_turn)
+            } else if (hasOption(message, "item:slug:lay-on-hands")) {
+                if (game.user.targets.first()?.actor?.type == "character") {
+                    setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.lyLMiauxIVUM3oF1", "Lay on hands", getSpellRange(message.actor, message.item), true)
+                }
             }
         }
 
@@ -847,33 +851,37 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             } else if (failureMessageOutcome(message) && !hasEffect(message.actor, "effect-jinx-immunity")) {
                 setEffectToActor(message.actor, effect_jinx_clumsy1)
             }
-        } else if (hasOption(message, "item:aberrant-whispers") && !hasEffect(message.actor, "effect-aberrant-whispers-immunity")) {
+        } else if (hasOption(message, "item:slug:aberrant-whispers") && !hasEffect(message.actor, "effect-aberrant-whispers-immunity")) {
             if (failureMessageOutcome(message)) {
                 increaseConditionForActor(message, "stupefied", 2);
             } else if (criticalFailureMessageOutcome(message)) {
                 increaseConditionForActor(message, "confused");
             }
             setEffectToActor(message.actor, effect_aberrant_whispers_immunity)
+        } else if (hasOption(message, "item:slug:lay-on-hands") && hasOption(message, "self:trait:undead")) {
+            if (anyFailureMessageOutcome(message)) {
+                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.JhihziXQuoteftdd")
+            }
         } else if (
             hasOption(message, "action:thunderstone-lesser")
             || hasOption(message, "action:thunderstone-moderate")
             || hasOption(message, "action:thunderstone-greater")
             || hasOption(message, "action:thunderstone-major")
-            || hasOption(message, "item:thunderstone-lesser")
-            || hasOption(message, "item:thunderstone-moderate")
-            || hasOption(message, "item:thunderstone-greater")
-            || hasOption(message, "item:thunderstone-major")
+            || hasOption(message, "item:slug:thunderstone-lesser")
+            || hasOption(message, "item:slug:thunderstone-moderate")
+            || hasOption(message, "item:slug:thunderstone-greater")
+            || hasOption(message, "item:slug:thunderstone-major")
         ) {
             if (anyFailureMessageOutcome(message)) {
                 setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
             }
-        } else if (hasOption(message, "item:ray-of-enfeeblement")) {
+        } else if (hasOption(message, "item:slug:ray-of-enfeeblement")) {
             let isCrit=false;
             let lastMsgs = game.messages.contents.slice(-10).reverse();
             for (var m in lastMsgs) {
                 if (messageType(lastMsgs[m], "spell-attack-roll")
                     && criticalSuccessMessageOutcome(lastMsgs[m])
-                    && hasOption(lastMsgs[m], "item:ray-of-enfeeblement")
+                    && hasOption(lastMsgs[m], "item:slug:ray-of-enfeeblement")
                     && lastMsgs[m]?.target?.actor?.id == message?.actor?.id) {
                     isCrit = true;
                 }
@@ -890,10 +898,10 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             || hasOption(message, "action:skunk-bomb-moderate")
             || hasOption(message, "action:skunk-bomb-greater")
             || hasOption(message, "action:skunk-bomb-major")
-            || hasOption(message, "item:skunk-bomb-lesser")
-            || hasOption(message, "item:skunk-bomb-moderate")
-            || hasOption(message, "item:skunk-bomb-greater")
-            || hasOption(message, "item:skunk-bomb-major")
+            || hasOption(message, "item:slug:skunk-bomb-lesser")
+            || hasOption(message, "item:slug:skunk-bomb-moderate")
+            || hasOption(message, "item:slug:skunk-bomb-greater")
+            || hasOption(message, "item:slug:skunk-bomb-major")
         ) {
             if (successMessageOutcome(message)) {
                 increaseConditionForActor(message, "sickened", 1);
@@ -906,8 +914,8 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         } else if (
             hasOption(message, "action:shatterstone")
             || hasOption(message, "action:shatterstone-greater")
-            || hasOption(message, "item:shatterstone")
-            || hasOption(message, "item:shatterstone-greater")
+            || hasOption(message, "item:slug:shatterstone")
+            || hasOption(message, "item:slug:shatterstone-greater")
         ) {
             if (anyFailureMessageOutcome(message)) {
                 setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
@@ -915,8 +923,8 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         } else if (
             hasOption(message, "action:trueshape-bomb")
             || hasOption(message, "action:trueshape-bomb-greater")
-            || hasOption(message, "item:trueshape-bomb")
-            || hasOption(message, "item:trueshape-bomb-greater")
+            || hasOption(message, "item:slug:trueshape-bomb")
+            || hasOption(message, "item:slug:trueshape-bomb-greater")
         ) {
             if (anyFailureMessageOutcome(message)) {
                 deleteMorphEffects(message);
@@ -1086,6 +1094,42 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.l9HRQggofFGIxEse", "Heroism", getSpellRange(message.actor, _obj))
         } else if  (_obj.slug == "soothe") {
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.nkk4O5fyzrC0057i", "Soothe", getSpellRange(message.actor, _obj))
+        } else if  (_obj.slug == "life-boost") {
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.NQZ88IoKeMBsfjp7", "Life Boost", getSpellRange(message.actor, _obj))
+        }  else if  (_obj.slug == "dimension-door") {
+            if (message?.item?.level >= 5) {
+                setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.YUY4TqQQrxs6qLKT", message?.item?.level)
+            }
+        } else if  (_obj.slug == "haste") {
+            if (game.user.targets.size == 0) {
+                setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.U6JZ3NYNtxjXeVdE", message?.item?.level)
+            } else if (game.user.targets.size == 1 || (game.user.targets.size <= 6 && message?.item?.level >= 7) ) {
+                let spellRange = getSpellRange(message.actor, _obj);
+                game.user.targets.forEach(tt => {
+                    if (distanceIsCorrect(message.token, tt, spellRange)) {
+                        setEffectToActor(tt.actor, "Compendium.pf2e-action-support.action-support.Item.U6JZ3NYNtxjXeVdE", message?.item?.level)
+                    } else {
+                        ui.notifications.info(`${message.actor.name} chose target that not in range for Haste spell`);
+                    }
+                })
+            } else {
+                ui.notifications.info(`${message.actor.name} chose incorrect count of targets for Haste spell`);
+            }
+        } else if  (_obj.slug == "resist-energy") {
+            if (game.user.targets.size == 0) {
+                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.con2Hzt47JjpuUej", message?.item?.level)
+            } else if (game.user.targets.size == 1 || (game.user.targets.size == 2 && message?.item?.level >= 4) || (game.user.targets.size <= 5 && message?.item?.level >= 7) ) {
+                let spellRange = getSpellRange(message.actor, _obj);
+                game.user.targets.forEach(tt => {
+                    if (distanceIsCorrect(message.token, tt, spellRange)) {
+                        setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.con2Hzt47JjpuUej", message?.item?.level)
+                    } else {
+                        ui.notifications.info(`${message.actor.name} chose target that not in range for Life Boost spell`);
+                    }
+                })
+            } else {
+                ui.notifications.info(`${message.actor.name} chose incorrect count of targets for Life Boost spell`);
+            }
         } else if  (_obj.slug == "anticipate-peril") {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, 'spell-effect-anticipate-peril')) {
