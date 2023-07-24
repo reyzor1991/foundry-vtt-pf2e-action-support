@@ -380,6 +380,12 @@ async function setEffectToActorOrTarget(message, effectUUID, spellName, spellRan
     }
 }
 
+function deleteMorphEffects(message) {
+    ui.notifications.info(`${message.actor.name} fails saving-throw. Need to delete morph/polymorph effects from actor`);
+
+    deleteEffectFromActor(message.actor, "spell-effect-wild-morph")
+}
+
 function deleteEffectUntilAttackerEnd(actor, eff, attackerId, isFinal=false) {
     actor.itemTypes.effect.filter(c => eff === c.slug)
     .forEach(effect => {
@@ -853,6 +859,10 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             || hasOption(message, "action:thunderstone-moderate")
             || hasOption(message, "action:thunderstone-greater")
             || hasOption(message, "action:thunderstone-major")
+            || hasOption(message, "item:thunderstone-lesser")
+            || hasOption(message, "item:thunderstone-moderate")
+            || hasOption(message, "item:thunderstone-greater")
+            || hasOption(message, "item:thunderstone-major")
         ) {
             if (anyFailureMessageOutcome(message)) {
                 setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
@@ -880,6 +890,10 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             || hasOption(message, "action:skunk-bomb-moderate")
             || hasOption(message, "action:skunk-bomb-greater")
             || hasOption(message, "action:skunk-bomb-major")
+            || hasOption(message, "item:skunk-bomb-lesser")
+            || hasOption(message, "item:skunk-bomb-moderate")
+            || hasOption(message, "item:skunk-bomb-greater")
+            || hasOption(message, "item:skunk-bomb-major")
         ) {
             if (successMessageOutcome(message)) {
                 increaseConditionForActor(message, "sickened", 1);
@@ -888,6 +902,59 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             } else if (criticalFailureMessageOutcome(message)) {
                 setEffectToActor(message.actor, effect_skunk_bomb_cfail)
                 setEffectToActor(message.actor, effect_blinded1_round)
+            }
+        } else if (
+            hasOption(message, "action:shatterstone")
+            || hasOption(message, "action:shatterstone-greater")
+            || hasOption(message, "item:shatterstone")
+            || hasOption(message, "item:shatterstone-greater")
+        ) {
+            if (anyFailureMessageOutcome(message)) {
+                setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
+            }
+        } else if (
+            hasOption(message, "action:trueshape-bomb")
+            || hasOption(message, "action:trueshape-bomb-greater")
+            || hasOption(message, "item:trueshape-bomb")
+            || hasOption(message, "item:trueshape-bomb-greater")
+        ) {
+            if (anyFailureMessageOutcome(message)) {
+                deleteMorphEffects(message);
+            }
+        } else if (hasOption(message, "alchemical") && hasOption(message, "bomb")) {
+            if (message?.flags?.pf2e?.context?.dc?.label == "Thunderstone (Lesser) DC"
+                || message?.flags?.pf2e?.context?.dc?.label == "Thunderstone (Moderate) DC"
+                || message?.flags?.pf2e?.context?.dc?.label == "Thunderstone (Greater) DC"
+                || message?.flags?.pf2e?.context?.dc?.label == "Thunderstone (Major) DC"
+            ) {
+                if (anyFailureMessageOutcome(message)) {
+                    setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
+                }
+            } else if (message?.flags?.pf2e?.context?.dc?.label == "Skunk Bomb (Lesser) DC"
+                || message?.flags?.pf2e?.context?.dc?.label == "Skunk Bomb (Moderate) DC"
+                || message?.flags?.pf2e?.context?.dc?.label == "Skunk Bomb (Greater) DC"
+                || message?.flags?.pf2e?.context?.dc?.label == "Skunk Bomb (Major) DC"
+            ) {
+                if (successMessageOutcome(message)) {
+                    increaseConditionForActor(message, "sickened", 1);
+                } else if (failureMessageOutcome(message)) {
+                    setEffectToActor(message.actor, effect_skunk_bomb_fail)
+                } else if (criticalFailureMessageOutcome(message)) {
+                    setEffectToActor(message.actor, effect_skunk_bomb_cfail)
+                    setEffectToActor(message.actor, effect_blinded1_round)
+                }
+            } else if (message?.flags?.pf2e?.context?.dc?.label == "Shatterstone DC"
+                || message?.flags?.pf2e?.context?.dc?.label == "Shatterstone (Greater) DC"
+            ) {
+                if (anyFailureMessageOutcome(message)) {
+                    setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
+                }
+            } else if (message?.flags?.pf2e?.context?.dc?.label == "Trueshape Bomb DC"
+                || message?.flags?.pf2e?.context?.dc?.label == "Trueshape Bomb (Greater) DC"
+            ) {
+                if (anyFailureMessageOutcome(message)) {
+                    deleteMorphEffects(message);
+                }
             }
         }
     }

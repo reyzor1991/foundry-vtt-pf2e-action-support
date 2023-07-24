@@ -116,3 +116,5 @@
 - Skunk Bomb
 - Necrotic Bomb
 - Boulder Seed
+- Shatterstone
+- Trueshape Bomb (Delete Wild Morph and notification)

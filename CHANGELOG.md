@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.0.31
+
+### New feature
+- Handling of Shatterstone (Add condition when fail)
+- Handling of Trueshape Bomb (Delete Wild Morph and notification)
+
 ## Version 0.0.30
 
 ### New feature
