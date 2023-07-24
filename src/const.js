@@ -42,6 +42,7 @@ export const spellEffectMap = {
     'armor-of-bones': ['Compendium.pf2e.spell-effects.Item.6BjslHgY01cNbKp5'],
     'athletic-rush': ['Compendium.pf2e.spell-effects.Item.57lnrCzGUcNUBP2O'],
     'true-strike': ['Compendium.pf2e.spell-effects.Item.fpGDAz2v5PG0zUSl'],
+    'gravity-weapon': ['Compendium.pf2e.spell-effects.Item.tNjimcyUwn8afeH6'],
 }
 export const featEffectMap = {
     "smite-evil":"Compendium.pf2e.feat-effects.Item.AlnxieIRjqNqsdVu",

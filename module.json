@@ -2,7 +2,7 @@
   "id": "pf2e-action-support",
   "title": "PF2e Action Support",
   "description": "PF2e Action Support",
-  "version": "0.0.32",
+  "version": "0.0.33",
   "authors": [
     {
       "name": "Reyzor",
@@ -24,6 +24,19 @@
       "private": false,
       "type": "Item",
       "flags": {}
+    },
+    {
+        "label": "Action Support Macros",
+        "name": "action-support-macros",
+        "path": "packs/action-support-macros.db",
+        "system": "pf2e",
+        "private": false,
+        "type": "Macro",
+        "ownership": {
+            "PLAYER": "OBSERVER",
+            "ASSISTANT": "OWNER"
+        },
+        "flags": {}
     }
   ],
   "socket": true,

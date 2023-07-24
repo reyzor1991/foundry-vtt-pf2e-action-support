@@ -1,5 +1,19 @@
 # Changelog
 
+## Version 0.0.33
+
+### New feature
+- Checking fear, mental or emotional immunity when use demoralize action
+- Handling of Gravity Weapon Spell
+- Handling of Aberrant Form Spell
+- Handling of Adapt Self Spell
+- Handling of Aerial Form Spell
+- Handling of Angel Form Spell
+- Handling of Animal Form Spell
+- Handling of Animal Feature Spell
+- Handling of Ant Haul Spell
+- Summoner-Eidolon shared HP bar (tested feature) [wiki](https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/wiki/Eidolon-helper)
+
 ## Version 0.0.32
 
 ### New feature

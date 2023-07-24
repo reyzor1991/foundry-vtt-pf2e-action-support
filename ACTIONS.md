@@ -75,12 +75,24 @@
 - Death Ward to target
 - Spectral Hand
 - Soothe
+- Countermeasure
+- Armor of Bones
+- Athletic Rush
+- Augment Summoning
 - Ray of Enfeeblement
 - Life Boost
 - Resist energy
 - Haste
 - Dimension Door
 - Lay on hands (Target gets buff if it's ally, undead gets debuff if fails saving-throw)
+- Gravity Weapon
+- Aberrant Form
+- Adapt Self
+- Aerial Form
+- Angel Form
+- Animal Form
+- Animal Feature
+- Ant Haul
 
 
 ### 3rd party
