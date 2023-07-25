@@ -94,6 +94,11 @@
 - Animal Feature
 - Ant Haul
 - Agonizing Despair
+- Allegro
+- Ancestral Touch
+- Animus Mine
+- Apex Companion
+- Aqueous Blast
 
 
 ### 3rd party

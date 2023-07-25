@@ -706,6 +706,10 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     }
                 }
             }
+        } else if (messageType(message, "spell-attack-roll")) {
+            if (hasOption(message, "item:slug:aqueous-blast") && criticalSuccessMessageOutcome(message)) {
+                increaseConditionForTarget(message, "prone");
+            }
         } else if (messageType(message, "attack-roll")) {
             if (anySuccessMessageOutcome(message)) {
                 if (message?.item?.isMelee) {
@@ -894,6 +898,8 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                         }
                     });
                 }
+            } else if (_obj.slug == "allegro") {
+                setEffectToActorOrTarget(message, effect_allegro, "Allegro", getSpellRange(message.actor, _obj))
             }
         }
     } else {
@@ -939,6 +945,16 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 increaseConditionForActor(message, "frightened", 2);
             } else if (criticalFailureMessageOutcome(message)) {
                 increaseConditionForActor(message, "frightened", 3);
+            }
+        } else if (hasOption(message, 'item:slug:ancestral-touch')) {
+            if (failureMessageOutcome(message)) {
+                increaseConditionForActor(message, "frightened", 1);
+            } else if (criticalFailureMessageOutcome(message)) {
+                increaseConditionForActor(message, "frightened", 2);
+            }
+        } else if (hasOption(message, 'item:slug:animus-mine')) {
+            if (anyFailureMessageOutcome(message)) {
+                increaseConditionForActor(message, "stunned", 1);
             }
         } else if (hasOption(message, "item:slug:aberrant-whispers") && !hasEffect(message.actor, "effect-aberrant-whispers-immunity")) {
             if (failureMessageOutcome(message)) {
@@ -1187,6 +1203,8 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.nkk4O5fyzrC0057i", "Soothe", getSpellRange(message.actor, _obj))
         } else if  (_obj.slug == "life-boost") {
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.NQZ88IoKeMBsfjp7", "Life Boost", getSpellRange(message.actor, _obj))
+        } else if  (_obj.slug == "apex-companion") {
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.NXzo2kdgVixIZ2T1", "Apex Companion", getSpellRange(message.actor, _obj), true)
         } else if  (_obj.slug == "aberrant-form") {
             setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.iOBUgipEjgu7jA5k", message?.item?.level)
         } else if  (_obj.slug == "adapt-self") {

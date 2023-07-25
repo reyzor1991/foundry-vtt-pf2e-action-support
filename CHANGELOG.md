@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.0.35
+
+### New feature
+- Handling of Allegro Spell
+- Handling of Ancestral Touch Spell
+- Handling of Animus Mine Spell
+- Handling of Apex Companion Spell
+- Handling of Aqueous Blast Spell
+
 ## Version 0.0.34
 
 ### New feature
