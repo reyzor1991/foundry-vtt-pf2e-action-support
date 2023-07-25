@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.34
+
+### New feature
+- Handling of Agonizing Despair Spell
+
 ## Version 0.0.33
 
 ### New feature

@@ -93,6 +93,7 @@
 - Animal Form
 - Animal Feature
 - Ant Haul
+- Agonizing Despair
 
 
 ### 3rd party

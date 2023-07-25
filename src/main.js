@@ -52,6 +52,13 @@ Hooks.once("init", () => {
         default: true,
         type: Boolean,
     });
+    game.settings.register("pf2e-action-support", "sharedHP", {
+        name: "Summoner-Eidolon shared HP",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
 
     let originGetRollContext = CONFIG.Actor.documentClass.prototype.getRollContext;
     CONFIG.Actor.documentClass.prototype.getRollContext = async function(prefix) {
@@ -925,6 +932,14 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             } else if (failureMessageOutcome(message) && !hasEffect(message.actor, "effect-jinx-immunity")) {
                 setEffectToActor(message.actor, effect_jinx_clumsy1)
             }
+        } else if (hasOption(message, 'item:slug:agonizing-despair')) {
+            if (anySuccessMessageOutcome(message)) {
+                increaseConditionForActor(message, "frightened", 1);
+            } else if (failureMessageOutcome(message)) {
+                increaseConditionForActor(message, "frightened", 2);
+            } else if (criticalFailureMessageOutcome(message)) {
+                increaseConditionForActor(message, "frightened", 3);
+            }
         } else if (hasOption(message, "item:slug:aberrant-whispers") && !hasEffect(message.actor, "effect-aberrant-whispers-immunity")) {
             if (failureMessageOutcome(message)) {
                 increaseConditionForActor(message, "stupefied", 2);
@@ -1475,24 +1490,33 @@ Hooks.on('pf2e.restForTheNight', async (actor) => {
     }
 })
 
+async function updateActorSum(a, data) {
+    await a.update({
+        "system.attributes.hp.value": data.system.attributes.hp.value
+    }, { render: false });
+    await a.sheet.render();
+}
+
 Hooks.on('preUpdateActor', async (actor, data, diff, id) => {
-    if (diff?.damageTaken) {
+    if (!game.settings.get("pf2e-action-support", "sharedHP")) {
+        return
+    }
+    if (diff?.damageTaken && diff?.render) {
         if ("character" == actor?.type && "eidolon" == actor?.class?.slug) {
             let f = actorFeat(actor, "summoner-hp")
             if (f && f?.flags?.summoner) {
                 let as = await fromUuid(f.flags.summoner);
-                as.update({
+                await as.update({
                     "system.attributes.hp.value": data.system.attributes.hp.value
-                })
+                }, { render: false })
+                await as.sheet.render();
             }
         } else if ("character" == actor?.type && "summoner" == actor?.class?.slug) {
             game.scenes.current.tokens.filter(a=>a?.actor?.class?.slug == "eidolon").map(a=>a.actor)
             .forEach(a => {
                 let f = actorFeat(a, "summoner-hp")
                 if (f && f.flags.summoner == actor.uuid) {
-                    a.update({
-                        "system.attributes.hp.value": data.system.attributes.hp.value
-                    })
+                    updateActorSum(a, data)
                 }
             })
         }
