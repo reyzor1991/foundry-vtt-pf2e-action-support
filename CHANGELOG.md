@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.0.36
+
+### New feature
+- Handling of Retributive Strike Reaction
+- Handling of Liberating Step Reaction
+
 ## Version 0.0.35
 
 ### New feature

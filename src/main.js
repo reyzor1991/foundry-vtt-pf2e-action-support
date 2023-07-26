@@ -26,6 +26,7 @@ async function setSummonerHP(actor) {
     }
 
     await game.user.targets.first().actor.createEmbeddedDocuments("Item", [feat]);
+    actor.setFlag("pf2e-action-support", "eidolon", game.user.targets.first().actor.uuid);
 }
 
 Hooks.once("init", () => {
@@ -422,6 +423,14 @@ async function setEffectToActorOrTarget(message, effectUUID, spellName, spellRan
         }
     } else {
         ui.notifications.info(`${message.actor.name} chose incorrect count of targets for ${spellName} spell`);
+    }
+}
+
+async function setEffectToTarget(message, effectUUID) {
+    if (game.user.targets.size == 1) {
+        setEffectToActor(game.user.targets.first().actor, effectUUID)
+    } else {
+        ui.notifications.info(`${message.actor.name} chose incorrect count of targets for effect`);
     }
 }
 
@@ -867,6 +876,14 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 setEffectToActor(message.actor, "Compendium.botanical-bestiary.effects.AwLeak2GPIH6E4b5")
             } else if (_obj?.sourceId ==  "Item.PUAigKSydzY9Ii10") {
                 setEffectToActor(message.actor, "Compendium.botanical-bestiary.effects.DwxpHXwlTPuXq2wT")
+            } else if (_obj?.slug ==  "retributive-strike") {
+                setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.DawVHfoPKbPJsz4k")
+            } else if (_obj?.slug ==  "liberating-step") {
+                if (game.user.targets.size == 1) {
+                    setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.DawVHfoPKbPJsz4k")
+                } else {
+                    ui.notifications.info(`${message.actor.name} chose incorrect count of targets for effect`);
+                }
             }
         } else if (message?.flags?.pf2e?.origin?.type == "spell") {
             let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
@@ -1496,47 +1513,56 @@ Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
 
 Hooks.on('pf2e.restForTheNight', async (actor) => {
     if ("character" == actor?.type && "summoner" == actor?.class?.slug) {
-        game.scenes.current.tokens.filter(a=>a?.actor?.class?.slug == "eidolon").map(a=>a.actor)
+        let ei = actor.getFlag("pf2e-action-support", "eidolon");
+        if (ei) {
+            (await fromUuid(ei)).update({
+                "system.attributes.hp.value": actor.system.attributes.hp.value
+            }, { "noHook": true });
+        } else {
+            game.scenes.current.tokens.filter(a=>a?.actor?.class?.slug == "eidolon").map(a=>a.actor)
             .forEach(a => {
                 let f = actorFeat(a, "summoner-hp")
                 if (f && f.flags.summoner == actor.uuid) {
                     a.update({
                         "system.attributes.hp.value": actor.system.attributes.hp.value
-                    })
+                    }, { "noHook": true })
                 }
             })
+        }
     }
 })
-
-async function updateActorSum(a, data) {
-    await a.update({
-        "system.attributes.hp.value": data.system.attributes.hp.value
-    }, { render: false });
-    await a.sheet.render();
-}
 
 Hooks.on('preUpdateActor', async (actor, data, diff, id) => {
     if (!game.settings.get("pf2e-action-support", "sharedHP")) {
         return
     }
-    if (diff?.damageTaken && diff?.render) {
+    if (diff?.damageTaken) {
         if ("character" == actor?.type && "eidolon" == actor?.class?.slug) {
             let f = actorFeat(actor, "summoner-hp")
             if (f && f?.flags?.summoner) {
                 let as = await fromUuid(f.flags.summoner);
                 await as.update({
                     "system.attributes.hp.value": data.system.attributes.hp.value
-                }, { render: false })
-                await as.sheet.render();
+                }, { "noHook": true })
             }
         } else if ("character" == actor?.type && "summoner" == actor?.class?.slug) {
-            game.scenes.current.tokens.filter(a=>a?.actor?.class?.slug == "eidolon").map(a=>a.actor)
-            .forEach(a => {
-                let f = actorFeat(a, "summoner-hp")
-                if (f && f.flags.summoner == actor.uuid) {
-                    updateActorSum(a, data)
-                }
-            })
+            let ei = actor.getFlag("pf2e-action-support", "eidolon");
+            if (ei) {
+                (await fromUuid(ei)).update({
+                    "system.attributes.hp.value": data.system.attributes.hp.value
+                }, { "noHook": true });
+            } else {
+                game.scenes.current.tokens.filter(a=>a?.actor?.class?.slug == "eidolon").map(a=>a.actor)
+                .forEach(a => {
+                    let f = actorFeat(a, "summoner-hp")
+                    if (f && f.flags.summoner == actor.uuid) {
+                        a.update({
+                            "system.attributes.hp.value": data.system.attributes.hp.value
+                        }, { "noHook": true });
+                    }
+                })
+            }
+
         }
     }
 })

@@ -41,6 +41,7 @@
 - Grab
 - Treat Disease
 - Tumble Through
+- Retributive Strike
 
 
 ### Spells
