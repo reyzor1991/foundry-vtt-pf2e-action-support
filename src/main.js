@@ -1,5 +1,3 @@
-import "./const.js";
-
 export var socketlibSocket = undefined;
 
 async function setSummonerHP(actor) {
@@ -11,26 +9,48 @@ async function setSummonerHP(actor) {
         ui.notifications.info(`Need to select Actor`);
         return
     }
+    if ("summoner" != actor?.class?.slug) {
+        ui.notifications.info(`Actor should be Summoner`);
+        return
+    }
     if (game.user.targets.size != 1) {
         ui.notifications.info(`Need to select 1 token of eidolon as target to set HP of summoner`);
         return
     }
-    let sHP = actor.system.attributes.hp.max;
-    let feat = (await fromUuid("Compendium.pf2e-action-support.action-support.Item.LnCPBh2F5tiDprR0")).toObject();
+    var target = game.user.targets.first().actor;
+    if ("eidolon" != target?.class?.slug) {
+        ui.notifications.info(`Need to select 1 token of eidolon as target to set HP of summoner`);
+        return
+    }
+
+    var sHP = actor.system.attributes.hp.max;
+    var feat = (await fromUuid("Compendium.pf2e-action-support.action-support.Item.LnCPBh2F5tiDprR0")).toObject();
     feat.system.rules[0].value = sHP;
     feat.flags.summoner = actor.uuid
 
-    let curFeat = actorFeat(game.user.targets.first().actor, "summoner-hp");
+    var curFeat = actorFeat(target, "summoner-hp");
     if (curFeat) {
         curFeat.delete()
     }
 
-    await game.user.targets.first().actor.createEmbeddedDocuments("Item", [feat]);
-    actor.setFlag("pf2e-action-support", "eidolon", game.user.targets.first().actor.uuid);
+    await target.createEmbeddedDocuments("Item", [feat]);
+    actor.setFlag(moduleName, "eidolon", target.uuid);
+
+    target.update({
+        "system.attributes.hp.value": actor.system.attributes.hp.value,
+        "system.attributes.hp.temp": actor.system.attributes.hp.temp,
+    }, { "noHook": true })
 }
 
 Hooks.once("init", () => {
-    game.settings.register("pf2e-action-support", "decreaseFrequency", {
+    game.settings.register(moduleName, "useHomebrew", {
+        name: "Use Homebrew",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
+    game.settings.register(moduleName, "decreaseFrequency", {
         name: "Decrease Frequency of Action",
         hint: "Decrease frequency of actions when posted in chat (useful for actions that have a once per day/turn/round)",
         scope: "world",
@@ -38,7 +58,7 @@ Hooks.once("init", () => {
         default: false,
         type: Boolean,
     });
-    game.settings.register("pf2e-action-support", "useSocket", {
+    game.settings.register(moduleName, "useSocket", {
         name: "Use socket",
         hint: "Enable this setting to be able to drop effects on creatures they dont own",
         scope: "world",
@@ -46,14 +66,14 @@ Hooks.once("init", () => {
         default: false,
         type: Boolean,
     });
-    game.settings.register("pf2e-action-support", "deleteScouting", {
+    game.settings.register(moduleName, "deleteScouting", {
         name: "Delete Scouting effect when combat ends",
         scope: "world",
         config: true,
         default: true,
         type: Boolean,
     });
-    game.settings.register("pf2e-action-support", "sharedHP", {
+    game.settings.register(moduleName, "sharedHP", {
         name: "Summoner-Eidolon shared HP",
         scope: "world",
         config: true,
@@ -61,9 +81,11 @@ Hooks.once("init", () => {
         type: Boolean,
     });
 
-    let originGetRollContext = CONFIG.Actor.documentClass.prototype.getRollContext;
+    PF2eActionSupportHomebrewSettings.init()
+
+    var originGetRollContext = CONFIG.Actor.documentClass.prototype.getRollContext;
     CONFIG.Actor.documentClass.prototype.getRollContext = async function(prefix) {
-        let r = await originGetRollContext.call(this, prefix);
+        var r = await originGetRollContext.call(this, prefix);
         if (r.options.has("first-attack") && !r.options.has(`target:effect:hunt-prey-${this.id}`)) {
             r.options.delete("first-attack");
         }
@@ -75,7 +97,6 @@ Hooks.once("init", () => {
     })
 });
 
-
 Hooks.on('deleteItem', async (effect, data, id) => {
     if (game.user.isGM) {
         if (effect.slug == "spell-effect-guidance" && !hasEffect(effect.actor, "effect-guidance-immunity")) {
@@ -85,8 +106,8 @@ Hooks.on('deleteItem', async (effect, data, id) => {
 });
 
 async function createEffects(data) {
-    let actor = await fromUuid(data.actorUuid);
-    let source = (await fromUuid(data.eff)).toObject();
+    var actor = await fromUuid(data.actorUuid);
+    var source = (await fromUuid(data.eff)).toObject();
     source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: data.eff } });
     if (data.level) {
         source.system.level = {'value': data.level};
@@ -95,8 +116,8 @@ async function createEffects(data) {
 }
 
 async function deleteEffects(data) {
-    let actor = await fromUuid(data.actorUuid);
-    let effect = actor.itemTypes.effect.find(c => data.eff === c.slug)
+    var actor = await fromUuid(data.actorUuid);
+    var effect = actor.itemTypes.effect.find(c => data.eff === c.slug)
     actor.deleteEmbeddedDocuments("Item", [effect._id])
 }
 
@@ -106,21 +127,21 @@ async function updateObjects(data) {
 }
 
 async function deleteEffectsById(data) {
-    let actor = await fromUuid(data.actorUuid);
-    let effect = actor.itemTypes.effect.find(c => data.effId === c.id)
+    var actor = await fromUuid(data.actorUuid);
+    var effect = actor.itemTypes.effect.find(c => data.effId === c.id)
     actor.deleteEmbeddedDocuments("Item", [effect._id])
 }
 
 async function increaseConditions(data) {
-    let actor = await fromUuid(data.actorUuid);
-    let valueObj = data?.value ? {'value': data?.value } : {}
+    var actor = await fromUuid(data.actorUuid);
+    var valueObj = data?.value ? {'value': data?.value } : {}
 
     actor.increaseCondition(data.condition, valueObj);
 }
 
 async function applyDamages(data) {
-    let actor = await fromUuid(data.actorUuid);
-    let token = await fromUuid(data.tokenUuid);
+    var actor = await fromUuid(data.actorUuid);
+    var token = await fromUuid(data.tokenUuid);
 
     applyDamage(actor, token, data.formula);
 }
@@ -137,9 +158,9 @@ function isActorHeldEquipment(actor, item) {
     return actor?.itemTypes?.equipment?.find(a=>a.isHeld && a.slug == item)
 }
 
-let setupSocket = () => {
+var setupSocket = () => {
   if (globalThis.socketlib) {
-      socketlibSocket = globalThis.socketlib.registerModule("pf2e-action-support");
+      socketlibSocket = globalThis.socketlib.registerModule(moduleName);
       socketlibSocket.register("createEffects", createEffects);
       socketlibSocket.register("deleteEffects", deleteEffects);
       socketlibSocket.register("deleteEffectsById", deleteEffectsById);
@@ -158,13 +179,11 @@ Hooks.once('setup', function () {
 })
 
 async function _socketDeleteEffect(targetId) {
-    let target = await fromUuid(targetId);
-    target.delete()
+    (await fromUuid(targetId)).delete()
 }
 
 async function _socketCreateFeintEffectOnTarget(effect, targetId) {
-    let target = await fromUuid(targetId);
-    await target.createEmbeddedDocuments("Item", [effect]);
+    await (await fromUuid(targetId)).createEmbeddedDocuments("Item", [effect]);
 }
 
 function failureMessageOutcome(message) {
@@ -236,12 +255,12 @@ function distanceIsCorrect(firstT, secondT, distance) {
 }
 
 function spellRange(spell) {
-    let s = spell?.system?.range?.value?.match(/\d+/g)
+    var s = spell?.system?.range?.value?.match(/\d+/g)
     return s ? parseInt(s[0]) : 0;
 }
 
 function getSpellRange(actor, spell) {
-    let s = spellRange(spell)
+    var s = spellRange(spell)
     if (hasEffect(actor, "effect-spectral-hand")) {
         s = s > 120 ? s : 120;
     } else if (hasEffect(actor, "effect-reach-spell")) {
@@ -251,10 +270,10 @@ function getSpellRange(actor, spell) {
 }
 
 async function treatWounds(message, target) {
-    let _bm = hasEffect(target, "effect-treat-wounds-immunity-minutes")
-    let _bm1 = hasEffect(target, "effect-treat-wounds-immunity")
+    var _bm = hasEffect(target, "effect-treat-wounds-immunity-minutes")
+    var _bm1 = hasEffect(target, "effect-treat-wounds-immunity")
 
-    let applyTreatWoundsImmunity = _bm || _bm1 ? false : true;
+    var applyTreatWoundsImmunity = _bm || _bm1 ? false : true;
 
     if (applyTreatWoundsImmunity) {
         if (actorFeat(message.actor, "continual-recovery")) {//10 min
@@ -286,11 +305,11 @@ function sendGMNotification(content) {
 }
 
 function deleteEffectFromActor(actor, eff) {
-    let effect = actor.itemTypes.effect.find(c => eff === c.slug)
+    var effect = actor.itemTypes.effect.find(c => eff === c.slug)
     if (!effect) {return}
     if (hasPermissions(actor)) {
         actor.deleteEmbeddedDocuments("Item", [effect._id])
-    } else if (game.settings.get("pf2e-action-support", "useSocket")) {
+    } else if (game.settings.get(moduleName, "useSocket")) {
         socketlibSocket._sendRequest("deleteEffects", [{'actorUuid': actor.uuid, 'eff': eff}], 0)
     } else {
         sendNotificationChatMessage(`Need delete ${effect.name} effect from ${actor.name}`);
@@ -300,7 +319,7 @@ function deleteEffectFromActor(actor, eff) {
 function deleteEffectById(actor, effId) {
     if (hasPermissions(actor)) {
         actor.deleteEmbeddedDocuments("Item", [effId])
-    } else if (game.settings.get("pf2e-action-support", "useSocket")) {
+    } else if (game.settings.get(moduleName, "useSocket")) {
         socketlibSocket._sendRequest("deleteEffectsById", [{'actorUuid': actor.uuid, 'effId': effId}], 0)
     } else {
         sendNotificationChatMessage(`Need delete effect with id ${effId} from ${actor.name}`);
@@ -308,10 +327,10 @@ function deleteEffectById(actor, effId) {
 }
 
 async function setFeintEffect(message, isCrit=false, isCritFail=false) {
-    let actor = isCritFail?message.target.actor:message.actor;
-    let target = isCritFail?message.actor:message.target.actor;
+    var actor = isCritFail?message.target.actor:message.actor;
+    var target = isCritFail?message.actor:message.target.actor;
 
-    let effect = (await fromUuid(isCrit?effect_feint_critical_success:effect_feint_success)).toObject();
+    var effect = (await fromUuid(isCrit?effect_feint_critical_success:effect_feint_success)).toObject();
     effect.flags = mergeObject(effect.flags ?? {}, { core: { sourceId: effect.id } });
     effect.system.slug = effect.system.slug.replace("attacker", actor.id)
     effect.name += ` ${actor.name}`
@@ -326,7 +345,7 @@ async function setFeintEffect(message, isCrit=false, isCritFail=false) {
     });
     effect.system.start.initiative = null;
 
-    let aEffect = (await fromUuid(isCrit?effect_feint_crit_success_attacker_target:effect_feint_success_attacker_target)).toObject();
+    var aEffect = (await fromUuid(isCrit?effect_feint_crit_success_attacker_target:effect_feint_success_attacker_target)).toObject();
     aEffect.system.slug = aEffect.system.slug.replace("attacker", actor.id).replace("target", target.id)
 
     aEffect.system.rules[0].predicate[0] = aEffect.system.rules[0].predicate[0].replace("attacker", actor.id);
@@ -348,7 +367,7 @@ async function setFeintEffect(message, isCrit=false, isCritFail=false) {
     }
 
     if (isCrit) {
-        let qq = hasEffect(actor, "effect-pistol-twirl")
+        var qq = hasEffect(actor, "effect-pistol-twirl")
         if (qq) {
             deleteEffectById(actor, qq.id)
 
@@ -367,8 +386,8 @@ async function setFeintEffect(message, isCrit=false, isCritFail=false) {
 
 async function setEffectToActor(actor, eff, level=undefined) {
     if (hasPermissions(actor)) {
-        let source = await fromUuid(eff)
-        let withBa = hasEffectBySourceId(actor, eff);
+        var source = await fromUuid(eff)
+        var withBa = hasEffectBySourceId(actor, eff);
         if (withBa && withBa.system.badge) {
             withBa.update({
                 "system.badge.value": withBa.system.badge.value += 1
@@ -381,7 +400,7 @@ async function setEffectToActor(actor, eff, level=undefined) {
             }
             await actor.createEmbeddedDocuments("Item", [source]);
         }
-    } else if (game.settings.get("pf2e-action-support", "useSocket")) {
+    } else if (game.settings.get(moduleName, "useSocket")) {
         socketlibSocket._sendRequest("createEffects", [{'actorUuid': actor.uuid, 'eff': eff, "level": level}], 0)
     } else {
         sendNotificationChatMessage(`Need add @UUID[${eff}] effect to ${actor.name}`);
@@ -389,11 +408,11 @@ async function setEffectToActor(actor, eff, level=undefined) {
 }
 
 async function increaseConditionForActor(message, condition, value=undefined) {
-    let valueObj = value ? {'value': value } : {}
+    var valueObj = value ? {'value': value } : {}
 
     if (hasPermissions(message.actor)) {
         message.actor.increaseCondition(condition, valueObj);
-    } else if (game.settings.get("pf2e-action-support", "useSocket")) {
+    } else if (game.settings.get(moduleName, "useSocket")) {
         socketlibSocket._sendRequest("increaseConditions", [{'actorUuid': message.actor.uuid, 'value': value, 'condition': condition}], 0)
     } else {
         sendNotificationChatMessage(`Set condition ${condition} ${value??''} to ${message.actor.name}`);
@@ -401,11 +420,11 @@ async function increaseConditionForActor(message, condition, value=undefined) {
 }
 
 async function increaseConditionForTarget(message, condition, value=undefined) {
-    let valueObj = value ? {'value': value } : {}
+    var valueObj = value ? {'value': value } : {}
 
     if (hasPermissions(message.target.actor)) {
         message.target.actor.increaseCondition(condition, valueObj);
-    } else if (game.settings.get("pf2e-action-support", "useSocket")) {
+    } else if (game.settings.get(moduleName, "useSocket")) {
         socketlibSocket._sendRequest("increaseConditions", [{'actorUuid': message.target.actor.uuid, 'value': value, 'condition': condition}], 0)
     } else {
         sendNotificationChatMessage(`Set condition ${condition} ${value??''} to ${message.target.actor.name}`);
@@ -437,7 +456,7 @@ async function setEffectToTarget(message, effectUUID) {
 function deleteMorphEffects(message) {
     ui.notifications.info(`${message.actor.name} fails saving-throw. Need to delete morph/polymorph effects from actor`);
 
-    let pol = ["spell-effect-wild-morph", "spell-effect-juvenile-companion",
+    var pol = ["spell-effect-wild-morph", "spell-effect-juvenile-companion",
         "spell-effect-pest-form", "spell-effect-wild-shape", "spell-effect-enlarge", "spell-effect-enlarge-heightened-4th",
          "spell-effect-shrink", "spell-effect-summoners-visage", "spell-effect-ooze-form-ochre-jelly", "spell-effect-elephant-form",
          "spell-effect-gaseous-form", "spell-effect-swarm-form", "spell-effect-unusual-anatomy",
@@ -448,7 +467,7 @@ function deleteMorphEffects(message) {
          "spell-effect-evolution-surge", "spell-effect-gluttons-jaw", "spell-effect-embrace-the-pit", "spell-effect-moon-frenzy",
          "spell-effect-divine-vessel", "spell-effect-divine-vessel-9th-level"];
 
-    let polAnim = ["spell-effect-aberrant-form-", "spell-effect-animal-form-", "spell-effect-insect-form-",
+    var polAnim = ["spell-effect-aberrant-form-", "spell-effect-animal-form-", "spell-effect-insect-form-",
      "spell-effect-ooze-form-", "spell-effect-aerial-form-", "spell-effect-bestial-curse-", "spell-effect-dinosaur-form-",
      "spell-effect-fey-form-", "spell-effect-elemental-form-", "spell-effect-plant-form-", "spell-effect-daemon-form-",
      "spell-effect-devil-form-", "spell-effect-dragon-form-", "spell-effect-tempest-form-", "spell-effect-angel-form-",
@@ -469,7 +488,7 @@ function deleteEffectUntilAttackerEnd(actor, eff, attackerId, isFinal=false) {
             if (effect.flags["attacker-turn"] == 1 || isFinal) {
                 deleteEffectById(actor, effect.id)
             } else {
-                let data = {"flags.attacker-turn": effect.flags["attacker-turn"] - 1};
+                var data = {"flags.attacker-turn": effect.flags["attacker-turn"] - 1};
                 if (hasPermissions(actor)) {
                     effect.update(data);
                 }else {
@@ -486,8 +505,8 @@ function immunities(actor) {
 
 async function applyDamage(actor, token, formula) {
     if (hasPermissions(actor)) {
-        let DamageRoll = CONFIG.Dice.rolls.find((r) => r.name === "DamageRoll")
-        let roll = new DamageRoll(formula);
+        var DamageRoll = CONFIG.Dice.rolls.find((r) => r.name === "DamageRoll")
+        var roll = new DamageRoll(formula);
         await roll.evaluate({async: true});
         actor.applyDamage({damage:roll, token:token})
         roll.toMessage({speaker: {alias: actor.prototypeToken.name}});
@@ -502,7 +521,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         if ("appliedDamage" in message?.flags?.pf2e && !message?.flags?.pf2e?.appliedDamage?.isHealing) {
             //maybe absorb
             //shield absorb
-            let shieldEff = hasEffect(message.actor, "spell-effect-shield");
+            var shieldEff = hasEffect(message.actor, "spell-effect-shield");
             if (shieldEff) {
                 if (message?.content.includes("shield") && message?.content.includes("absorb")) {
                     if (hasPermissions(shieldEff)) {
@@ -530,9 +549,9 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 }
 
                 if (hasOption(message, "action:demoralize")) {
-                    let dd = hasEffects(message?.target?.actor, "effect-demoralize-immunity-minutes");
+                    var dd = hasEffects(message?.target?.actor, "effect-demoralize-immunity-minutes");
                     if (dd.length == 0 || !dd.some(d=>d.system?.context?.origin?.actor == message.actor.uuid)) {
-                        let i = immunities(message?.target?.actor);
+                        var i = immunities(message?.target?.actor);
                         if (i.some(d=>["mental", "fear-effects", "emotion"].includes(d))) {
                             sendGMNotification(`${message.target.actor.name} has Immunity to Demoralize action. Has mental, fear or emotion immunity`);
                         } else {
@@ -621,8 +640,8 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 }
 
                 if (hasOption(message, "action:escape") && anySuccessMessageOutcome(message)) {
-                    let rest = hasEffects(message.actor, "effect-restrained-until-end-of-attacker-next-turn")
-                    let grab = hasEffects(message.actor, "effect-grabbed-until-end-of-attacker-next-turn")
+                    var rest = hasEffects(message.actor, "effect-restrained-until-end-of-attacker-next-turn")
+                    var grab = hasEffects(message.actor, "effect-grabbed-until-end-of-attacker-next-turn")
                     rest.filter(a=>a?.system?.context?.origin?.actor == message.target.actor.uuid).forEach(a => {
                         deleteEffectById(message.actor, a.id)
                     });
@@ -644,23 +663,23 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 }
             } else if (hasOption(message, "action:treat-wounds") && hasOption(message, "feat:battle-medicine") && message?.flavor == message?.flags?.pf2e?.unsafe) {
                 if (game.user.targets.size == 1) {
-                    let [first] = game.user.targets;
+                    var [first] = game.user.targets;
 
-                    let _bm = hasEffect(first.actor, "effect-battle-medicine-immunity")
-                    let _bm1 = hasEffect(first.actor, "effect-battle-medicine-immunity-hour")
+                    var _bm = hasEffect(first.actor, "effect-battle-medicine-immunity")
+                    var _bm1 = hasEffect(first.actor, "effect-battle-medicine-immunity-hour")
 
                     _bm = _bm?.system?.context?.origin?.actor == message.actor.uuid ? true : false;
                     _bm1 = _bm1?.system?.context?.origin?.actor == message.actor.uuid ? true : false;
 
-                    let applyTreatWoundsImmunity = true;
+                    var applyTreatWoundsImmunity = true;
 
                     if (_bm || _bm1) {
                         if (actorFeat(message.actor, "medic-dedication")) {
-                            let immuns = hasAnyEffects(first.actor, ["effect-battle-medicine-immunity", "effect-battle-medicine-immunity-hour"]);
+                            var immuns = hasAnyEffects(first.actor, ["effect-battle-medicine-immunity", "effect-battle-medicine-immunity-hour"]);
                             if (immuns.length > 1) {
                                 applyTreatWoundsImmunity = false;
                                 if (message.actor.system.skills.med.rank >= 3) {
-                                    let minV = Math.min(...immuns.map(a=>game.time.worldTime - a.system.start.value))
+                                    var minV = Math.min(...immuns.map(a=>game.time.worldTime - a.system.start.value))
                                     if (minV >= 3600) {
                                         applyTreatWoundsImmunity = true;
                                     }
@@ -672,7 +691,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     }
 
                     if (applyTreatWoundsImmunity) {
-                        let optName = `(${message.actor.name})`;
+                        var optName = `(${message.actor.name})`;
                         if (isActorHeldEquipment(message.actor, "battle-medics-baton") || actorFeat(message.actor, "forensic-medicine-methodology")) {//1 hour
                             effectWithActorNextTurn(message, first.actor, effect_battle_medicine_immunity_hour, optName, true)
                         } else {
@@ -722,7 +741,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         } else if (messageType(message, "attack-roll")) {
             if (anySuccessMessageOutcome(message)) {
                 if (message?.item?.isMelee) {
-                    let is = hasEffect(message?.actor, "effect-intimidating-strike")
+                    var is = hasEffect(message?.actor, "effect-intimidating-strike")
                     if (is) {
                         if (criticalSuccessMessageOutcome(message)) {
                             increaseConditionForTarget(message, "frightened", 2)
@@ -801,7 +820,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 && hasDomain(message, "strike-damage")
                 && actorFeat(message.actor, "precision")
             ) {
-                let dd = hasEffects(message?.target?.actor, `effect-hunt-prey-${message.actor.id}`);
+                var dd = hasEffects(message?.target?.actor, `effect-hunt-prey-${message.actor.id}`);
                 if (dd.some(d=>d.system?.context?.origin?.actor == message.actor.uuid)) {
                     message.actor.toggleRollOption("all", "first-attack")
                 }
@@ -857,9 +876,9 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         }
 
         if (message?.flags?.pf2e?.origin?.type == "action") {
-            let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+            var _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
 
-            let eff = actionEffectMap[_obj.slug]
+            var eff = actionEffectMap[_obj.slug]
             if (eff) {
                 setEffectToActor(message.actor, eff)
             }
@@ -886,15 +905,15 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 }
             }
         } else if (message?.flags?.pf2e?.origin?.type == "spell") {
-            let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+            var _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
 
-            let effs = spellEffectMap[_obj.slug] ?? []
+            var effs = spellEffectMap[_obj.slug] ?? []
             effs.forEach(eff => {
                 setEffectToActor(message.actor, eff, message?.item?.level)
             })
 
             if (_obj.slug == "inspire-courage") {
-                let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")
+                var aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")
                 if (aura) {
                     setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")
                 } else {
@@ -905,7 +924,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     });
                 }
             } else if (_obj.slug == "inspire-defense") {
-                let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")
+                var aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")
                 if (aura) {
                     setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")
                 } else {
@@ -923,7 +942,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         if (messageType(message, 'skill-check')) {
             if (hasOption(message, "action:treat-wounds") && message?.flavor == message?.flags?.pf2e?.unsafe) {
                 if (game.user.targets.size == 1) {
-                    let [first] = game.user.targets;
+                    var [first] = game.user.targets;
                     treatWounds(message, first.actor);
                 } else if (actorFeat(message.actor, "ward-medic")) {
                     game.user.targets.forEach(a => {
@@ -932,7 +951,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 }
             } else if (hasOption(message, "action:treat-disease") && message?.flavor == message?.flags?.pf2e?.unsafe) {
                 if (game.user.targets.size > 1) {
-                    let [first] = game.user.targets;
+                    var [first] = game.user.targets;
 
                     if (criticalSuccessMessageOutcome(message)) {
                         setEffectToActor(first, "Compendium.pf2e.equipment-effects.Item.id20P4pj7zDKeLmy")
@@ -998,8 +1017,8 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
             }
         } else if (hasOption(message, "item:slug:ray-of-enfeeblement")) {
-            let isCrit=false;
-            let lastMsgs = game.messages.contents.slice(-10).reverse();
+            var isCrit=false;
+            var lastMsgs = game.messages.contents.slice(-10).reverse();
             for (var m in lastMsgs) {
                 if (messageType(lastMsgs[m], "spell-attack-roll")
                     && criticalSuccessMessageOutcome(lastMsgs[m])
@@ -1089,9 +1108,9 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         }
     }
 
-    if (game.settings.get("pf2e-action-support", "decreaseFrequency")) {
+    if (game.settings.get(moduleName, "decreaseFrequency")) {
         if (message?.actor) {
-            let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+            var _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
             if (_obj?.system?.frequency?.value > 0) {
                 _obj.update({
                     "system.frequency.value": _obj?.system?.frequency?.value - 1
@@ -1104,9 +1123,9 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 
 
     if (message?.flags?.pf2e?.origin?.type == "action") {
-        let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+        var _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
         if (_obj.slug == "scout") {
-            let sc = actorFeat(message.actor, "incredible-scout");
+            var sc = actorFeat(message.actor, "incredible-scout");
             if (sc) {
                 setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.la8rWwUtReElgTS6")
             } else {
@@ -1121,7 +1140,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.2ca1ZuqQ7VkunAh3")
         }  else if (_obj.slug == "hunt-prey") {
             game.combat.turns.map(cc=>cc.actor).forEach(a => {
-                let qq = hasEffects(a, `effect-hunt-prey-${message.actor.id}`)
+                var qq = hasEffects(a, `effect-hunt-prey-${message.actor.id}`)
                 .forEach(eff => {
                     deleteEffectById(a, eff.id)
                 })
@@ -1142,14 +1161,14 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             }
         }
     } else if (message?.flags?.pf2e?.origin?.type == "feat") {
-        let feat = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+        var feat = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
 
         if (feat.slug == "rage" && !hasCondition(message.actor, "fatigued") && !hasEffect(message.actor, "effect-rage")) {
             setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.z3uyCMBddrPK5umr")
         } else if (feat.slug == "reactive-shield") {
             (await fromUuid("Compendium.pf2e.action-macros.4hfQEMiEOBbqelAh")).execute()
         } else if (feat.slug == "pistol-twirl") {
-            let w = message.actor.itemTypes.weapon.find(a=>a.isRanged && a.handsHeld >= 1 && parseInt(a.hands) == 1)
+            var w = message.actor.itemTypes.weapon.find(a=>a.isRanged && a.handsHeld >= 1 && parseInt(a.hands) == 1)
 
             if (w) {
                 if (w.ammo) {
@@ -1162,14 +1181,14 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             }
         }
 
-        let effs = featEffectMap[feat.slug] ?? undefined;
+        var effs = featEffectMap[feat.slug] ?? undefined;
         if (effs) {
             setEffectToActor(message.actor, effs)
         }
 
 
     } else if (message?.flags?.pf2e?.origin?.type == "spell") {
-        let _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+        var _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
 
         if (_obj.slug == "guidance") {
             game.user.targets.forEach(tt => {
@@ -1246,7 +1265,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             if (game.user.targets.size == 0) {
                 setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.U6JZ3NYNtxjXeVdE", message?.item?.level)
             } else if (game.user.targets.size == 1 || (game.user.targets.size <= 6 && message?.item?.level >= 7) ) {
-                let spellRange = getSpellRange(message.actor, _obj);
+                var spellRange = getSpellRange(message.actor, _obj);
                 game.user.targets.forEach(tt => {
                     if (distanceIsCorrect(message.token, tt, spellRange)) {
                         setEffectToActor(tt.actor, "Compendium.pf2e-action-support.action-support.Item.U6JZ3NYNtxjXeVdE", message?.item?.level)
@@ -1261,7 +1280,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             if (game.user.targets.size == 0) {
                 setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.con2Hzt47JjpuUej", message?.item?.level)
             } else if (game.user.targets.size == 1 || (game.user.targets.size == 2 && message?.item?.level >= 4) || (game.user.targets.size <= 5 && message?.item?.level >= 7) ) {
-                let spellRange = getSpellRange(message.actor, _obj);
+                var spellRange = getSpellRange(message.actor, _obj);
                 game.user.targets.forEach(tt => {
                     if (distanceIsCorrect(message.token, tt, spellRange)) {
                         setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.con2Hzt47JjpuUej", message?.item?.level)
@@ -1293,7 +1312,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         } else if (_obj.slug == "protective-ward") {
             setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.5p3bKvWsJgo83FS1")
         } else if (_obj.slug == "bane") {
-            let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.YcyN7BDbL0Nt3CFN")
+            var aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.YcyN7BDbL0Nt3CFN")
             if (aura) {
                 setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.YcyN7BDbL0Nt3CFN")
             } else {
@@ -1304,7 +1323,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 });
             }
         } else if (_obj.slug == "bless") {
-            let aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.BqkDxiAi0q6Uaar4")
+            var aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.BqkDxiAi0q6Uaar4")
             if (aura) {
                 setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.BqkDxiAi0q6Uaar4")
             } else {
@@ -1367,8 +1386,8 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 });
 
 async function deleteFeintEffects(message) {
-    let aef = hasEffect(message.actor, `effect-feint-success-${message.actor.id}-${message?.target?.actor.id}`)
-    let tef = hasEffect(message?.target?.actor, `effect-feint-success-${message.actor.id}`)
+    var aef = hasEffect(message.actor, `effect-feint-success-${message.actor.id}-${message?.target?.actor.id}`)
+    var tef = hasEffect(message?.target?.actor, `effect-feint-success-${message.actor.id}`)
     if (aef && tef) {
         deleteEffectFromActor(message.actor, "effect-pistol-twirl")
         if (hasPermissions(aef)) {
@@ -1385,7 +1404,7 @@ async function deleteFeintEffects(message) {
 }
 
 async function guidanceEffect(message, target) {
-    let aEffect = (await fromUuid("Compendium.pf2e.spell-effects.Item.3qHKBDF7lrHw8jFK")).toObject();
+    var aEffect = (await fromUuid("Compendium.pf2e.spell-effects.Item.3qHKBDF7lrHw8jFK")).toObject();
 
     aEffect.system.context = mergeObject(aEffect.system.context ?? {}, {
         "origin": {
@@ -1408,7 +1427,7 @@ async function guidanceEffect(message, target) {
 }
 
 async function effectWithActorNextTurn(message, target, uuid, optionalName=undefined, ownerIcon=false) {
-    let aEffect = (await fromUuid(uuid)).toObject();
+    var aEffect = (await fromUuid(uuid)).toObject();
 
     aEffect.system.context = mergeObject(aEffect.system.context ?? {}, {
         "origin": {
@@ -1436,7 +1455,7 @@ async function effectWithActorNextTurn(message, target, uuid, optionalName=undef
 
 async function huntedPreyEffect(message, _obj) {
     if (game.user.targets.size == 1) {
-        let aEffect = (await fromUuid(effect_hunt_prey)).toObject();
+        var aEffect = (await fromUuid(effect_hunt_prey)).toObject();
         aEffect.name = aEffect.name.replace("Actor", message.actor.name)
         aEffect.img = message.token.texture.src
         aEffect.system.context = mergeObject(aEffect.system.context ?? {}, {
@@ -1451,7 +1470,7 @@ async function huntedPreyEffect(message, _obj) {
         aEffect.system.slug = aEffect.system.slug.replace("actor", message?.actor?.id)
 
 
-        let target = game.user.targets.first().actor;
+        var target = game.user.targets.first().actor;
         if (hasPermissions(target)) {
             target.createEmbeddedDocuments("Item", [aEffect]);
         } else {
@@ -1463,7 +1482,7 @@ async function huntedPreyEffect(message, _obj) {
 }
 
 Hooks.on("deleteCombat", function (combat, delta) {
-    if (game.settings.get("pf2e-action-support", "deleteScouting")) {
+    if (game.settings.get(moduleName, "deleteScouting")) {
         combat.turns.forEach(cc => {
             deleteEffectFromActor(cc.actor, "effect-scouting")
             deleteEffectFromActor(cc.actor, "effect-scouting-incredible-scout")
@@ -1477,7 +1496,7 @@ Hooks.on('combatRound', async (combat, updateData, updateOptions) => {
             if (hasEffect(a.actor, "effect-flat-footed-tumble-behind")) {
                 deleteEffectFromActor(cc.actor, "effect-flat-footed-tumble-behind")
             }
-            let qq = hasEffectStart(a.actor, "effect-feint-success");
+            var qq = hasEffectStart(a.actor, "effect-feint-success");
             if (qq) {
                 deleteEffectFromActor(a.actor, qq.slug)
                 deleteEffectFromActor(cc.actor, "effect-pistol-twirl")
@@ -1491,8 +1510,8 @@ Hooks.on('combatRound', async (combat, updateData, updateOptions) => {
             })
         })
 
-    precision(game.combat.turns[0].actor)
-    gravityWeapon(game.combat.turns[0].actor)
+    precision(game.combat.turns[0]?.actor)
+    gravityWeapon(game.combat.turns[0]?.actor)
 });
 
 Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
@@ -1500,69 +1519,59 @@ Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
         if (hasEffect(cc.actor, "effect-flat-footed-tumble-behind")) {
             deleteEffectFromActor(cc.actor, "effect-flat-footed-tumble-behind")
         }
-        let qq = hasEffectStart(cc.actor, "effect-feint-success");
+        var qq = hasEffectStart(cc.actor, "effect-feint-success");
         if (qq) {
             deleteEffectFromActor(cc.actor, qq.slug)
             deleteEffectFromActor(cc.actor, "effect-pistol-twirl")
         }
     })
 
-    precision(combat?.nextCombatant.actor)
-    gravityWeapon(combat?.nextCombatant.actor)
+    precision(combat?.nextCombatant?.actor)
+    gravityWeapon(combat?.nextCombatant?.actor)
 });
 
 Hooks.on('pf2e.restForTheNight', async (actor) => {
     if ("character" == actor?.type && "summoner" == actor?.class?.slug) {
-        let ei = actor.getFlag("pf2e-action-support", "eidolon");
+        var ei = actor.getFlag(moduleName, "eidolon");
         if (ei) {
             (await fromUuid(ei)).update({
                 "system.attributes.hp.value": actor.system.attributes.hp.value
             }, { "noHook": true });
-        } else {
-            game.scenes.current.tokens.filter(a=>a?.actor?.class?.slug == "eidolon").map(a=>a.actor)
-            .forEach(a => {
-                let f = actorFeat(a, "summoner-hp")
-                if (f && f.flags.summoner == actor.uuid) {
-                    a.update({
-                        "system.attributes.hp.value": actor.system.attributes.hp.value
-                    }, { "noHook": true })
-                }
-            })
         }
     }
 })
 
 Hooks.on('preUpdateActor', async (actor, data, diff, id) => {
-    if (!game.settings.get("pf2e-action-support", "sharedHP")) {
+    if (!game.settings.get(moduleName, "sharedHP")) {
         return
     }
-    if (diff?.damageTaken) {
+    if (data.system.attributes.hp) {
         if ("character" == actor?.type && "eidolon" == actor?.class?.slug) {
-            let f = actorFeat(actor, "summoner-hp")
+            var f = actorFeat(actor, "summoner-hp")
             if (f && f?.flags?.summoner) {
-                let as = await fromUuid(f.flags.summoner);
+                var as = await fromUuid(f.flags.summoner);
+
+                const hp = as.system.attributes.hp;
+                hp.value = data?.system?.attributes?.hp?.value;
+                hp.temp = data?.system?.attributes?.hp?.temp;
+
                 await as.update({
-                    "system.attributes.hp.value": data.system.attributes.hp.value
+                    "system.attributes.hp": hp
                 }, { "noHook": true })
             }
         } else if ("character" == actor?.type && "summoner" == actor?.class?.slug) {
-            let ei = actor.getFlag("pf2e-action-support", "eidolon");
+            var ei = actor.getFlag(moduleName, "eidolon");
             if (ei) {
-                (await fromUuid(ei)).update({
-                    "system.attributes.hp.value": data.system.attributes.hp.value
-                }, { "noHook": true });
-            } else {
-                game.scenes.current.tokens.filter(a=>a?.actor?.class?.slug == "eidolon").map(a=>a.actor)
-                .forEach(a => {
-                    let f = actorFeat(a, "summoner-hp")
-                    if (f && f.flags.summoner == actor.uuid) {
-                        a.update({
-                            "system.attributes.hp.value": data.system.attributes.hp.value
-                        }, { "noHook": true });
-                    }
-                })
-            }
+                var as = await fromUuid(ei);
 
+                const hp = as.system.attributes.hp;
+                hp.value = data?.system?.attributes?.hp?.value;
+                hp.temp = data?.system?.attributes?.hp?.temp;
+
+                as.update({
+                    "system.attributes.hp": hp
+                }, { "noHook": true });
+            }
         }
     }
 })

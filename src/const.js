@@ -1,4 +1,6 @@
-export default const effect_flat_footed = "Compendium.pf2e-action-support.action-support.Item.Vh5E1Qgp34sTKfVs";
+export const moduleName = "pf2e-action-support";
+
+export const effect_flat_footed = "Compendium.pf2e-action-support.action-support.Item.Vh5E1Qgp34sTKfVs";
 export const effect_flat_footed_start_turn = "Compendium.pf2e-action-support.action-support.Item.YsNqG4OocHoErbc9";
 export const effect_enfeebled1_start_turn = "Compendium.pf2e-action-support.action-support.Item.9QvJm6xIKWjti3PD";
 export const effect_enfeebled2_start_turn = "Compendium.pf2e-action-support.action-support.Item.66Sg7uVVaIb3tOib";
@@ -114,4 +116,4 @@ export const actionEffectMap = {
     "recall-under-pressure": "Compendium.pf2e.feat-effects.Item.CW4zphOOpeaLJIWc",
     "tail-toxin": "Compendium.pf2e.feat-effects.Item.Q0DKJRnDuuUnLpvn",
     "tenacious-stance": "Compendium.pf2e.feat-effects.Item.Ms6WPXRWfXb2KpG2",
-}
+};
