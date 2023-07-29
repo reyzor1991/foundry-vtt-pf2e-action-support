@@ -2,7 +2,7 @@
   "id": "pf2e-action-support",
   "title": "PF2e Action Support",
   "description": "PF2e Action Support",
-  "version": "0.0.37",
+  "version": "0.1.0",
   "authors": [
     {
       "name": "Reyzor",
@@ -14,7 +14,9 @@
   "esmodules": [
     "pf2e-action-support.js"
   ],
-  "styles": [],
+  "styles": [
+    "pf2e-action-support.css"
+  ],
   "packs": [
     {
       "label": "Action Support",
@@ -40,13 +42,13 @@
     }
   ],
   "socket": true,
-  "manifest": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/releases/download/0.0.37/module.json",
-  "download": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/releases/download/0.0.37/pf2e-action-support.zip",
+  "manifest": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/releases/latest/download/module.json",
+  "download": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/releases/latest/download/pf2e-action-support.zip",
   "url": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support",
-  "license": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/blob/0.0.37/LICENSE",
-  "readme": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/blob/0.0.37/README.md",
+  "license": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/blob/master/LICENSE",
+  "readme": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/blob/master/README.md",
   "bugs": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/issues",
-  "changelog": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/blob/0.0.37/CHANGELOG.md",
+  "changelog": "https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/blob/master/CHANGELOG.md",
   "compatibility": {
     "minimum": "11",
     "verified": "11.306"

@@ -1,7 +1,7 @@
 ### Actions:
 
 - Stand
-- Scout
+- Scout (to actor and targets)
 - Battle Medicine
 - Treat Wounds
 - Drop Prone

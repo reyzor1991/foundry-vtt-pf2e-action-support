@@ -1,0 +1,18 @@
+#pf2e-action-support-homebrew-settings form .form-group > label {
+    flex: 2;
+    padding-left: 4px;
+}
+
+#pf2e-action-support-homebrew-settings button.homebrew-delete {
+    flex: 0.5;
+}
+#pf2e-action-support-homebrew-settings .form-group > label {
+    flex: 2;
+    padding-left: 4px;
+}
+#pf2e-action-support-homebrew-settings .first-line > label {
+    flex: 2.2!important;
+}
+#pf2e-action-support-homebrew-settings form button.homebrew-delete {
+    flex: 0.2;
+}

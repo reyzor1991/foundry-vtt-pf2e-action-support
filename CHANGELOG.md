@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.1.0
+
+### New feature
+- Add Homebrew handler
+
 ## Version 0.0.36
 
 ### New feature
