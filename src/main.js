@@ -1,4 +1,23 @@
-export var socketlibSocket = undefined;
+let socketlibSocket = undefined;
+
+const pol = ["spell-effect-wild-morph", "spell-effect-juvenile-companion",
+"spell-effect-pest-form", "spell-effect-wild-shape", "spell-effect-enlarge", "spell-effect-enlarge-heightened-4th",
+ "spell-effect-shrink", "spell-effect-summoners-visage", "spell-effect-ooze-form-ochre-jelly", "spell-effect-elephant-form",
+ "spell-effect-gaseous-form", "spell-effect-swarm-form", "spell-effect-unusual-anatomy",
+ "spell-effect-righteous-might", "spell-effect-corrosive-body", "spell-effect-corrosive-body-heightened-9th",
+ "spell-effect-cosmic-form-moon", "spell-effect-cosmic-form-sun", "spell-effect-fiery-body",
+ "spell-effect-fiery-body-9th-level", "spell-effect-ki-form", "spell-effect-apex-companion",
+ "spell-effect-nature-incarnate-kaiju", "spell-effect-nature-incarnate-green-man", "spell-effect-dragon-claws",
+ "spell-effect-evolution-surge", "spell-effect-gluttons-jaw", "spell-effect-embrace-the-pit", "spell-effect-moon-frenzy",
+ "spell-effect-divine-vessel", "spell-effect-divine-vessel-9th-level"];
+
+const polAnim = ["spell-effect-aberrant-form-", "spell-effect-animal-form-", "spell-effect-insect-form-",
+"spell-effect-ooze-form-", "spell-effect-aerial-form-", "spell-effect-bestial-curse-", "spell-effect-dinosaur-form-",
+"spell-effect-fey-form-", "spell-effect-elemental-form-", "spell-effect-plant-form-", "spell-effect-daemon-form-",
+"spell-effect-devil-form-", "spell-effect-dragon-form-", "spell-effect-tempest-form-", "spell-effect-angel-form-",
+"spell-effect-monstrosity-form-", "spell-effect-element-embodied-",
+"spell-effect-animal-feature-", "spell-effect-adapt-self-", "spell-effect-shifting-form-", "spell-effect-dragon-wings-",
+"spell-effect-mantle-of-the-frozen-heart-", "spell-effect-mantle-of-the-magma-heart-"]
 
 async function setSummonerHP(actor) {
     if (!game.user.isGM) {
@@ -17,18 +36,18 @@ async function setSummonerHP(actor) {
         ui.notifications.info(`Need to select 1 token of eidolon as target to set HP of summoner`);
         return
     }
-    var target = game.user.targets.first().actor;
+    const target = game.user.targets.first().actor;
     if ("eidolon" != target?.class?.slug) {
         ui.notifications.info(`Need to select 1 token of eidolon as target to set HP of summoner`);
         return
     }
 
-    var sHP = actor.system.attributes.hp.max;
-    var feat = (await fromUuid("Compendium.pf2e-action-support.action-support.Item.LnCPBh2F5tiDprR0")).toObject();
+    const sHP = actor.system.attributes.hp.max;
+    const feat = (await fromUuid("Compendium.pf2e-action-support.action-support.Item.LnCPBh2F5tiDprR0")).toObject();
     feat.system.rules[0].value = sHP;
     feat.flags.summoner = actor.uuid
 
-    var curFeat = actorFeat(target, "summoner-hp");
+    const curFeat = actorFeat(target, "summoner-hp");
     if (curFeat) {
         curFeat.delete()
     }
@@ -80,12 +99,19 @@ Hooks.once("init", () => {
         default: false,
         type: Boolean,
     });
+    game.settings.register(moduleName, "affliction", {
+        name: "Handle afflictions",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
 
     PF2eActionSupportHomebrewSettings.init()
 
-    var originGetRollContext = CONFIG.Actor.documentClass.prototype.getRollContext;
+    const originGetRollContext = CONFIG.Actor.documentClass.prototype.getRollContext;
     CONFIG.Actor.documentClass.prototype.getRollContext = async function(prefix) {
-        var r = await originGetRollContext.call(this, prefix);
+        const r = await originGetRollContext.call(this, prefix);
         if (r.options.has("first-attack") && !r.options.has(`target:effect:hunt-prey-${this.id}`)) {
             r.options.delete("first-attack");
         }
@@ -99,15 +125,15 @@ Hooks.once("init", () => {
 
 Hooks.on('deleteItem', async (effect, data, id) => {
     if (game.user.isGM) {
-        if (effect.slug == "spell-effect-guidance" && !hasEffect(effect.actor, "effect-guidance-immunity")) {
+        if (effect.slug === "spell-effect-guidance" && !hasEffect(effect.actor, "effect-guidance-immunity")) {
             setEffectToActor(effect.actor, "Compendium.pf2e.spell-effects.Item.3LyOkV25p7wA181H");
         }
     }
 });
 
 async function createEffects(data) {
-    var actor = await fromUuid(data.actorUuid);
-    var source = (await fromUuid(data.eff)).toObject();
+    const actor = await fromUuid(data.actorUuid);
+    const source = (await fromUuid(data.eff)).toObject();
     source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: data.eff } });
     if (data.level) {
         source.system.level = {'value': data.level};
@@ -116,49 +142,58 @@ async function createEffects(data) {
 }
 
 async function deleteEffects(data) {
-    var actor = await fromUuid(data.actorUuid);
-    var effect = actor.itemTypes.effect.find(c => data.eff === c.slug)
+    const actor = await fromUuid(data.actorUuid);
+    const effect = actor.itemTypes.effect.find(c => data.eff === c.slug)
     actor.deleteEmbeddedDocuments("Item", [effect._id])
 }
 
 async function updateObjects(data) {
-    var _obj = await fromUuid(data.id);
+    const _obj = await fromUuid(data.id);
     _obj.update(data.data);
 }
 
 async function deleteEffectsById(data) {
-    var actor = await fromUuid(data.actorUuid);
-    var effect = actor.itemTypes.effect.find(c => data.effId === c.id)
+    const actor = await fromUuid(data.actorUuid);
+    const effect = actor.itemTypes.effect.find(c => data.effId === c.id)
     actor.deleteEmbeddedDocuments("Item", [effect._id])
 }
 
 async function increaseConditions(data) {
-    var actor = await fromUuid(data.actorUuid);
-    var valueObj = data?.value ? {'value': data?.value } : {}
+    const actor = await fromUuid(data.actorUuid);
+    const valueObj = data?.value ? {'value': data?.value } : {}
 
     actor.increaseCondition(data.condition, valueObj);
 }
 
 async function applyDamages(data) {
-    var actor = await fromUuid(data.actorUuid);
-    var token = await fromUuid(data.tokenUuid);
+    const actor = await fromUuid(data.actorUuid);
+    const token = await fromUuid(data.tokenUuid);
 
     applyDamage(actor, token, data.formula);
 }
 
 function hasPermissions(item) {
-    return 3 == item.ownership[game.user.id] || game.user.isGM;
+    return 3 === item.ownership[game.user.id] || game.user.isGM;
+}
+
+function heldItems(actor) {
+    if (!actor) return []
+    return Object.values(actor?.itemTypes).flat(1).filter(a=>a.handsHeld > 0);
+}
+
+function hasFreeHand(actor) {
+    return heldItems(actor).map(a=>a.handsHeld).reduce((a, b) => a + b, 0) < 2;
 }
 
 function hasCondition(actor, con) {
-    return actor?.itemTypes?.condition?.find((c => c.type == "condition" && con === c.slug))
+    return actor?.itemTypes?.condition?.find((c => c.type === "condition" && con === c.slug))
 }
 
 function isActorHeldEquipment(actor, item) {
-    return actor?.itemTypes?.equipment?.find(a=>a.isHeld && a.slug == item)
+    return actor?.itemTypes?.equipment?.find(a=>a.isHeld && a.slug === item)
 }
 
-var setupSocket = () => {
+const setupSocket = () => {
   if (globalThis.socketlib) {
       socketlibSocket = globalThis.socketlib.registerModule(moduleName);
       socketlibSocket.register("createEffects", createEffects);
@@ -187,19 +222,19 @@ async function _socketCreateFeintEffectOnTarget(effect, targetId) {
 }
 
 function failureMessageOutcome(message) {
-    return "failure" == message?.flags?.pf2e?.context?.outcome;
+    return "failure" === message?.flags?.pf2e?.context?.outcome;
 }
 
 function criticalFailureMessageOutcome(message) {
-    return "criticalFailure" == message?.flags?.pf2e?.context?.outcome;
+    return "criticalFailure" === message?.flags?.pf2e?.context?.outcome;
 }
 
 function successMessageOutcome(message) {
-    return "success" == message?.flags?.pf2e?.context?.outcome;
+    return "success" === message?.flags?.pf2e?.context?.outcome;
 }
 
 function criticalSuccessMessageOutcome(message) {
-    return "criticalSuccess" == message?.flags?.pf2e?.context?.outcome;
+    return "criticalSuccess" === message?.flags?.pf2e?.context?.outcome;
 }
 
 function anyFailureMessageOutcome(message) {
@@ -215,7 +250,7 @@ function actorFeat(actor, feat) {
 }
 
 function messageType(message, type) {
-    return type == message?.flags?.pf2e?.context?.type;
+    return type === message?.flags?.pf2e?.context?.type;
 }
 
 function hasOption(message, opt) {
@@ -232,6 +267,10 @@ function hasEffectStart(actor, eff) {
 
 function hasEffect(actor, eff) {
     return actor?.itemTypes?.effect?.find((c => eff === c.slug))
+}
+
+function hasAfflictionBySourceId(actor, uuid) {
+    return actor?.itemTypes?.affliction?.find((c => uuid === c.sourceId))
 }
 
 function hasEffectBySourceId(actor, eff) {
@@ -255,25 +294,25 @@ function distanceIsCorrect(firstT, secondT, distance) {
 }
 
 function spellRange(spell) {
-    var s = spell?.system?.range?.value?.match(/\d+/g)
+    const s = spell?.system?.range?.value?.match(/\d+/g)
     return s ? parseInt(s[0]) : 0;
 }
 
 function getSpellRange(actor, spell) {
-    var s = spellRange(spell)
+    let s = spellRange(spell)
     if (hasEffect(actor, "effect-spectral-hand")) {
         s = s > 120 ? s : 120;
     } else if (hasEffect(actor, "effect-reach-spell")) {
         s += 30;
     }
-    return s == 0 ? 5 : s;
+    return s === 0 ? 5 : s;
 }
 
 async function treatWounds(message, target) {
-    var _bm = hasEffect(target, "effect-treat-wounds-immunity-minutes")
-    var _bm1 = hasEffect(target, "effect-treat-wounds-immunity")
+    const _bm = hasEffect(target, "effect-treat-wounds-immunity-minutes")
+    const _bm1 = hasEffect(target, "effect-treat-wounds-immunity")
 
-    var applyTreatWoundsImmunity = _bm || _bm1 ? false : true;
+    const applyTreatWoundsImmunity = _bm || _bm1 ? false : true;
 
     if (applyTreatWoundsImmunity) {
         if (actorFeat(message.actor, "continual-recovery")) {//10 min
@@ -287,7 +326,7 @@ async function treatWounds(message, target) {
 }
 
 function sendNotificationChatMessage(content) {
-    var whispers = ChatMessage.getWhisperRecipients("GM").map((u) => u.id).concat(game.user.id);
+    const whispers = ChatMessage.getWhisperRecipients("GM").map((u) => u.id).concat(game.user.id);
 
     ChatMessage.create({
         type: CONST.CHAT_MESSAGE_TYPES.OOC,
@@ -305,7 +344,7 @@ function sendGMNotification(content) {
 }
 
 function deleteEffectFromActor(actor, eff) {
-    var effect = actor.itemTypes.effect.find(c => eff === c.slug)
+    const effect = actor.itemTypes.effect.find(c => eff === c.slug)
     if (!effect) {return}
     if (hasPermissions(actor)) {
         actor.deleteEmbeddedDocuments("Item", [effect._id])
@@ -327,10 +366,10 @@ function deleteEffectById(actor, effId) {
 }
 
 async function setFeintEffect(message, isCrit=false, isCritFail=false) {
-    var actor = isCritFail?message.target.actor:message.actor;
-    var target = isCritFail?message.actor:message.target.actor;
+    const actor = isCritFail?message.target.actor:message.actor;
+    const target = isCritFail?message.actor:message.target.actor;
 
-    var effect = (await fromUuid(isCrit?effect_feint_critical_success:effect_feint_success)).toObject();
+    const effect = (await fromUuid(isCrit?effect_feint_critical_success:effect_feint_success)).toObject();
     effect.flags = mergeObject(effect.flags ?? {}, { core: { sourceId: effect.id } });
     effect.system.slug = effect.system.slug.replace("attacker", actor.id)
     effect.name += ` ${actor.name}`
@@ -345,7 +384,7 @@ async function setFeintEffect(message, isCrit=false, isCritFail=false) {
     });
     effect.system.start.initiative = null;
 
-    var aEffect = (await fromUuid(isCrit?effect_feint_crit_success_attacker_target:effect_feint_success_attacker_target)).toObject();
+    const aEffect = (await fromUuid(isCrit?effect_feint_crit_success_attacker_target:effect_feint_success_attacker_target)).toObject();
     aEffect.system.slug = aEffect.system.slug.replace("attacker", actor.id).replace("target", target.id)
 
     aEffect.system.rules[0].predicate[0] = aEffect.system.rules[0].predicate[0].replace("attacker", actor.id);
@@ -367,7 +406,7 @@ async function setFeintEffect(message, isCrit=false, isCritFail=false) {
     }
 
     if (isCrit) {
-        var qq = hasEffect(actor, "effect-pistol-twirl")
+        let qq = hasEffect(actor, "effect-pistol-twirl")
         if (qq) {
             deleteEffectById(actor, qq.id)
 
@@ -386,8 +425,8 @@ async function setFeintEffect(message, isCrit=false, isCritFail=false) {
 
 async function setEffectToActor(actor, eff, level=undefined) {
     if (hasPermissions(actor)) {
-        var source = await fromUuid(eff)
-        var withBa = hasEffectBySourceId(actor, eff);
+        let source = await fromUuid(eff)
+        let withBa = hasEffectBySourceId(actor, eff);
         if (withBa && withBa.system.badge) {
             withBa.update({
                 "system.badge.value": withBa.system.badge.value += 1
@@ -408,7 +447,7 @@ async function setEffectToActor(actor, eff, level=undefined) {
 }
 
 async function increaseConditionForActor(message, condition, value=undefined) {
-    var valueObj = value ? {'value': value } : {}
+    const valueObj = value ? {'value': value } : {}
 
     if (hasPermissions(message.actor)) {
         message.actor.increaseCondition(condition, valueObj);
@@ -420,7 +459,7 @@ async function increaseConditionForActor(message, condition, value=undefined) {
 }
 
 async function increaseConditionForTarget(message, condition, value=undefined) {
-    var valueObj = value ? {'value': value } : {}
+    const valueObj = value ? {'value': value } : {}
 
     if (hasPermissions(message.target.actor)) {
         message.target.actor.increaseCondition(condition, valueObj);
@@ -432,9 +471,9 @@ async function increaseConditionForTarget(message, condition, value=undefined) {
 }
 
 async function setEffectToActorOrTarget(message, effectUUID, spellName, spellRange, onlyTarget=false) {
-    if (game.user.targets.size == 0 && !onlyTarget) {
+    if (game.user.targets.size === 0 && !onlyTarget) {
         setEffectToActor(message.actor, effectUUID, message?.item?.level)
-    } else if (game.user.targets.size == 1) {
+    } else if (game.user.targets.size === 1) {
         if (distanceIsCorrect(message.token, game.user.targets.first(), spellRange)) {
             setEffectToActor(game.user.targets.first().actor, effectUUID, message?.item?.level)
         } else {
@@ -446,7 +485,7 @@ async function setEffectToActorOrTarget(message, effectUUID, spellName, spellRan
 }
 
 async function setEffectToTarget(message, effectUUID) {
-    if (game.user.targets.size == 1) {
+    if (game.user.targets.size === 1) {
         setEffectToActor(game.user.targets.first().actor, effectUUID)
     } else {
         ui.notifications.info(`${message.actor.name} chose incorrect count of targets for effect`);
@@ -455,25 +494,6 @@ async function setEffectToTarget(message, effectUUID) {
 
 function deleteMorphEffects(message) {
     ui.notifications.info(`${message.actor.name} fails saving-throw. Need to delete morph/polymorph effects from actor`);
-
-    var pol = ["spell-effect-wild-morph", "spell-effect-juvenile-companion",
-        "spell-effect-pest-form", "spell-effect-wild-shape", "spell-effect-enlarge", "spell-effect-enlarge-heightened-4th",
-         "spell-effect-shrink", "spell-effect-summoners-visage", "spell-effect-ooze-form-ochre-jelly", "spell-effect-elephant-form",
-         "spell-effect-gaseous-form", "spell-effect-swarm-form", "spell-effect-unusual-anatomy",
-         "spell-effect-righteous-might", "spell-effect-corrosive-body", "spell-effect-corrosive-body-heightened-9th",
-         "spell-effect-cosmic-form-moon", "spell-effect-cosmic-form-sun", "spell-effect-fiery-body",
-         "spell-effect-fiery-body-9th-level", "spell-effect-ki-form", "spell-effect-apex-companion",
-         "spell-effect-nature-incarnate-kaiju", "spell-effect-nature-incarnate-green-man", "spell-effect-dragon-claws",
-         "spell-effect-evolution-surge", "spell-effect-gluttons-jaw", "spell-effect-embrace-the-pit", "spell-effect-moon-frenzy",
-         "spell-effect-divine-vessel", "spell-effect-divine-vessel-9th-level"];
-
-    var polAnim = ["spell-effect-aberrant-form-", "spell-effect-animal-form-", "spell-effect-insect-form-",
-     "spell-effect-ooze-form-", "spell-effect-aerial-form-", "spell-effect-bestial-curse-", "spell-effect-dinosaur-form-",
-     "spell-effect-fey-form-", "spell-effect-elemental-form-", "spell-effect-plant-form-", "spell-effect-daemon-form-",
-     "spell-effect-devil-form-", "spell-effect-dragon-form-", "spell-effect-tempest-form-", "spell-effect-angel-form-",
-     "spell-effect-monstrosity-form-", "spell-effect-element-embodied-",
-     "spell-effect-animal-feature-", "spell-effect-adapt-self-", "spell-effect-shifting-form-", "spell-effect-dragon-wings-",
-     "spell-effect-mantle-of-the-frozen-heart-", "spell-effect-mantle-of-the-magma-heart-"]
 
     message.actor.itemTypes.effect.filter(c => pol.includes(c.slug) || polAnim.find(qq=>c.slug.startsWith(qq)))
         .forEach(effect => {
@@ -484,14 +504,14 @@ function deleteMorphEffects(message) {
 function deleteEffectUntilAttackerEnd(actor, eff, attackerId, isFinal=false) {
     actor.itemTypes.effect.filter(c => eff === c.slug)
     .forEach(effect => {
-        if (effect?.flags?.attacker == attackerId) {
-            if (effect.flags["attacker-turn"] == 1 || isFinal) {
+        if (effect?.flags?.attacker === attackerId) {
+            if (effect.flags["attacker-turn"] === 1 || isFinal) {
                 deleteEffectById(actor, effect.id)
             } else {
-                var data = {"flags.attacker-turn": effect.flags["attacker-turn"] - 1};
+                const data = {"flags.attacker-turn": effect.flags["attacker-turn"] - 1};
                 if (hasPermissions(actor)) {
                     effect.update(data);
-                }else {
+                } else {
                     socketlibSocket._sendRequest("updateObjects", [{id: effect.uuid, data:data}], 0)
                 }
             }
@@ -505,8 +525,8 @@ function immunities(actor) {
 
 async function applyDamage(actor, token, formula) {
     if (hasPermissions(actor)) {
-        var DamageRoll = CONFIG.Dice.rolls.find((r) => r.name === "DamageRoll")
-        var roll = new DamageRoll(formula);
+        const DamageRoll = CONFIG.Dice.rolls.find((r) => r.name === "DamageRoll")
+        const roll = new DamageRoll(formula);
         await roll.evaluate({async: true});
         actor.applyDamage({damage:roll, token:token})
         roll.toMessage({speaker: {alias: actor.prototypeToken.name}});
@@ -521,7 +541,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         if ("appliedDamage" in message?.flags?.pf2e && !message?.flags?.pf2e?.appliedDamage?.isHealing) {
             //maybe absorb
             //shield absorb
-            var shieldEff = hasEffect(message.actor, "spell-effect-shield");
+            const shieldEff = hasEffect(message.actor, "spell-effect-shield");
             if (shieldEff) {
                 if (message?.content.includes("shield") && message?.content.includes("absorb")) {
                     if (hasPermissions(shieldEff)) {
@@ -549,9 +569,9 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 }
 
                 if (hasOption(message, "action:demoralize")) {
-                    var dd = hasEffects(message?.target?.actor, "effect-demoralize-immunity-minutes");
-                    if (dd.length == 0 || !dd.some(d=>d.system?.context?.origin?.actor == message.actor.uuid)) {
-                        var i = immunities(message?.target?.actor);
+                    const dd = hasEffects(message?.target?.actor, "effect-demoralize-immunity-minutes");
+                    if (dd.length === 0 || !dd.some(d=>d.system?.context?.origin?.actor === message.actor.uuid)) {
+                        const i = immunities(message?.target?.actor);
                         if (i.some(d=>["mental", "fear-effects", "emotion"].includes(d))) {
                             sendGMNotification(`${message.target.actor.name} has Immunity to Demoralize action. Has mental, fear or emotion immunity`);
                         } else {
@@ -640,12 +660,12 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 }
 
                 if (hasOption(message, "action:escape") && anySuccessMessageOutcome(message)) {
-                    var rest = hasEffects(message.actor, "effect-restrained-until-end-of-attacker-next-turn")
-                    var grab = hasEffects(message.actor, "effect-grabbed-until-end-of-attacker-next-turn")
-                    rest.filter(a=>a?.system?.context?.origin?.actor == message.target.actor.uuid).forEach(a => {
+                    const rest = hasEffects(message.actor, "effect-restrained-until-end-of-attacker-next-turn")
+                    const grab = hasEffects(message.actor, "effect-grabbed-until-end-of-attacker-next-turn")
+                    rest.filter(a=>a?.system?.context?.origin?.actor === message.target.actor.uuid).forEach(a => {
                         deleteEffectById(message.actor, a.id)
                     });
-                    grab.filter(a=>a?.system?.context?.origin?.actor == message.target.actor.uuid).forEach(a => {
+                    grab.filter(a=>a?.system?.context?.origin?.actor === message.target.actor.uuid).forEach(a => {
                         deleteEffectById(message.actor, a.id)
                     });
                 }
@@ -661,25 +681,25 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                         }
                     }
                 }
-            } else if (hasOption(message, "action:treat-wounds") && hasOption(message, "feat:battle-medicine") && message?.flavor == message?.flags?.pf2e?.unsafe) {
-                if (game.user.targets.size == 1) {
-                    var [first] = game.user.targets;
+            } else if (hasOption(message, "action:treat-wounds") && hasOption(message, "feat:battle-medicine") && message?.flavor === message?.flags?.pf2e?.unsafe) {
+                if (game.user.targets.size === 1) {
+                    const [first] = game.user.targets;
 
-                    var _bm = hasEffect(first.actor, "effect-battle-medicine-immunity")
-                    var _bm1 = hasEffect(first.actor, "effect-battle-medicine-immunity-hour")
+                    let _bm = hasEffect(first.actor, "effect-battle-medicine-immunity")
+                    let _bm1 = hasEffect(first.actor, "effect-battle-medicine-immunity-hour")
 
-                    _bm = _bm?.system?.context?.origin?.actor == message.actor.uuid ? true : false;
-                    _bm1 = _bm1?.system?.context?.origin?.actor == message.actor.uuid ? true : false;
+                    _bm = _bm?.system?.context?.origin?.actor === message.actor.uuid ? true : false;
+                    _bm1 = _bm1?.system?.context?.origin?.actor === message.actor.uuid ? true : false;
 
-                    var applyTreatWoundsImmunity = true;
+                    let applyTreatWoundsImmunity = true;
 
                     if (_bm || _bm1) {
                         if (actorFeat(message.actor, "medic-dedication")) {
-                            var immuns = hasAnyEffects(first.actor, ["effect-battle-medicine-immunity", "effect-battle-medicine-immunity-hour"]);
+                            const immuns = hasAnyEffects(first.actor, ["effect-battle-medicine-immunity", "effect-battle-medicine-immunity-hour"]);
                             if (immuns.length > 1) {
                                 applyTreatWoundsImmunity = false;
                                 if (message.actor.system.skills.med.rank >= 3) {
-                                    var minV = Math.min(...immuns.map(a=>game.time.worldTime - a.system.start.value))
+                                    const minV = Math.min(...immuns.map(a=>game.time.worldTime - a.system.start.value))
                                     if (minV >= 3600) {
                                         applyTreatWoundsImmunity = true;
                                     }
@@ -691,8 +711,11 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     }
 
                     if (applyTreatWoundsImmunity) {
-                        var optName = `(${message.actor.name})`;
-                        if (isActorHeldEquipment(message.actor, "battle-medics-baton") || actorFeat(message.actor, "forensic-medicine-methodology")) {//1 hour
+                        const optName = `(${message.actor.name})`;
+                        if (isActorHeldEquipment(message.actor, "battle-medics-baton")
+                            || actorFeat(message.actor, "forensic-medicine-methodology")
+                            || actorFeat(first.actor, "godless-healing")
+                        ) {//1 hour
                             effectWithActorNextTurn(message, first.actor, effect_battle_medicine_immunity_hour, optName, true)
                         } else {
                             effectWithActorNextTurn(message, first.actor, "Compendium.pf2e.feat-effects.Item.2XEYQNZTCGpdkyR6", optName, true)
@@ -741,7 +764,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
         } else if (messageType(message, "attack-roll")) {
             if (anySuccessMessageOutcome(message)) {
                 if (message?.item?.isMelee) {
-                    var is = hasEffect(message?.actor, "effect-intimidating-strike")
+                    const is = hasEffect(message?.actor, "effect-intimidating-strike")
                     if (is) {
                         if (criticalSuccessMessageOutcome(message)) {
                             increaseConditionForTarget(message, "frightened", 2)
@@ -749,6 +772,10 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                             increaseConditionForTarget(message, "frightened", 1)
                         }
                         deleteEffectById(message.actor, is.id)
+                    }
+                    const cg = actorFeat(message?.actor, "combat-grab")
+                    if (cg && hasFreeHand(message.actor)) {
+                        effectWithActorNextTurn(message, message.target.actor, effect_grabbed_end_attacker_next_turn)
                     }
                 }
 
@@ -820,8 +847,8 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 && hasDomain(message, "strike-damage")
                 && actorFeat(message.actor, "precision")
             ) {
-                var dd = hasEffects(message?.target?.actor, `effect-hunt-prey-${message.actor.id}`);
-                if (dd.some(d=>d.system?.context?.origin?.actor == message.actor.uuid)) {
+                const dd = hasEffects(message?.target?.actor, `effect-hunt-prey-${message.actor.id}`);
+                if (dd.some(d=>d.system?.context?.origin?.actor === message.actor.uuid)) {
                     message.actor.toggleRollOption("all", "first-attack")
                 }
             }
@@ -835,7 +862,7 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             ) {
                 deleteEffectFromActor(message.actor, "effect-panache")
             }
-            if (message?.item.isMelee) {
+            if (message?.item?.isMelee) {
                 deleteFeintEffects(message);
             }
 
@@ -869,51 +896,51 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             ) {
                 effectWithActorNextTurn(message, message.target.actor, effect_enfeebled2_start_turn)
             } else if (hasOption(message, "item:slug:lay-on-hands")) {
-                if (game.user.targets.first()?.actor?.type == "character") {
+                if (game.user.targets.first()?.actor?.type === "character") {
                     setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.lyLMiauxIVUM3oF1", "Lay on hands", getSpellRange(message.actor, message.item), true)
                 }
             }
         }
 
-        if (message?.flags?.pf2e?.origin?.type == "action") {
-            var _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+        if (message?.flags?.pf2e?.origin?.type === "action") {
+            const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
 
-            var eff = actionEffectMap[_obj.slug]
+            const eff = actionEffectMap[_obj.slug]
             if (eff) {
                 setEffectToActor(message.actor, eff)
             }
 
-            if (_obj.slug == "drop-prone" || _obj.slug == "crawl") {
+            if (_obj.slug === "drop-prone" || _obj.slug === "crawl") {
                 message.actor.increaseCondition("prone");
-            } else if (_obj.slug == "stand") {
+            } else if (_obj.slug === "stand") {
                 message.actor.decreaseCondition("prone");
-            } else if (_obj.slug == "grab") {
+            } else if (_obj.slug === "grab") {
                 game.user.targets.forEach(a => {
                     effectWithActorNextTurn(message, a.actor, effect_grabbed_end_attacker_next_turn)
                 });
-            } else if (_obj?.sourceId == "Item.hqsDRpzHAWEagLDO") {
+            } else if (_obj?.sourceId === "Item.hqsDRpzHAWEagLDO") {
                 setEffectToActor(message.actor, "Compendium.botanical-bestiary.effects.AwLeak2GPIH6E4b5")
-            } else if (_obj?.sourceId ==  "Item.PUAigKSydzY9Ii10") {
+            } else if (_obj?.sourceId ===  "Item.PUAigKSydzY9Ii10") {
                 setEffectToActor(message.actor, "Compendium.botanical-bestiary.effects.DwxpHXwlTPuXq2wT")
-            } else if (_obj?.slug ==  "retributive-strike") {
+            } else if (_obj?.slug ===  "retributive-strike") {
                 setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.DawVHfoPKbPJsz4k")
-            } else if (_obj?.slug ==  "liberating-step") {
-                if (game.user.targets.size == 1) {
+            } else if (_obj?.slug ===  "liberating-step") {
+                if (game.user.targets.size === 1) {
                     setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.DawVHfoPKbPJsz4k")
                 } else {
                     ui.notifications.info(`${message.actor.name} chose incorrect count of targets for effect`);
                 }
             }
-        } else if (message?.flags?.pf2e?.origin?.type == "spell") {
-            var _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+        } else if (message?.flags?.pf2e?.origin?.type === "spell") {
+            const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
 
-            var effs = spellEffectMap[_obj.slug] ?? []
+            const effs = spellEffectMap[_obj.slug] ?? []
             effs.forEach(eff => {
                 setEffectToActor(message.actor, eff, message?.item?.level)
             })
 
-            if (_obj.slug == "inspire-courage") {
-                var aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")
+            if (_obj.slug === "inspire-courage") {
+                const aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")
                 if (aura) {
                     setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")
                 } else {
@@ -923,8 +950,8 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                         }
                     });
                 }
-            } else if (_obj.slug == "inspire-defense") {
-                var aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")
+            } else if (_obj.slug === "inspire-defense") {
+                const aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")
                 if (aura) {
                     setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")
                 } else {
@@ -934,24 +961,26 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                         }
                     });
                 }
-            } else if (_obj.slug == "allegro") {
+            } else if (_obj.slug === "allegro") {
                 setEffectToActorOrTarget(message, effect_allegro, "Allegro", getSpellRange(message.actor, _obj))
+            } else if (_obj.slug === "ki-strike") {
+                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.8olfnTmWh0GGPDqX")
             }
         }
     } else {
         if (messageType(message, 'skill-check')) {
-            if (hasOption(message, "action:treat-wounds") && message?.flavor == message?.flags?.pf2e?.unsafe) {
-                if (game.user.targets.size == 1) {
-                    var [first] = game.user.targets;
+            if (hasOption(message, "action:treat-wounds") && message?.flavor === message?.flags?.pf2e?.unsafe) {
+                if (game.user.targets.size === 1) {
+                    const [first] = game.user.targets;
                     treatWounds(message, first.actor);
                 } else if (actorFeat(message.actor, "ward-medic")) {
                     game.user.targets.forEach(a => {
                         treatWounds(message, a.actor);
                     });
                 }
-            } else if (hasOption(message, "action:treat-disease") && message?.flavor == message?.flags?.pf2e?.unsafe) {
+            } else if (hasOption(message, "action:treat-disease") && message?.flavor === message?.flags?.pf2e?.unsafe) {
                 if (game.user.targets.size > 1) {
-                    var [first] = game.user.targets;
+                    const [first] = game.user.targets;
 
                     if (criticalSuccessMessageOutcome(message)) {
                         setEffectToActor(first, "Compendium.pf2e.equipment-effects.Item.id20P4pj7zDKeLmy")
@@ -1017,13 +1046,13 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
             }
         } else if (hasOption(message, "item:slug:ray-of-enfeeblement")) {
-            var isCrit=false;
-            var lastMsgs = game.messages.contents.slice(-10).reverse();
-            for (var m in lastMsgs) {
+            let isCrit=false;
+            const lastMsgs = game.messages.contents.slice(-10).reverse();
+            for (const m in lastMsgs) {
                 if (messageType(lastMsgs[m], "spell-attack-roll")
                     && criticalSuccessMessageOutcome(lastMsgs[m])
                     && hasOption(lastMsgs[m], "item:slug:ray-of-enfeeblement")
-                    && lastMsgs[m]?.target?.actor?.id == message?.actor?.id) {
+                    && lastMsgs[m]?.target?.actor?.id === message?.actor?.id) {
                     isCrit = true;
                 }
             }
@@ -1071,18 +1100,18 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 deleteMorphEffects(message);
             }
         } else if (hasOption(message, "alchemical") && hasOption(message, "bomb")) {
-            if (message?.flags?.pf2e?.context?.dc?.label == "Thunderstone (Lesser) DC"
-                || message?.flags?.pf2e?.context?.dc?.label == "Thunderstone (Moderate) DC"
-                || message?.flags?.pf2e?.context?.dc?.label == "Thunderstone (Greater) DC"
-                || message?.flags?.pf2e?.context?.dc?.label == "Thunderstone (Major) DC"
+            if (eqMessageDCLabel(message, "Thunderstone (Lesser) DC")
+                || eqMessageDCLabel(message, "Thunderstone (Moderate) DC")
+                || eqMessageDCLabel(message, "Thunderstone (Greater) DC")
+                || eqMessageDCLabel(message, "Thunderstone (Major) DC")
             ) {
                 if (anyFailureMessageOutcome(message)) {
                     setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
                 }
-            } else if (message?.flags?.pf2e?.context?.dc?.label == "Skunk Bomb (Lesser) DC"
-                || message?.flags?.pf2e?.context?.dc?.label == "Skunk Bomb (Moderate) DC"
-                || message?.flags?.pf2e?.context?.dc?.label == "Skunk Bomb (Greater) DC"
-                || message?.flags?.pf2e?.context?.dc?.label == "Skunk Bomb (Major) DC"
+            } else if (eqMessageDCLabel(message, "Skunk Bomb (Lesser) DC")
+                || eqMessageDCLabel(message, "Skunk Bomb (Moderate) DC")
+                || eqMessageDCLabel(message, "Skunk Bomb (Greater) DC")
+                || eqMessageDCLabel(message, "Skunk Bomb (Major) DC")
             ) {
                 if (successMessageOutcome(message)) {
                     increaseConditionForActor(message, "sickened", 1);
@@ -1092,17 +1121,27 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     setEffectToActor(message.actor, effect_skunk_bomb_cfail)
                     setEffectToActor(message.actor, effect_blinded1_round)
                 }
-            } else if (message?.flags?.pf2e?.context?.dc?.label == "Shatterstone DC"
-                || message?.flags?.pf2e?.context?.dc?.label == "Shatterstone (Greater) DC"
+            } else if (eqMessageDCLabel(message, "Shatterstone DC")
+                || eqMessageDCLabel(message, "Shatterstone (Greater) DC")
             ) {
                 if (anyFailureMessageOutcome(message)) {
                     setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
                 }
-            } else if (message?.flags?.pf2e?.context?.dc?.label == "Trueshape Bomb DC"
-                || message?.flags?.pf2e?.context?.dc?.label == "Trueshape Bomb (Greater) DC"
+            } else if (eqMessageDCLabel(message, "Trueshape Bomb DC")
+                || eqMessageDCLabel(message, "Trueshape Bomb (Greater) DC")
             ) {
                 if (anyFailureMessageOutcome(message)) {
                     deleteMorphEffects(message);
+                }
+            }
+        } else if (hasOption(message, "disease") || hasOption(message, "drug")) {
+            if (game.settings.get(moduleName, "affliction")) {
+                if (eqMessageDCLabel(message, 'Addictive Exhaustion DC')) {
+                    handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.aODJbcFmhQcbllba")
+                } else if (eqMessageDCLabel(message, "Ghoul Fever DC")) {
+                    handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.FwevQUDFd1uTU8cR")
+                } else if (eqMessageDCLabel(message, "Alcohol DC")) {
+                    handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.N12lBsMmAKvO3mSh")
                 }
             }
         }
@@ -1110,22 +1149,22 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
 
     if (game.settings.get(moduleName, "decreaseFrequency")) {
         if (message?.actor) {
-            var _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+            const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
             if (_obj?.system?.frequency?.value > 0) {
                 _obj.update({
                     "system.frequency.value": _obj?.system?.frequency?.value - 1
                 });
-            } else if (_obj?.system?.frequency?.value == 0) {
+            } else if (_obj?.system?.frequency?.value === 0) {
                sendNotificationChatMessage(`Action sent to chat with 0 uses left.`);
             }
         }
     }
 
 
-    if (message?.flags?.pf2e?.origin?.type == "action") {
-        var _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
-        if (_obj.slug == "scout") {
-            var sc = actorFeat(message.actor, "incredible-scout");
+    if (message?.flags?.pf2e?.origin?.type === "action") {
+        const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+        if (_obj.slug === "scout") {
+            const sc = actorFeat(message.actor, "incredible-scout");
             if (sc) {
                 setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.la8rWwUtReElgTS6")
             } else {
@@ -1136,20 +1175,20 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 setEffectToActor(tt.actor, sc ? "Compendium.pf2e.other-effects.Item.la8rWwUtReElgTS6" : "Compendium.pf2e.other-effects.Item.EMqGwUi3VMhCjTlF")
             })
 
-        } else if (_obj.slug == "accept-echo") {
+        } else if (_obj.slug === "accept-echo") {
             setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.2ca1ZuqQ7VkunAh3")
-        }  else if (_obj.slug == "hunt-prey") {
+        }  else if (_obj.slug === "hunt-prey") {
             game.combat.turns.map(cc=>cc.actor).forEach(a => {
-                var qq = hasEffects(a, `effect-hunt-prey-${message.actor.id}`)
+                const qq = hasEffects(a, `effect-hunt-prey-${message.actor.id}`)
                 .forEach(eff => {
                     deleteEffectById(a, eff.id)
                 })
             })
 
             huntedPreyEffect(message, _obj);
-        } else if (_obj.slug == "devise-a-stratagem") {
+        } else if (_obj.slug === "devise-a-stratagem") {
             if (actorFeat(message.actor, "didactic-strike")) {
-                if (game.user.targets.size == 0) {
+                if (game.user.targets.size === 0) {
                     ui.notifications.info(`${message.actor.name} forgot to choose up to 10 allies`);
                 } else {
                     game.user.targets.forEach(tt => {
@@ -1160,15 +1199,17 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 }
             }
         }
-    } else if (message?.flags?.pf2e?.origin?.type == "feat") {
-        var feat = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+    } else if (message?.flags?.pf2e?.origin?.type === "feat") {
+        const feat = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
 
-        if (feat.slug == "rage" && !hasCondition(message.actor, "fatigued") && !hasEffect(message.actor, "effect-rage")) {
+        if (feat.slug === "rage" && !hasCondition(message.actor, "fatigued") && !hasEffect(message.actor, "effect-rage")) {
             setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.z3uyCMBddrPK5umr")
-        } else if (feat.slug == "reactive-shield") {
+        } else if (feat.slug === "reactive-shield") {
             (await fromUuid("Compendium.pf2e.action-macros.4hfQEMiEOBbqelAh")).execute()
-        } else if (feat.slug == "pistol-twirl") {
-            var w = message.actor.itemTypes.weapon.find(a=>a.isRanged && a.handsHeld >= 1 && parseInt(a.hands) == 1)
+        } else if (feat.slug === "kip-up") {
+            message.actor.decreaseCondition("prone");
+        } else if (feat.slug === "pistol-twirl") {
+            const w = message.actor.itemTypes.weapon.find(a=>a.isRanged && a.handsHeld >= 1 && parseInt(a.hands) === 1)
 
             if (w) {
                 if (w.ammo) {
@@ -1181,35 +1222,35 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             }
         }
 
-        var effs = featEffectMap[feat.slug] ?? undefined;
+        const effs = featEffectMap[feat.slug] ?? undefined;
         if (effs) {
             setEffectToActor(message.actor, effs)
         }
 
 
-    } else if (message?.flags?.pf2e?.origin?.type == "spell") {
-        var _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+    } else if (message?.flags?.pf2e?.origin?.type === "spell") {
+        const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
 
-        if (_obj.slug == "guidance") {
+        if (_obj.slug === "guidance") {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, "effect-guidance-immunity") && !hasEffect(tt.actor, "spell-effect-guidance")) {
                     guidanceEffect(message, tt.actor)
                 }
             });
-        } else if  (_obj.slug == "vital-beacon" && !hasEffect(message.actor, "spell-effect-vital-beacon")) {
+        } else if  (_obj.slug === "vital-beacon" && !hasEffect(message.actor, "spell-effect-vital-beacon")) {
             setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.WWtSEJGwKY4bQpUn", message?.item?.level)
-        } else if  (_obj.slug == "shield" && !hasEffect(message.actor, "effect-shield-immunity")) {
+        } else if  (_obj.slug === "shield" && !hasEffect(message.actor, "effect-shield-immunity")) {
             setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.Jemq5UknGdMO7b73", message?.item?.level)
-        } else if  (_obj.slug == "stabilize") {
+        } else if  (_obj.slug === "stabilize") {
             game.user.targets.forEach(tt => {
                 if (hasCondition(tt.actor, "dying")) {
                     tt.actor.toggleCondition("dying")
                 }
             });
-        } else if  (_obj.slug == "blur") {
-            if (game.user.targets.size == 0) {
+        } else if  (_obj.slug === "blur") {
+            if (game.user.targets.size === 0) {
                 increaseConditionForActor(message, "concealed");
-            } else if (game.user.targets.size == 1) {
+            } else if (game.user.targets.size === 1) {
                 if (distanceIsCorrect(message.token, game.user.targets.first(), getSpellRange(message.actor, _obj))) {
                     increaseConditionForActor({'actor': game.user.targets.first().actor}, "concealed");
                 } else {
@@ -1219,53 +1260,53 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                 ui.notifications.info(`${message.actor.name} chose incorrect count of targets for Blur spell`);
             }
 
-        } else if  (_obj.slug == "death-ward") {
+        } else if  (_obj.slug === "death-ward") {
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.s6CwkSsMDGfUmotn", "Blur", getSpellRange(message.actor, _obj))
-        } else if  (_obj.slug == "fly") {
+        } else if  (_obj.slug === "fly") {
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.MuRBCiZn5IKeaoxi", "Fly", getSpellRange(message.actor, _obj))
-        } else if  (_obj.slug == "protection") {
+        } else if  (_obj.slug === "protection") {
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.RawLEPwyT5CtCZ4D", "Protection", getSpellRange(message.actor, _obj))
-        }  else if  (_obj.slug == "stoneskin") {
+        }  else if  (_obj.slug === "stoneskin") {
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.JHpYudY14g0H4VWU", "Stoneskin", getSpellRange(message.actor, _obj))
-        } else if  (_obj.slug == "energy-aegis") {
+        } else if  (_obj.slug === "energy-aegis") {
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.4Lo2qb5PmavSsLNk", "Energy Aegis", getSpellRange(message.actor, _obj))
-        } else if  (_obj.slug == "regenerate") {
+        } else if  (_obj.slug === "regenerate") {
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.dXq7z633ve4E0nlX", "Regenerate", getSpellRange(message.actor, _obj))
-        }  else if  (_obj.slug == "ant-haul") {
+        }  else if  (_obj.slug === "ant-haul") {
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.5yCL7InrJDHpaQjz", "Ant Haul", getSpellRange(message.actor, _obj))
-        } else if  (_obj.slug == "heroism") {
+        } else if  (_obj.slug === "heroism") {
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.l9HRQggofFGIxEse", "Heroism", getSpellRange(message.actor, _obj))
-        } else if  (_obj.slug == "soothe") {
+        } else if  (_obj.slug === "soothe") {
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.nkk4O5fyzrC0057i", "Soothe", getSpellRange(message.actor, _obj))
-        } else if  (_obj.slug == "life-boost") {
+        } else if  (_obj.slug === "life-boost") {
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.NQZ88IoKeMBsfjp7", "Life Boost", getSpellRange(message.actor, _obj))
-        } else if  (_obj.slug == "apex-companion") {
+        } else if  (_obj.slug === "apex-companion") {
             setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.NXzo2kdgVixIZ2T1", "Apex Companion", getSpellRange(message.actor, _obj), true)
-        } else if  (_obj.slug == "aberrant-form") {
+        } else if  (_obj.slug === "aberrant-form") {
             setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.iOBUgipEjgu7jA5k", message?.item?.level)
-        } else if  (_obj.slug == "adapt-self") {
+        } else if  (_obj.slug === "adapt-self") {
             setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.39ZPxVV3WYb54951", message?.item?.level)
-        } else if  (_obj.slug == "aerial-form") {
+        } else if  (_obj.slug === "aerial-form") {
             setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.bgOAblEI21XV8Pg3", message?.item?.level)
-        }  else if  (_obj.slug == "angel-form") {
+        }  else if  (_obj.slug === "angel-form") {
             setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.3Hd6ZtQYlel5fYIC", message?.item?.level)
-        }  else if  (_obj.slug == "animal-form") {
+        }  else if  (_obj.slug === "animal-form") {
             setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.h68Fr3fht1319txv", message?.item?.level)
-        }   else if  (_obj.slug == "animal-feature") {
+        }   else if  (_obj.slug === "animal-feature") {
             if (message?.item?.level >= 4) {
                 setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.A61YUZctL5D1e351", message?.item?.level)
             } else {
                 setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.pzPqJbOvHdgtIzH1", message?.item?.level)
             }
-        }  else if  (_obj.slug == "dimension-door") {
+        }  else if  (_obj.slug === "dimension-door") {
             if (message?.item?.level >= 5) {
                 setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.YUY4TqQQrxs6qLKT", message?.item?.level)
             }
-        } else if  (_obj.slug == "haste") {
-            if (game.user.targets.size == 0) {
+        } else if  (_obj.slug === "haste") {
+            if (game.user.targets.size === 0) {
                 setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.U6JZ3NYNtxjXeVdE", message?.item?.level)
-            } else if (game.user.targets.size == 1 || (game.user.targets.size <= 6 && message?.item?.level >= 7) ) {
-                var spellRange = getSpellRange(message.actor, _obj);
+            } else if (game.user.targets.size === 1 || (game.user.targets.size <= 6 && message?.item?.level >= 7) ) {
+                const spellRange = getSpellRange(message.actor, _obj);
                 game.user.targets.forEach(tt => {
                     if (distanceIsCorrect(message.token, tt, spellRange)) {
                         setEffectToActor(tt.actor, "Compendium.pf2e-action-support.action-support.Item.U6JZ3NYNtxjXeVdE", message?.item?.level)
@@ -1276,11 +1317,11 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             } else {
                 ui.notifications.info(`${message.actor.name} chose incorrect count of targets for Haste spell`);
             }
-        } else if  (_obj.slug == "resist-energy") {
-            if (game.user.targets.size == 0) {
+        } else if  (_obj.slug === "resist-energy") {
+            if (game.user.targets.size === 0) {
                 setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.con2Hzt47JjpuUej", message?.item?.level)
-            } else if (game.user.targets.size == 1 || (game.user.targets.size == 2 && message?.item?.level >= 4) || (game.user.targets.size <= 5 && message?.item?.level >= 7) ) {
-                var spellRange = getSpellRange(message.actor, _obj);
+            } else if (game.user.targets.size === 1 || (game.user.targets.size === 2 && message?.item?.level >= 4) || (game.user.targets.size <= 5 && message?.item?.level >= 7) ) {
+                const spellRange = getSpellRange(message.actor, _obj);
                 game.user.targets.forEach(tt => {
                     if (distanceIsCorrect(message.token, tt, spellRange)) {
                         setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.con2Hzt47JjpuUej", message?.item?.level)
@@ -1291,28 +1332,28 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             } else {
                 ui.notifications.info(`${message.actor.name} chose incorrect count of targets for Life Boost spell`);
             }
-        } else if  (_obj.slug == "anticipate-peril") {
+        } else if  (_obj.slug === "anticipate-peril") {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, 'spell-effect-anticipate-peril')) {
                     setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.4ag0OHKfjROmR4Pm", message?.item?.level)
                 }
             });
-        } else if  (_obj.slug == "arcane-countermeasure") {
+        } else if  (_obj.slug === "arcane-countermeasure") {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, 'spell-effect-arcane-countermeasure')) {
                     setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.14m4s0FeRSqRlHwL")
                 }
             });
-        } else if  (_obj.slug == "augment-summoning") {
+        } else if  (_obj.slug === "augment-summoning") {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, 'spell-effect-augment-summoning')) {
                     setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.UtIOWubq7akdHMOh")
                 }
             });
-        } else if (_obj.slug == "protective-ward") {
+        } else if (_obj.slug === "protective-ward") {
             setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.5p3bKvWsJgo83FS1")
-        } else if (_obj.slug == "bane") {
-            var aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.YcyN7BDbL0Nt3CFN")
+        } else if (_obj.slug === "bane") {
+            const aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.YcyN7BDbL0Nt3CFN")
             if (aura) {
                 setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.YcyN7BDbL0Nt3CFN")
             } else {
@@ -1322,8 +1363,8 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     }
                 });
             }
-        } else if (_obj.slug == "bless") {
-            var aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.BqkDxiAi0q6Uaar4")
+        } else if (_obj.slug === "bless") {
+            const aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.BqkDxiAi0q6Uaar4")
             if (aura) {
                 setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.BqkDxiAi0q6Uaar4")
             } else {
@@ -1333,19 +1374,19 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     }
                 });
             }
-        } else if (_obj.slug == "mirror-image") {
+        } else if (_obj.slug === "mirror-image") {
             if (!hasEffect(message.actor, 'spell-effect-mirror-image')) {
                 setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.0PO5mFRhh9HxGAtv")
             }
-        } else if (_obj.slug == "see-invisibility") {
+        } else if (_obj.slug === "see-invisibility") {
             setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.T5bk6UH7yuYog1Fp", message?.item?.level)
-        } else if (_obj.slug == "mage-armor") {
+        } else if (_obj.slug === "mage-armor") {
             setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.qkwb5DD3zmKwvbk0", message?.item?.level)
-        } else if (_obj.slug == "darkvision") {
+        } else if (_obj.slug === "darkvision") {
             if (message?.item?.level >= 5) {
-                if (game.user.targets.size == 0) {
+                if (game.user.targets.size === 0) {
                     setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.inNfTmtWpsxeGBI9", message?.item?.level)
-                } else if (game.user.targets.size == 1) {
+                } else if (game.user.targets.size === 1) {
                     if (distanceIsCorrect(message.token, game.user.targets.first(), getSpellRange(message.actor, _obj))) {
                         setEffectToActor(game.user.targets.first().actor, "Compendium.pf2e.spell-effects.Item.inNfTmtWpsxeGBI9", message?.item?.level)
                     } else {
@@ -1355,9 +1396,9 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     ui.notifications.info(`${message.actor.name} chose incorrect count of targets for Darkvision spell`);
                 }
             } else if (message?.item?.level >= 3) {
-                if (game.user.targets.size == 0) {
+                if (game.user.targets.size === 0) {
                     setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.IXS15IQXYCZ8vsmX", message?.item?.level)
-                } else if (game.user.targets.size == 1) {
+                } else if (game.user.targets.size === 1) {
                     if (distanceIsCorrect(message.token, game.user.targets.first(), getSpellRange(message.actor, _obj))) {
                         setEffectToActor(game.user.targets.first().actor, "Compendium.pf2e.spell-effects.Item.IXS15IQXYCZ8vsmX", message?.item?.level)
                     } else {
@@ -1369,25 +1410,25 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             } else {
                 setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.IXS15IQXYCZ8vsmX", message?.item?.level)
             }
-        } else if (_obj.slug == "longstrider") {
+        } else if (_obj.slug === "longstrider") {
             if (message?.item?.level >= 2) {
                 setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.7vIUF5zbvHzVcJA0", message?.item?.level)
             } else {
                 setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.PQHP7Oph3BQX1GhF", message?.item?.level)
             }
-        } else if (_obj.slug == "spectral-hand") {
+        } else if (_obj.slug === "spectral-hand") {
             setEffectToActor(message.actor, effect_spectral_hand)
         }
     }
 
-    if (message?.flags?.pf2e?.modifiers?.find(a=>a.slug == "guidance" && a.enabled)) {
+    if (message?.flags?.pf2e?.modifiers?.find(a=>a.slug === "guidance" && a.enabled)) {
         deleteEffectFromActor(message.actor, "spell-effect-guidance")
     }
 });
 
 async function deleteFeintEffects(message) {
-    var aef = hasEffect(message.actor, `effect-feint-success-${message.actor.id}-${message?.target?.actor.id}`)
-    var tef = hasEffect(message?.target?.actor, `effect-feint-success-${message.actor.id}`)
+    const aef = hasEffect(message.actor, `effect-feint-success-${message.actor.id}-${message?.target?.actor.id}`)
+    const tef = hasEffect(message?.target?.actor, `effect-feint-success-${message.actor.id}`)
     if (aef && tef) {
         deleteEffectFromActor(message.actor, "effect-pistol-twirl")
         if (hasPermissions(aef)) {
@@ -1403,8 +1444,43 @@ async function deleteFeintEffects(message) {
     }
 }
 
+async function handleAffection(message, eff_uuid) {
+    const affectionObj = hasAfflictionBySourceId(message.actor, eff_uuid);
+    if (affectionObj) {
+        if (criticalSuccessMessageOutcome(message)) {
+            await affectionObj.decrease();
+            await affectionObj.decrease();
+        } else if (successMessageOutcome(message)) {
+            await affectionObj.decrease();
+        } else if (failureMessageOutcome(message)) {
+            await affectionObj.increase();
+        } else {
+            await affectionObj.increase();
+            await affectionObj.increase();
+        }
+    } else if (failureMessageOutcome(message)) {
+        afflictionEffect(message, eff_uuid)
+    } else if (criticalFailureMessageOutcome(message)) {
+        afflictionEffect(message, eff_uuid, true)
+    }
+}
+
+async function afflictionEffect(message, eff, crit=false) {
+    const aEffect = (await fromUuid(eff)).toObject();
+    aEffect.flags = mergeObject(aEffect.flags ?? {}, { core: { sourceId: eff } });
+    if (crit) {
+        aEffect.system.stage = 2
+    }
+
+    if (hasPermissions(message.actor)) {
+        message.actor.createEmbeddedDocuments("Item", [aEffect]);
+    } else {
+        socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, message.actor.uuid], 0)
+    }
+}
+
 async function guidanceEffect(message, target) {
-    var aEffect = (await fromUuid("Compendium.pf2e.spell-effects.Item.3qHKBDF7lrHw8jFK")).toObject();
+    const aEffect = (await fromUuid("Compendium.pf2e.spell-effects.Item.3qHKBDF7lrHw8jFK")).toObject();
 
     aEffect.system.context = mergeObject(aEffect.system.context ?? {}, {
         "origin": {
@@ -1427,7 +1503,7 @@ async function guidanceEffect(message, target) {
 }
 
 async function effectWithActorNextTurn(message, target, uuid, optionalName=undefined, ownerIcon=false) {
-    var aEffect = (await fromUuid(uuid)).toObject();
+    const aEffect = (await fromUuid(uuid)).toObject();
 
     aEffect.system.context = mergeObject(aEffect.system.context ?? {}, {
         "origin": {
@@ -1454,8 +1530,8 @@ async function effectWithActorNextTurn(message, target, uuid, optionalName=undef
 }
 
 async function huntedPreyEffect(message, _obj) {
-    if (game.user.targets.size == 1) {
-        var aEffect = (await fromUuid(effect_hunt_prey)).toObject();
+    if (game.user.targets.size === 1) {
+        const aEffect = (await fromUuid(effect_hunt_prey)).toObject();
         aEffect.name = aEffect.name.replace("Actor", message.actor.name)
         aEffect.img = message.token.texture.src
         aEffect.system.context = mergeObject(aEffect.system.context ?? {}, {
@@ -1470,7 +1546,7 @@ async function huntedPreyEffect(message, _obj) {
         aEffect.system.slug = aEffect.system.slug.replace("actor", message?.actor?.id)
 
 
-        var target = game.user.targets.first().actor;
+        const target = game.user.targets.first().actor;
         if (hasPermissions(target)) {
             target.createEmbeddedDocuments("Item", [aEffect]);
         } else {
@@ -1496,13 +1572,13 @@ Hooks.on('combatRound', async (combat, updateData, updateOptions) => {
             if (hasEffect(a.actor, "effect-flat-footed-tumble-behind")) {
                 deleteEffectFromActor(cc.actor, "effect-flat-footed-tumble-behind")
             }
-            var qq = hasEffectStart(a.actor, "effect-feint-success");
+            const qq = hasEffectStart(a.actor, "effect-feint-success");
             if (qq) {
                 deleteEffectFromActor(a.actor, qq.slug)
                 deleteEffectFromActor(cc.actor, "effect-pistol-twirl")
             }
             Object.values(a?.itemTypes).flat(1).forEach(i => {
-                if (i?.system?.frequency?.per == "round" || i?.system?.frequency?.per == "turn") {
+                if (i?.system?.frequency?.per === "round" || i?.system?.frequency?.per === "turn") {
                     i.update({
                         "system.frequency.value": i.system.frequency.max
                     });
@@ -1519,7 +1595,7 @@ Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
         if (hasEffect(cc.actor, "effect-flat-footed-tumble-behind")) {
             deleteEffectFromActor(cc.actor, "effect-flat-footed-tumble-behind")
         }
-        var qq = hasEffectStart(cc.actor, "effect-feint-success");
+        const qq = hasEffectStart(cc.actor, "effect-feint-success");
         if (qq) {
             deleteEffectFromActor(cc.actor, qq.slug)
             deleteEffectFromActor(cc.actor, "effect-pistol-twirl")
@@ -1531,8 +1607,8 @@ Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
 });
 
 Hooks.on('pf2e.restForTheNight', async (actor) => {
-    if ("character" == actor?.type && "summoner" == actor?.class?.slug) {
-        var ei = actor.getFlag(moduleName, "eidolon");
+    if ("character" === actor?.type && "summoner" === actor?.class?.slug) {
+        const ei = actor.getFlag(moduleName, "eidolon");
         if (ei) {
             (await fromUuid(ei)).update({
                 "system.attributes.hp.value": actor.system.attributes.hp.value
@@ -1545,11 +1621,11 @@ Hooks.on('preUpdateActor', async (actor, data, diff, id) => {
     if (!game.settings.get(moduleName, "sharedHP")) {
         return
     }
-    if (data.system.attributes.hp) {
-        if ("character" == actor?.type && "eidolon" == actor?.class?.slug) {
-            var f = actorFeat(actor, "summoner-hp")
+    if (data?.system?.attributes?.hp) {
+        if ("character" === actor?.type && "eidolon" === actor?.class?.slug) {
+            const f = actorFeat(actor, "summoner-hp")
             if (f && f?.flags?.summoner) {
-                var as = await fromUuid(f.flags.summoner);
+                const as = await fromUuid(f.flags.summoner);
 
                 const hp = as.system.attributes.hp;
                 hp.value = data?.system?.attributes?.hp?.value;
@@ -1559,10 +1635,10 @@ Hooks.on('preUpdateActor', async (actor, data, diff, id) => {
                     "system.attributes.hp": hp
                 }, { "noHook": true })
             }
-        } else if ("character" == actor?.type && "summoner" == actor?.class?.slug) {
-            var ei = actor.getFlag(moduleName, "eidolon");
+        } else if ("character" === actor?.type && "summoner" === actor?.class?.slug) {
+            const ei = actor.getFlag(moduleName, "eidolon");
             if (ei) {
-                var as = await fromUuid(ei);
+                const as = await fromUuid(ei);
 
                 const hp = as.system.attributes.hp;
                 hp.value = data?.system?.attributes?.hp?.value;
@@ -1583,6 +1659,10 @@ function gravityWeapon(actor) {
             actor.toggleRollOption("damage-roll", "gravity-weapon")
         }
     }
+}
+
+function eqMessageDCLabel(message, l) {
+    return message?.flags?.pf2e?.context?.dc?.label.includes(l);
 }
 
 function precision(actor) {

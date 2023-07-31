@@ -100,6 +100,7 @@
 - Animus Mine
 - Apex Companion
 - Aqueous Blast
+- Ki Strike
 
 
 ### 3rd party
@@ -128,6 +129,9 @@
 - Precision
 - Hunt Prey
 - Pistol Twirl
+- Combat Grab
+- Godless Healing
+- Kip Up
 
 ### Items
 

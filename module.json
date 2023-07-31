@@ -2,7 +2,7 @@
   "id": "pf2e-action-support",
   "title": "PF2e Action Support",
   "description": "PF2e Action Support",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "authors": [
     {
       "name": "Reyzor",
@@ -17,6 +17,21 @@
   "styles": [
     "pf2e-action-support.css"
   ],
+  "packFolders": [
+    {
+      "name": "PF2e Action Support",
+      "sorting": "m",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "packs": [
+        "action-support",
+        "action-support-afflictions",
+        "action-support-macros"
+      ]
+    }
+  ],
   "packs": [
     {
       "label": "Action Support",
@@ -26,6 +41,19 @@
       "private": false,
       "type": "Item",
       "flags": {}
+    },
+    {
+        "label": "Action Support Afflictions",
+        "name": "action-support-afflictions",
+        "path": "packs/action-support-afflictions.db",
+        "system": "pf2e",
+        "private": false,
+        "type": "Item",
+        "ownership": {
+            "PLAYER": "OBSERVER",
+            "ASSISTANT": "OWNER"
+        },
+        "flags": {}
     },
     {
         "label": "Action Support Macros",

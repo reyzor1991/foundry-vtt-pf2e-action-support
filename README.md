@@ -10,7 +10,7 @@
 ![](https://img.shields.io/github/downloads-pre/reyzor1991/foundry-vtt-pf2e-action-support/latest/total)
 ![](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fpf2e-action-support&colorB=4aa94a)
 
-[Version]: https://img.shields.io/badge/Version-0.1.0-yellow?style=flat-square
+[Version]: https://img.shields.io/badge/Version-0.1.1-yellow?style=flat-square
 [Version URL]: https://github.com/reyzor1991/foundry-vtt-pf2e-action-support
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W2LF8UA)
@@ -23,3 +23,8 @@
 See [ACTIONS.md](./ACTIONS.md)
 
 ### To get more info/examples visit [WIKI](https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/wiki)
+
+### Afflictions
+- Need to copy affliction-card.hbs from /modules/pf2e-action-support/templates tp /systems/pf2e/templates/chat
+- Update pf2e.mjs file in /systems/pf2e. Replace _onCreate(data,options,userId),this.createStageMessage() ->  _onCreate(data,options,userId),data.system.onset||this.createStageMessage()
+- ```_token.actor.itemTypes.affliction.forEach(a=>a.delete())``` - delete all affliction from actor

@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.1.1
+
+### New feature
+- Tested feature - Afflictions(only few tested examples)
+- Handling of Combat Grab Feat
+- Handling of Godless Healing Feat
+- Handling of Kip Up Feat
+- Handling of Ki Strike Spell
+
 ## Version 0.1.0
 
 ### New feature

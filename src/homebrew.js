@@ -53,7 +53,7 @@ class Homebrew {
   }
 
   static fromObj(obj) {
-    var h = new Homebrew();
+    const h = new Homebrew();
     Object.assign(h, obj);
     h.triggers = h.triggers.map(a=>HomebrewTrigger.fromObj(a));
     h.requirements = h.requirements.map(a=>HomebrewRequirement.fromObj(a));
@@ -67,17 +67,17 @@ class PF2eActionSupportHomebrewSettings extends FormApplication {
 
     constructor() {
         super();
-        var _e = game.settings.get("pf2e-action-support", "homebrew");
+        const _e = game.settings.get("pf2e-action-support", "homebrew");
         if (_e) {
             this.homebrews = _e.map(a=>Homebrew.fromObj(a));
         }
     }
 
     async updateValue(key, value) {
-        var qq = key.split(".");
-        if (qq.length == 2) {
+        const qq = key.split(".");
+        if (qq.length === 2) {
             this.homebrews[qq[0]][qq[1]] = value;
-        } else if (qq.length == 4) {
+        } else if (qq.length === 4) {
             this.homebrews[qq[0]][qq[1]][qq[2]][qq[3]] = value;
         }
     }
@@ -97,8 +97,8 @@ class PF2eActionSupportHomebrewSettings extends FormApplication {
     }
 
     rawValue() {
-        var res = [];
-        for (var i=0; i < this.homebrews.length; i++) {
+        const res = [];
+        for (const i=0; i < this.homebrews.length; i++) {
             res.push({
                 effect: this.homebrews[i].effect,
                 target: this.homebrews[i].target,
@@ -150,7 +150,7 @@ class PF2eActionSupportHomebrewSettings extends FormApplication {
         html.find('.add-trigger').click(async (event) => {
             this.updateForm(event);
 
-            var i = $(event.currentTarget).data().idx;
+            const i = $(event.currentTarget).data().idx;
             this.homebrews[i].triggers.push(new HomebrewTrigger());
             super.render()
         });
@@ -158,7 +158,7 @@ class PF2eActionSupportHomebrewSettings extends FormApplication {
         html.find('.add-requirement').click(async (event) => {
             this.updateForm(event);
 
-            var i = $(event.currentTarget).data().idx;
+            const i = $(event.currentTarget).data().idx;
             this.homebrews[i].requirements.push(new HomebrewRequirement());
             super.render()
         });
@@ -207,7 +207,7 @@ class PF2eActionSupportHomebrewSettings extends FormApplication {
 
 Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
     if (game.settings.get("pf2e-action-support", "useHomebrew")) {
-        var _obj = message?.flags?.pf2e?.origin ? (await fromUuid(message?.flags?.pf2e?.origin?.uuid)) : undefined;
+        const _obj = message?.flags?.pf2e?.origin ? (await fromUuid(message?.flags?.pf2e?.origin?.uuid)) : undefined;
 
         game.settings.get("pf2e-action-support", "homebrew")
             .filter(a=>a.triggers.length > 0 && a.effect.length > 0 && a.target != "None")
@@ -222,8 +222,8 @@ async function handleHomebrewMessages(hb, message, _obj=undefined) {
     hb.triggers.forEach( t => {
         if (t.battle && !game?.combats?.active) {return}
         if (
-            (t.trigger == "EqualsSlug" && _obj?.slug == t.slug)
-            || (t.trigger == "HasOption" && hasOption(message, t.slug))
+            (t.trigger === "EqualsSlug" && _obj?.slug === t.slug)
+            || (t.trigger === "HasOption" && hasOption(message, t.slug))
         ) {
             handleTarget(hb.target, hb.effect, message, _obj)
         }
@@ -231,32 +231,32 @@ async function handleHomebrewMessages(hb, message, _obj=undefined) {
 }
 
 function handleRequirement(req, message) {
-    if (req.requirement == "None") {
+    if (req.requirement === "None") {
         return true;
-    } else if (req.requirement == "Success") {
+    } else if (req.requirement === "Success") {
         return successMessageOutcome(message);
-    } else if (req.requirement == "CriticalSuccess") {
+    } else if (req.requirement === "CriticalSuccess") {
         return criticalSuccessMessageOutcome(message);
-    } else if (req.requirement == "AnySuccess") {
+    } else if (req.requirement === "AnySuccess") {
         return anySuccessMessageOutcome(message);
-    } else if (req.requirement == "Failure") {
+    } else if (req.requirement === "Failure") {
         return failureMessageOutcome(message);
-    } else if (req.requirement == "CriticalFailure") {
+    } else if (req.requirement === "CriticalFailure") {
         return criticalFailureMessageOutcome(message);
-    } else if (req.requirement == "AnyFailure") {
+    } else if (req.requirement === "AnyFailure") {
         return anyFailureMessageOutcome(message);
     }
     return false;
 }
 
 async function handleTarget(targetType, effect, message, _obj=undefined) {
-    if (targetType == "SelfEffect") {
+    if (targetType === "SelfEffect") {
         setEffectToActor(message.actor, effect, message?.item?.level)
-    } else if (targetType == "TargetEffect") {
+    } else if (targetType === "TargetEffect") {
         setEffectToTarget(message, effect)
-    } else if (targetType == "SelfOrTargetEffect") {
-        setEffectToActorOrTarget(message, effect, _obj ? _obj.name : '', _obj && message?.flags?.pf2e?.origin?.type == "spell" ? getSpellRange(message.actor, _obj) : 1000)
-    } else if (targetType == "TargetsEffect") {
+    } else if (targetType === "SelfOrTargetEffect") {
+        setEffectToActorOrTarget(message, effect, _obj ? _obj.name : '', _obj && message?.flags?.pf2e?.origin?.type === "spell" ? getSpellRange(message.actor, _obj) : 1000)
+    } else if (targetType === "TargetsEffect") {
         game.user.targets.forEach(tt => {
             setEffectToActor(tt.actor, effect, message?.item?.level)
         });
