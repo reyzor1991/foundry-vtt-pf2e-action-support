@@ -98,7 +98,7 @@ class PF2eActionSupportHomebrewSettings extends FormApplication {
 
     rawValue() {
         const res = [];
-        for (const i=0; i < this.homebrews.length; i++) {
+        for (let i=0; i < this.homebrews.length; i++) {
             res.push({
                 effect: this.homebrews[i].effect,
                 target: this.homebrews[i].target,

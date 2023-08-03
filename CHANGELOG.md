@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.1
+
+### Bug fixes
+- Fix issue with homebrew
+
 ## Version 0.2.0
 
 ### New feature
