@@ -1,9 +1,18 @@
 # Changelog
 
+## Version 0.1.2
+
+### New feature
+- Handling of Enlarge Spell (without 6th)
+- Handling of Aid Action
+- Handling of Blizzard Evasion Action
+- Handling of Bullet Dancer Stance Action
+- Handling of Overdrive Action
+
 ## Version 0.1.1
 
 ### New feature
-- Tested feature - Afflictions(only few tested examples)
+- Testing feature - Afflictions(only few tested examples)
 - Handling of Combat Grab Feat
 - Handling of Godless Healing Feat
 - Handling of Kip Up Feat

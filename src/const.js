@@ -37,6 +37,26 @@ export const effect_spectral_hand = "Compendium.pf2e-action-support.action-suppo
 export const effect_hunt_prey = "Compendium.pf2e-action-support.action-support.Item.a51AN6VfpW9b4ttm";
 export const effect_allegro = "Compendium.pf2e-action-support.action-support.Item.kZmteGRpdP6qgIdC";
 
+
+const pol = ["spell-effect-wild-morph", "spell-effect-juvenile-companion",
+"spell-effect-pest-form", "spell-effect-wild-shape", "spell-effect-enlarge", "spell-effect-enlarge-heightened-4th",
+ "spell-effect-shrink", "spell-effect-summoners-visage", "spell-effect-ooze-form-ochre-jelly", "spell-effect-elephant-form",
+ "spell-effect-gaseous-form", "spell-effect-swarm-form", "spell-effect-unusual-anatomy",
+ "spell-effect-righteous-might", "spell-effect-corrosive-body", "spell-effect-corrosive-body-heightened-9th",
+ "spell-effect-cosmic-form-moon", "spell-effect-cosmic-form-sun", "spell-effect-fiery-body",
+ "spell-effect-fiery-body-9th-level", "spell-effect-ki-form", "spell-effect-apex-companion",
+ "spell-effect-nature-incarnate-kaiju", "spell-effect-nature-incarnate-green-man", "spell-effect-dragon-claws",
+ "spell-effect-evolution-surge", "spell-effect-gluttons-jaw", "spell-effect-embrace-the-pit", "spell-effect-moon-frenzy",
+ "spell-effect-divine-vessel", "spell-effect-divine-vessel-9th-level"];
+
+const polAnim = ["spell-effect-aberrant-form-", "spell-effect-animal-form-", "spell-effect-insect-form-",
+"spell-effect-ooze-form-", "spell-effect-aerial-form-", "spell-effect-bestial-curse-", "spell-effect-dinosaur-form-",
+"spell-effect-fey-form-", "spell-effect-elemental-form-", "spell-effect-plant-form-", "spell-effect-daemon-form-",
+"spell-effect-devil-form-", "spell-effect-dragon-form-", "spell-effect-tempest-form-", "spell-effect-angel-form-",
+"spell-effect-monstrosity-form-", "spell-effect-element-embodied-",
+"spell-effect-animal-feature-", "spell-effect-adapt-self-", "spell-effect-shifting-form-", "spell-effect-dragon-wings-",
+"spell-effect-mantle-of-the-frozen-heart-", "spell-effect-mantle-of-the-magma-heart-"]
+
 export const spellEffectMap = {
     'adaptive-ablation': ['Compendium.pf2e.spell-effects.Item.6GAztnHuQSwAp1k1'],
     'agile-feet': ['Compendium.pf2e.spell-effects.Item.y9PJdDYFemhk6Z5o'],
@@ -95,25 +115,30 @@ export const featEffectMap = {
     "buckler-dance": "Compendium.pf2e.feat-effects.Item.PS17dsXkTdQmOv7w",
     "dueling-dance-swashbuckler": "Compendium.pf2e.feat-effects.Item.1nCwQErK6hpkNvfw",
     "twinned-defense-swashbuckler": "Compendium.pf2e.feat-effects.Item.3eHMqVx30JGiJqtM",
-}
+};
 
 export const actionEffectMap = {
     "conduct-energy": effect_conduct_energy,
-    "daydream-trance": effect_daydream_trance,
     "energy-shot": effect_energy_shot,
-    "entitys-resurgence": effect_entitys_resurgence,
     "fade-into-daydreams": effect_concealed_start_turn,
-    "follow-the-expert": effect_follow_the_expert,
     "anadi-venom": "Compendium.pf2e.feat-effects.Item.gN1LbKYQgi8Fx98V",
     "arcane-cascade": "Compendium.pf2e.feat-effects.Item.fsjO5oTKttsbpaKl",
     "bend-time": effect_bend_time,
     "blizzard-evasion": "Compendium.pf2e.feat-effects.Item.JF2xCqL6t4UJZtUi",
     "calculate-threats": "Compendium.pf2e.feat-effects.Item.P6druSuWIVoLrXJR",
-    "call-upon-the-brightness": "Compendium.pf2e.feat-effects.Item.xPg5wzzKNxJy18rU",
     "catharsis": "Compendium.pf2e.feat-effects.Item.JysvElDwGZ5ABQ6x",
-    "clue-in": "Compendium.pf2e.feat-effects.Item.vhSYlQiAQMLuXqoc",
     "harrow-the-fiend": "Compendium.pf2e.feat-effects.Item.MSkspeBsbXm6LQ19",
     "recall-under-pressure": "Compendium.pf2e.feat-effects.Item.CW4zphOOpeaLJIWc",
     "tail-toxin": "Compendium.pf2e.feat-effects.Item.Q0DKJRnDuuUnLpvn",
     "tenacious-stance": "Compendium.pf2e.feat-effects.Item.Ms6WPXRWfXb2KpG2",
+};
+
+export const actionGeneralEffectMap = {
+    "daydream-trance": effect_daydream_trance,
+    "entitys-resurgence": effect_entitys_resurgence,
+    "follow-the-expert": effect_follow_the_expert,
+    "call-upon-the-brightness": "Compendium.pf2e.feat-effects.Item.xPg5wzzKNxJy18rU",
+    "clue-in": "Compendium.pf2e.feat-effects.Item.vhSYlQiAQMLuXqoc",
+    "bullet-dancer-stance": "Compendium.pf2e.feat-effects.Item.6ctQFQfSZ6o1uyyZ",
+    "change-shape-beastkin": "Compendium.pf2e.feat-effects.Item.qIOEe4kUN7FOBifb",
 };

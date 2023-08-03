@@ -1,24 +1,5 @@
 let socketlibSocket = undefined;
 
-const pol = ["spell-effect-wild-morph", "spell-effect-juvenile-companion",
-"spell-effect-pest-form", "spell-effect-wild-shape", "spell-effect-enlarge", "spell-effect-enlarge-heightened-4th",
- "spell-effect-shrink", "spell-effect-summoners-visage", "spell-effect-ooze-form-ochre-jelly", "spell-effect-elephant-form",
- "spell-effect-gaseous-form", "spell-effect-swarm-form", "spell-effect-unusual-anatomy",
- "spell-effect-righteous-might", "spell-effect-corrosive-body", "spell-effect-corrosive-body-heightened-9th",
- "spell-effect-cosmic-form-moon", "spell-effect-cosmic-form-sun", "spell-effect-fiery-body",
- "spell-effect-fiery-body-9th-level", "spell-effect-ki-form", "spell-effect-apex-companion",
- "spell-effect-nature-incarnate-kaiju", "spell-effect-nature-incarnate-green-man", "spell-effect-dragon-claws",
- "spell-effect-evolution-surge", "spell-effect-gluttons-jaw", "spell-effect-embrace-the-pit", "spell-effect-moon-frenzy",
- "spell-effect-divine-vessel", "spell-effect-divine-vessel-9th-level"];
-
-const polAnim = ["spell-effect-aberrant-form-", "spell-effect-animal-form-", "spell-effect-insect-form-",
-"spell-effect-ooze-form-", "spell-effect-aerial-form-", "spell-effect-bestial-curse-", "spell-effect-dinosaur-form-",
-"spell-effect-fey-form-", "spell-effect-elemental-form-", "spell-effect-plant-form-", "spell-effect-daemon-form-",
-"spell-effect-devil-form-", "spell-effect-dragon-form-", "spell-effect-tempest-form-", "spell-effect-angel-form-",
-"spell-effect-monstrosity-form-", "spell-effect-element-embodied-",
-"spell-effect-animal-feature-", "spell-effect-adapt-self-", "spell-effect-shifting-form-", "spell-effect-dragon-wings-",
-"spell-effect-mantle-of-the-frozen-heart-", "spell-effect-mantle-of-the-magma-heart-"]
-
 async function setSummonerHP(actor) {
     if (!game.user.isGM) {
         ui.notifications.info(`Only GM can run script`);
@@ -745,6 +726,13 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     applyDamage(message.actor, message.token, `${message.actor.level}[fire]`)
                 }
             }
+            if (hasOption(message, "action:overdrive")) {
+                if (anySuccessMessageOutcome(message)) {
+                    setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.1XlJ9xLzL19GHoOL")
+                } else if (criticalFailureMessageOutcome(message)) {
+                    applyDamage(message.actor, message.token, `${message.actor.level}[fire]`)
+                }
+            }
         } else if (messageType(message, "perception-check")) {
             if (hasOption(message, "action:sense-motive")) {
                 if (actorFeat(message?.actor, "predictable")) {
@@ -991,6 +979,14 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     }
                 }
             }
+
+            if (hasOption(message, "action:overdrive")) {
+                if (anySuccessMessageOutcome(message)) {
+                    setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.1XlJ9xLzL19GHoOL")
+                } else if (criticalFailureMessageOutcome(message)) {
+                    applyDamage(message.actor, message.token, `${message.actor.level}[fire]`)
+                }
+            }
         }
     }
 
@@ -1134,15 +1130,15 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     deleteMorphEffects(message);
                 }
             }
-        } else if (hasOption(message, "disease") || hasOption(message, "drug")) {
-            if (game.settings.get(moduleName, "affliction")) {
-                if (eqMessageDCLabel(message, 'Addictive Exhaustion DC')) {
-                    handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.aODJbcFmhQcbllba")
-                } else if (eqMessageDCLabel(message, "Ghoul Fever DC")) {
-                    handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.FwevQUDFd1uTU8cR")
-                } else if (eqMessageDCLabel(message, "Alcohol DC")) {
-                    handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.N12lBsMmAKvO3mSh")
-                }
+        } else if (hasOption(message, "item:type:affliction") && game.settings.get(moduleName, "affliction")) {
+            if (eqMessageDCLabel(message, 'Addictive Exhaustion DC')) {
+                handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.aODJbcFmhQcbllba")
+            } else if (eqMessageDCLabel(message, "Ghoul Fever DC")) {
+                handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.FwevQUDFd1uTU8cR")
+            } else if (eqMessageDCLabel(message, "Alcohol DC")) {
+                handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.N12lBsMmAKvO3mSh")
+            } else if (eqMessageDCLabel(message, "Dream Spider Venom DC")) {
+                handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.PxVQlg6YFmuV4INb")
             }
         }
     }
@@ -1198,7 +1194,23 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
                     });
                 }
             }
+        } else if (_obj.slug === "aid") {
+            if (game.user.targets.size != 1) {
+                ui.notifications.info(`${message.actor.name} forgot to choose 1 ally`);
+            } else {
+                game.user.targets.first().forEach(tt => {
+                    if (!hasEffect(tt.actor, 'effect-aid')) {
+                        setEffectToActor(tt.actor, "Compendium.pf2e.other-effects.Item.AHMUpMbaVkZ5A1KX")
+                    }
+                });
+            }
         }
+
+        const eff = actionGeneralEffectMap[_obj.slug]
+        if (eff) {
+            setEffectToActor(message.actor, eff)
+        }
+
     } else if (message?.flags?.pf2e?.origin?.type === "feat") {
         const feat = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
 
@@ -1418,6 +1430,12 @@ Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
             }
         } else if (_obj.slug === "spectral-hand") {
             setEffectToActor(message.actor, effect_spectral_hand)
+        } else if (_obj.slug === "enlarge") {
+            if (message?.item?.level < 4) {
+                setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.sPCWrhUHqlbGhYSD", "Enlarge", getSpellRange(message.actor, _obj))
+            } else if (message?.item?.level < 6) {
+                setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.41WThj17MZBXTO2X", "Enlarge", getSpellRange(message.actor, _obj))
+            }
         }
     }
 
@@ -1448,14 +1466,12 @@ async function handleAffection(message, eff_uuid) {
     const affectionObj = hasAfflictionBySourceId(message.actor, eff_uuid);
     if (affectionObj) {
         if (criticalSuccessMessageOutcome(message)) {
-            await affectionObj.decrease();
-            await affectionObj.decrease();
+            await affectionObj.decrease(true);
         } else if (successMessageOutcome(message)) {
             await affectionObj.decrease();
-        } else if (failureMessageOutcome(message)) {
-            await affectionObj.increase();
+        } else if (criticalFailureMessageOutcome(message)) {
+            await affectionObj.increase(true);
         } else {
-            await affectionObj.increase();
             await affectionObj.increase();
         }
     } else if (failureMessageOutcome(message)) {

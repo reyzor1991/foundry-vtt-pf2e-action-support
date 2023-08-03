@@ -42,6 +42,10 @@
 - Treat Disease
 - Tumble Through
 - Retributive Strike
+- Aid
+- Blizzard Evasion
+- Bullet Dancer Stance
+- Overdrive
 
 
 ### Spells
@@ -101,6 +105,7 @@
 - Apex Companion
 - Aqueous Blast
 - Ki Strike
+- Enlarge
 
 
 ### 3rd party
