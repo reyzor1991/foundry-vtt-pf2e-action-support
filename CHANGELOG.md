@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.2.0
+
+### New feature
+- Setting option to ignore encounter check
+- Handling of False Life Spell
+- Handling of Replenishment Of War Feat
+
 ## Version 0.1.2
 
 ### New feature

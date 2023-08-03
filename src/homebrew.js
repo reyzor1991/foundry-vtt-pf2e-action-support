@@ -261,4 +261,4 @@ async function handleTarget(targetType, effect, message, _obj=undefined) {
             setEffectToActor(tt.actor, effect, message?.item?.level)
         });
     }
-}
+};

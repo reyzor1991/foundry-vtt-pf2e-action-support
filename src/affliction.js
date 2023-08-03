@@ -27,4 +27,4 @@ async function checkAffectionStage(token, aff) {
             await aff.update({ "system.onset": null });
         }
     }
-}
+};

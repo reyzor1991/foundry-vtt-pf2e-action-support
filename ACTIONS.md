@@ -137,6 +137,7 @@
 - Combat Grab
 - Godless Healing
 - Kip Up
+- Replenishment Of War
 
 ### Items
 
