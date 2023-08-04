@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 0.2.3
+
+### New feature
+- Handling of Unusual Anatomy Spell
+- Handling of Bloodline Aberrant Feat
+- Handling of Bloodline Angelic Feat
+- Handling of Bloodline Demonic Feat
+- Handling of Bloodline Diabolic Feat
+- Handling of Bloodline Draconic Feat
+- Handling of Bloodline Elemental Feat
+- Handling of Bloodline Fey Feat
+- Handling of Bloodline Genie Feat
+
 ## Version 0.2.2
 
 ### New feature

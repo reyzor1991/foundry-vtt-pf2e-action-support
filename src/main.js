@@ -94,6 +94,13 @@ Hooks.once("init", () => {
         default: false,
         type: Boolean,
     });
+    game.settings.register(moduleName, "useBloodline", {
+        name: "Handle Bloodlines ",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
 
     PF2eActionSupportHomebrewSettings.init()
 
@@ -193,6 +200,7 @@ const setupSocket = () => {
       socketlibSocket.register("createFeintEffectOnTarget", _socketCreateFeintEffectOnTarget);
       socketlibSocket.register("deleteEffect", _socketDeleteEffect);
       socketlibSocket.register("sendGMNotification", sendGMNotification);
+      socketlibSocket.register("bloodlineDemonic", bloodlineDemonic);
   }
   return !!globalThis.socketlib
 }

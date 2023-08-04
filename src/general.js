@@ -21,6 +21,7 @@ const selfEffectMap = {
     "twinned-defense-swashbuckler": "Compendium.pf2e.feat-effects.Item.3eHMqVx30JGiJqtM",
     //spell
     "false-life": "Compendium.pf2e.spell-effects.Item.PANUWN5xXC20WBg2",
+    "unusual-anatomy": "Compendium.pf2e.spell-effects.Item.LMzFBnOEPzDGzHg4",
 }
 
 function handleTreatWounds(message) {

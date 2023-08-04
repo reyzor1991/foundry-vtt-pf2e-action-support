@@ -106,6 +106,7 @@
 - Aqueous Blast
 - Ki Strike
 - Enlarge
+- Unusual Anatomy
 
 
 ### 3rd party
@@ -138,6 +139,14 @@
 - Godless Healing
 - Kip Up
 - Replenishment Of War
+- Bloodline Aberrant
+- Bloodline Angelic
+- Bloodline Demonic
+- Bloodline Diabolic
+- Bloodline Draconic
+- Bloodline Elemental
+- Bloodline Fey
+- Bloodline Genie
 
 ### Items
 
