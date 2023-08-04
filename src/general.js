@@ -649,6 +649,8 @@ function handleSpells(message, _obj) {
         setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.NQZ88IoKeMBsfjp7", "Life Boost", getSpellRange(message.actor, _obj))
     } else if  (_obj.slug === "apex-companion") {
         setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.NXzo2kdgVixIZ2T1", "Apex Companion", getSpellRange(message.actor, _obj), true)
+    } else if  (_obj.slug === "light") {
+        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.cVVZXNbV0nElVOPZ", "Light", getSpellRange(message.actor, _obj))
     }
 
     if (_obj.slug === "aberrant-form") {

@@ -1,5 +1,19 @@
 # Changelog
 
+## Version 0.2.2
+
+### New feature
+- Not apply Treat Wounds Immunity if immunity time - 10 min
+- Handling of Daze Spell
+- Handling of Light Spell
+- Change logic of Combat Grab Feat
+- Handling of Crushing Rune
+- Handling of Drained Rune
+- Handling of Brilliant Rune
+- Handling of Disrupting Rune
+- Handling of Frost Rune
+- Handling of Thundering Rune
+
 ## Version 0.2.1
 
 ### Bug fixes

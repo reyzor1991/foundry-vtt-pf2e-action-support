@@ -304,7 +304,8 @@ async function treatWounds(message, target) {
 
     if (applyTreatWoundsImmunity) {
         if (actorFeat(message.actor, "continual-recovery")) {//10 min
-            setEffectToActor(target, effect_treat_wounds_immunity_minutes)
+// setEffectToActor(target, effect_treat_wounds_immunity_minutes)
+// don't need to apply because immunity 10 min - treat_wounds 10 min and immunity applied at start of process
         } else {
             setEffectToActor(target, "Compendium.pf2e.feat-effects.Lb4q2bBAgxamtix5")
         }
@@ -448,6 +449,12 @@ async function increaseConditionForActor(message, condition, value=undefined) {
 
 async function increaseConditionForTarget(message, condition, value=undefined) {
     const valueObj = value ? {'value': value } : {}
+    if (value) {
+        const activeCondition = hasCondition(message.target.actor, condition);
+        if (activeCondition.value >= value) {
+            return
+        }
+    }
 
     if (hasPermissions(message.target.actor)) {
         message.target.actor.increaseCondition(condition, valueObj);

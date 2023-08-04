@@ -323,7 +323,7 @@ function battleSpellAttackRoll(message) {
     }
 }
 
-function intimidatingStrike(message) {
+function meleeStrike(message) {
     if (message?.item?.isMelee) {
         const is = hasEffect(message?.actor, "effect-intimidating-strike")
         if (is) {
@@ -333,9 +333,6 @@ function intimidatingStrike(message) {
                 increaseConditionForTarget(message, "frightened", 1)
             }
             deleteEffectById(message.actor, is.id)
-        }
-        if (actorFeat(message?.actor, "combat-grab") && hasFreeHand(message.actor)) {
-            effectWithActorNextTurn(message, message.target.actor, effect_grabbed_end_attacker_next_turn)
         }
     }
 }
@@ -401,13 +398,31 @@ function boulderSeed(message) {
     }
 }
 
+function runes(message) {
+    if (message.item) {
+        if (message.item.system.runes.property.includes("crushing")) {
+            setEffectToActor(message.target?.actor, "Compendium.pf2e.equipment-effects.Item.zNHvhwHsC8ckhKVp")
+        } else if (message.item.system.runes.property.includes("bloodthirsty")) {
+            increaseConditionForTarget(message, "drained", 1);
+        } else if (message.item.system.runes.property.includes("disrupting")) {
+            effectWithActorNextTurn(message, message.target.actor, effect_enfeebled1_start_turn)
+        } else if (message.item.system.runes.property.includes("fearsome")) {
+            increaseConditionForTarget(message, "frightened", 1);
+        }
+    }
+}
+
 function battleAttackRoll(message) {
     if (anySuccessMessageOutcome(message)) {
-        intimidatingStrike(message);
+        meleeStrike(message);
         dreadAmpoule(message);
         tangleFootBagLesser(message);
         necroticBomb(message);
         boulderSeed(message);
+
+        if (criticalSuccessMessageOutcome(message)) {
+            runes(message)
+        }
     } else if (anyFailureMessageOutcome(message)) {
         if (message?.item?.isMelee) {
             deleteFeintEffects(message);
@@ -545,6 +560,16 @@ function handleBattleActions(message, _obj) {
     }
 }
 
+function handleBattleFeats(message, _obj) {
+    if (_obj.slug === "combat-grab") {
+        if (hasFreeHand(message.actor)) {
+            setEffectToTarget(message, effect_grabbed_end_attacker_next_turn)
+        } else {
+            ui.notifications.info(`${message.actor.name} heeds to have free hand to grab`);
+        }
+    }
+};
+
 async function handleBattleSpells(message, _obj) {
     if (_obj.slug === "inspire-courage") {
         if (await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")) {
@@ -581,6 +606,7 @@ async function handleBattleSelfAssignedEffects(message) {
             setEffectToActor(message.actor, eff, message?.item?.level)
         }
         handleBattleActions(message, _obj);
+        handleBattleFeats(message, _obj);
         handleBattleSpells(message, _obj);
     }
 }
@@ -591,8 +617,33 @@ function animusMine(message) {
     }
 }
 
+function daze(message) {
+    if (hasOption(message, 'item:slug:daze') && criticalFailureMessageOutcome(message)) {
+        increaseConditionForActor(message, "stunned", 1);
+    }
+}
+
+function saveRunes(message) {
+    if (!anyFailureMessageOutcome(message)) {return}
+    if (eqMessageDCLabel(message, "Brilliant DC") || eqMessageDCLabel(message, "Brilliant (Greater) DC")) {
+        setEffectToActor(message.actor, effect_blinded1_round)
+    } else if (eqMessageDCLabel(message, "Frost Rune DC")) {
+        setEffectToActor(message.actor, effect_slowed1_round)
+    } else if (eqMessageDCLabel(message, "Greater Thundering DC")) {
+        increaseConditionForActor(message, "deafened");
+    } else if (eqMessageDCLabel(message, "Thundering DC")) {
+        if (criticalFailureMessageOutcome(message)) {
+            setEffectToActor(message.actor, effect_deafened_hour)
+        } else {
+            setEffectToActor(message.actor, effect_deafened_minute)
+        }
+    }
+}
+
 function battleSavingThrow(message) {
     animusMine(message)
+    daze(message)
+    saveRunes(message);
 }
 
 function handleEncounterMessage(message) {
