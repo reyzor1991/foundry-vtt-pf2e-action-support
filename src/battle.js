@@ -400,13 +400,13 @@ function boulderSeed(message) {
 
 function runes(message) {
     if (message.item) {
-        if (message.item.system.runes.property.includes("crushing")) {
+        if (message.item.system?.runes?.property?.includes("crushing")) {
             setEffectToActor(message.target?.actor, "Compendium.pf2e.equipment-effects.Item.zNHvhwHsC8ckhKVp")
-        } else if (message.item.system.runes.property.includes("bloodthirsty")) {
+        } else if (message.item.system?.runes?.property?.includes("bloodthirsty")) {
             increaseConditionForTarget(message, "drained", 1);
-        } else if (message.item.system.runes.property.includes("disrupting")) {
+        } else if (message.item.system?.runes?.property?.includes("disrupting") && message?.target?.actor?.traits?.has("undead")) {
             effectWithActorNextTurn(message, message.target.actor, effect_enfeebled1_start_turn)
-        } else if (message.item.system.runes.property.includes("fearsome")) {
+        } else if (message.item.system?.runes?.property?.includes("fearsome")) {
             increaseConditionForTarget(message, "frightened", 1);
         }
     }

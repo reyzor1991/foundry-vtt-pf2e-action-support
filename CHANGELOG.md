@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 0.2.4
+
+### New feature
+- Handling of Bloodline Hag Feat
+- Handling of Bloodline Harrow Feat
+- Handling of Bloodline Imperial Feat
+- Handling of Bloodline Nymph Feat
+- Handling of Bloodline Shadow Feat
+- Handling of Bloodline Wyrmblessed Feat
+
 ## Version 0.2.3
 
 ### New feature

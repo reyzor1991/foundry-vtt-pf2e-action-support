@@ -127,6 +127,150 @@ const bloodlineGenieSpells = [
     "wish-twisted-form",
 ];
 
+const bloodlineHagSpells = [
+    "daze",
+    "illusory-disguise",
+    "touch-of-idiocy",
+    "blindness",
+    "outcasts-curse",
+    "mariners-curse",
+    "baleful-polymorph",
+    "warp-mind",
+    "spiritual-epidemic",
+    "natures-enmity",
+    "jealous-hex",
+    "horrific-visage",
+    "youre-mine",
+];
+
+const bloodlineHarrowSpells = [
+    "detect-magic",
+    "ill-omen",
+    "augury",
+    "wanderers-guide",
+    "suggestion",
+    "shadow-siphon",
+    "true-seeing",
+    "retrocognition",
+    "unrelenting-observation",
+    "weird",
+    "unraveling-blast",
+    "invoke-the-harrow",
+    "rewrite-possibility",
+];
+
+const bloodlineImperialSpells = [
+    "detect-magic",
+    "magic-missile",
+    "dispel-magic",
+    "haste",
+    "dimension-door",
+    "prying-eye",
+    "disintegrate",
+    "prismatic-spray",
+    "maze",
+    "prismatic-sphere",
+    "ancestral-memories",
+    "extend-spell",
+    "arcane-countermeasure",
+];
+
+const bloodlineNymphSpells = [
+    "tanglefoot",
+    "charm",
+    "calm-emotions",
+    "animal-vision",
+    "vital-beacon",
+    "crushing-despair",
+    "repulsion",
+    "unfettered-pack",
+    "moment-of-renewal",
+    "overwhelming-presence",
+    "nymphs-token",
+    "blinding-beauty",
+    "establish-ward",
+];
+
+const bloodlinePhoenixSpells = [
+    "detect-magic",
+    "burning-hands",
+    "see-invisibility",
+    "fireball",
+    "remove-curse",
+    "breath-of-life",
+    "disintegrate",
+    "contingency",
+    "moment-of-renewal",
+    "meteor-swarm",
+    "rejuvenating-flames",
+    "shroud-of-flame",
+    "cleansing-flames",
+];
+
+const bloodlinePsychopompSpells = [
+    "disrupt-undead",
+    "heal",
+    "calm-emotions",
+    "searing-light",
+    "dimensional-anchor",
+    "death-ward",
+    "spirit-blast",
+    "finger-of-death",
+    "spirit-song",
+    "massacre",
+    "sepulchral-mask",
+    "spirit-veil",
+    "shepherd-of-souls",
+];
+
+const bloodlineShadowSpells = [
+    "chill-touch",
+    "grim-tendrils",
+    "darkness",
+    "chilling-darkness",
+    "phantasmal-killer",
+    "shadow-siphon",
+    "collective-transposition",
+    "duplicate-foe",
+    "disappearance",
+    "weird",
+    "dim-the-light",
+    "steal-shadow",
+    "consuming-darkness",
+];
+
+const bloodlineUndeadSpells = [
+    "chill-touch",
+    "harm",
+    "false-life",
+    "bind-undead",
+    "talking-corpse",
+    "cloudkill",
+    "vampiric-exsanguination",
+    "finger-of-death",
+    "horrid-wilting",
+    "wail-of-the-banshee",
+    "undeaths-blessing",
+    "drain-life",
+    "grasping-grave",
+];
+
+const bloodlineWyrmblessedSpells = [
+    "read-aura",
+    "mage-armor",
+    "resist-energy",
+    "haste",
+    "reflective-scales",
+    "cloak-of-colors",
+    "repulsion",
+    "mask-of-terror",
+    "divine-inspiration",
+    "overwhelming-presence",
+    "dragon-claws",
+    "dragon-breath",
+    "dragon-wings",
+];
+
 async function createDialog(actorId, selfEffect, targets, targetEffect) {
     const options = targets.map(a => {
         return `<option value="${a.uuid}" data-effect="${targetEffect}">${a.name}</option>`
@@ -200,6 +344,42 @@ async function bloodlineGenie(message) {
     createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.9AUcoY48H5LrVZiF", targetNpcs(), "Compendium.pf2e.feat-effects.Item.KVbS7AbhQdeuA0J6");
 }
 
+async function bloodlineHag(message) {
+    const effect = (await fromUuid("Compendium.pf2e.feat-effects.Item.6fb15XuSV4TNuVAT")).toObject();
+    effect.system.level = {value: message?.item?.level ?? 1};
+
+    message.actor.createEmbeddedDocuments("Item", [effect]);
+}
+
+async function bloodlineHarrow(message) {
+    setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.SbYoI8G8Ze6oE4we")
+}
+
+async function bloodlineImperial(message) {
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.vguxP8ukwVTWWWaA", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.Item.vguxP8ukwVTWWWaA");
+}
+
+async function bloodlineNymph(message) {
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.SVGW8CLKwixFlnTv", targetNpcs(), "Compendium.pf2e.feat-effects.Item.ruRAfGJnik7lRavk");
+}
+
+async function bloodlinePhoenix(message) {
+}
+
+async function bloodlinePsychopomp(message) {
+}
+
+async function bloodlineShadow(message) {
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.OqH6IaeOwRWkGPrk", targetNpcs(), "Compendium.pf2e.feat-effects.Item.Nv70aqcQgCBpDYp8");
+}
+
+async function bloodlineUndead(message) {
+}
+
+async function bloodlineWyrmblessed(message) {
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.fILVhS5NuCtGXfri", targetNpcs(), "Compendium.pf2e.feat-effects.Item.aqnx6IDcB7ARLxS5");
+}
+
 const bloodlineFeatMap = {
     "bloodline-aberrant": {spells: bloodlineAberrantSpells, handler: bloodlineAberrant},
     "bloodline-angelic": {spells: bloodlineAngelicSpells, handler: bloodlineAngelic},
@@ -209,6 +389,14 @@ const bloodlineFeatMap = {
     "bloodline-elemental": {spells: bloodlineElementalSpells, handler: bloodlineElemental},
     "bloodline-fey": {spells: bloodlineFeySpells, handler: bloodlineFey},
     "bloodline-genie": {spells: bloodlineGenieSpells, handler: bloodlineGenie},
+    "bloodline-hag": {spells: bloodlineHagSpells, handler: bloodlineHag},
+    "bloodline-imperial": {spells: bloodlineImperialSpells, handler: bloodlineImperial},
+    "bloodline-nymph": {spells: bloodlineNymphSpells, handler: bloodlineNymph},
+    "bloodline-phoenix": {spells: bloodlinePhoenixSpells, handler: bloodlinePhoenix},
+    "bloodline-psychopomp": {spells: bloodlinePsychopompSpells, handler: bloodlinePsychopomp},
+    "bloodline-shadow": {spells: bloodlineShadowSpells, handler: bloodlineShadow},
+    "bloodline-undead": {spells: bloodlineUndeadSpells, handler: bloodlineUndead},
+    "bloodline-wyrmblessed": {spells: bloodlineWyrmblessedSpells, handler: bloodlineWyrmblessed},
 }
 
 function targetNpcs() {
@@ -232,7 +420,25 @@ Hooks.on('preCreateChatMessage', async (message)=>{
             bloodlineFeatMap[featName].handler.call(this, message)
         }
     }
+
 });
+
+Hooks.on('preCreateChatMessage', async (message)=>{
+    if (!game.settings.get(moduleName, "useBloodline")) {return}
+    if ("appliedDamage" in message?.flags?.pf2e && !message?.flags?.pf2e?.appliedDamage?.isHealing) {
+        const eff = hasEffect(message.actor, "effect-hag-blood-magic");
+        if (!eff) {
+            return;
+        }
+
+        ui.notifications.info(`${message.actor.name} has Effect: Hag Blood Magic. Attack should take ${eff.system.level.value} damage`);
+        if (hasPermissions(eff)) {
+            eff.delete()
+        } else {
+            socketlibSocket._sendRequest("deleteEffect", [eff.uuid], 0)
+        }
+    }
+})
 
 function isActorCharacter(actor) {
     return "character" === actor?.type || (actor?.type === "npc" && actor?.alliance === "party");
