@@ -250,16 +250,18 @@ function saveBombs(message) {
 }
 
 function saveAffliction(message) {
-    if (hasOption(message, "item:type:affliction") && game.settings.get(moduleName, "affliction")) {
-        if (eqMessageDCLabel(message, 'Addictive Exhaustion DC')) {
-            handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.aODJbcFmhQcbllba")
-        } else if (eqMessageDCLabel(message, "Ghoul Fever DC")) {
-            handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.FwevQUDFd1uTU8cR")
-        } else if (eqMessageDCLabel(message, "Alcohol DC")) {
-            handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.N12lBsMmAKvO3mSh")
-        } else if (eqMessageDCLabel(message, "Dream Spider Venom DC")) {
-            handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.PxVQlg6YFmuV4INb")
-        }
+    if (eqMessageDCLabel(message, 'Addictive Exhaustion DC')) {
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.aODJbcFmhQcbllba")
+    } else if (eqMessageDCLabel(message, "Ghoul Fever DC")) {
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.FwevQUDFd1uTU8cR")
+    } else if (eqMessageDCLabel(message, "Alcohol DC")) {
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.N12lBsMmAKvO3mSh")
+    } else if (eqMessageDCLabel(message, "Dream Spider Venom DC")) {
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.PxVQlg6YFmuV4INb")
+    } else if (eqMessageDCLabel(message, "Tendriculos DC")) {
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.llqImM8DAHdb4Pax")
+    } else if (eqMessageDCLabel(message, "Serpentfolk Venom DC")) {
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.QueFYtT56FG0ZDN5")
     }
 }
 

@@ -539,7 +539,7 @@ async function applyDamage(actor, token, formula) {
 }
 
 Hooks.on('preCreateChatMessage', async (message, user, _options, userId)=>{
-    if (game?.combats?.active && !game.settings.get(moduleName, "ignoreEncounterCheck")) {
+    if (game?.combats?.active || game.settings.get(moduleName, "ignoreEncounterCheck")) {
         handleEncounterMessage(message);
     }
     handleGeneralMessage(message);
