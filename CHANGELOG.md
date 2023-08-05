@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.5,0.2.6
+
+### Bug Fixes
+- Fix issue with applying condition
+
 ## Version 0.2.4
 
 ### New feature

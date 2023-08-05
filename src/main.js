@@ -459,7 +459,7 @@ async function increaseConditionForTarget(message, condition, value=undefined) {
     const valueObj = value ? {'value': value } : {}
     if (value) {
         const activeCondition = hasCondition(message.target.actor, condition);
-        if (activeCondition.value >= value) {
+        if (activeCondition?.value >= value) {
             return
         }
     }
