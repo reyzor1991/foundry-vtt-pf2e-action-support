@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.7
+
+### New feature
+- Add raw afflictions
+
 ## Version 0.2.5,0.2.6
 
 ### Bug Fixes

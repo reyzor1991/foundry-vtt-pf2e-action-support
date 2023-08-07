@@ -796,7 +796,7 @@ function gravityWeaponTurn(actor) {
 }
 
 function eqMessageDCLabel(message, l) {
-    return message?.flags?.pf2e?.context?.dc?.label.includes(l);
+    return message?.flags?.pf2e?.context?.dc?.label?.includes(l);
 }
 
 function precisionTurn(actor) {

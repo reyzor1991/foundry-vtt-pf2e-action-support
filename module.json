@@ -2,7 +2,7 @@
   "id": "pf2e-action-support",
   "title": "PF2e Action Support",
   "description": "PF2e Action Support",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "authors": [
     {
       "name": "Reyzor",
@@ -28,6 +28,7 @@
       "packs": [
         "action-support",
         "action-support-afflictions",
+        "action-support-afflictions-raw",
         "action-support-macros"
       ]
     }
@@ -46,6 +47,19 @@
       "label": "Action Support Afflictions",
       "name": "action-support-afflictions",
       "path": "packs/action-support-afflictions.db",
+      "system": "pf2e",
+      "private": false,
+      "type": "Item",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "flags": {}
+    },
+    {
+      "label": "Action Support Afflictions RAW",
+      "name": "action-support-afflictions-raw",
+      "path": "packs/action-support-afflictions-raw.db",
       "system": "pf2e",
       "private": false,
       "type": "Item",
