@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.2.9
+
+### New feature
+- Handling of Bone Spikes Feat
+- Handling of Accelerating Touch Feat
+- Handling of Acknowledge Fan Feat
+
 ## Version 0.2.8
 
 ### New feature

@@ -19,6 +19,7 @@ const selfEffectMap = {
     "ricochet-stance-rogue": "Compendium.pf2e.feat-effects.Item.Unfl4QQURWaX2zfd",
     "buckler-dance": "Compendium.pf2e.feat-effects.Item.PS17dsXkTdQmOv7w",
     "twinned-defense-swashbuckler": "Compendium.pf2e.feat-effects.Item.3eHMqVx30JGiJqtM",
+    "bone-spikes": "Compendium.pf2e.feat-effects.Item.ZsO5juyylVoxUkXh",
     //spell
     "false-life": "Compendium.pf2e.spell-effects.Item.PANUWN5xXC20WBg2",
     "unusual-anatomy": "Compendium.pf2e.spell-effects.Item.LMzFBnOEPzDGzHg4",
@@ -684,7 +685,7 @@ async function handleSelfAssignedEffects(message) {
         const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
         if (!_obj) {return}
         const eff = selfEffectMap[_obj.slug]
-        if (eff) {
+        if (eff && !hasEffectBySourceId(message.actor, eff)) {
             setEffectToActor(message.actor, eff, message?.item?.level)
         }
         handleActions(message, _obj);

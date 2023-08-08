@@ -46,6 +46,8 @@
 - Blizzard Evasion
 - Bullet Dancer Stance
 - Overdrive
+- Spit Tale
+- Screaming Skull
 
 
 ### Spells
@@ -107,6 +109,7 @@
 - Ki Strike
 - Enlarge
 - Unusual Anatomy
+- Ashen Wind
 
 
 ### 3rd party
@@ -147,6 +150,14 @@
 - Bloodline Elemental
 - Bloodline Fey
 - Bloodline Genie
+- Bloodline Hag
+- Bloodline Harrow
+- Bloodline Imperial
+- Bloodline Nymph
+- Bloodline Shadow
+- Bloodline Wyrmblessed
+- Accelerating Touch
+- Acknowledge Fan
 
 ### Items
 

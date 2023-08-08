@@ -10,7 +10,7 @@
 ![](https://img.shields.io/github/downloads-pre/reyzor1991/foundry-vtt-pf2e-action-support/latest/total)
 ![](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fpf2e-action-support&colorB=4aa94a)
 
-[Version]: https://img.shields.io/badge/Version-0.2.8-yellow?style=flat-square
+[Version]: https://img.shields.io/badge/Version-0.2.9-yellow?style=flat-square
 [Version URL]: https://github.com/reyzor1991/foundry-vtt-pf2e-action-support
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W2LF8UA)
@@ -25,11 +25,10 @@ See [ACTIONS.md](./ACTIONS.md)
 ### To get more info/examples visit [WIKI](https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/wiki)
 
 ### Afflictions(under dev feature)
-- pf2e.mjs file is 5.3.1 version with affliction modifications
+- pf2e.mjs file is 5.3.1+ version with affliction modifications
 - Replace pf2e.mjs and hbs files from afflictionfiles dir
 - Paths 
 - - systems/pf2e
 - - systems/pf2e/templates/items
 - - systems/pf2e/templates/system
-- - systems/pf2e/templates/chat
 - ```_token.actor.itemTypes.affliction.forEach(a=>a.delete())``` - delete all affliction from actor

@@ -19,12 +19,6 @@ async function checkAffectionStage(token, aff) {
     if (aff.isExpired) {
         await aff.delete()
     } else {
-        if (aff.isStageExpired) {
-            aff.toMessage();
-        }
-        if (aff.system.onset && game.time.worldTime >= aff.system.stageStart.value) {
-            await aff.createStageMessage();
-            await aff.update({ "system.onset": null });
-        }
+        aff.onEndTurn();
     }
 };

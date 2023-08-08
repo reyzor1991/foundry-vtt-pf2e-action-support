@@ -16,3 +16,16 @@
 #pf2e-action-support-homebrew-settings form button.homebrew-delete {
     flex: 0.2;
 }
+
+
+.column-flurry {
+  float: left;
+  width: 50%;
+  padding: 10px;
+}
+
+.row-flurry:after {
+  content: "";
+  display: table;
+  clear: both;
+}

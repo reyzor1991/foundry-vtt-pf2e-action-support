@@ -499,7 +499,9 @@ function layOnHands(message) {
     if (hasOption(message, "item:slug:lay-on-hands") && game.user.targets.first()?.actor?.type === "character") {
         setEffectToActorOrTarget(
             message,
-            "Compendium.pf2e.spell-effects.Item.lyLMiauxIVUM3oF1",
+            actorFeat(message.actor, "accelerating-touch")
+                ? "Compendium.pf2e.spell-effects.Item.alyNtkHLNnt98Ewz"
+                : "Compendium.pf2e.spell-effects.Item.lyLMiauxIVUM3oF1",
             "Lay on hands",
             getSpellRange(message.actor, message.item),
              true
@@ -607,7 +609,7 @@ async function handleBattleSelfAssignedEffects(message) {
         const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
         if (!_obj) {return}
         const eff = battleSelfEffectMap[_obj.slug]
-        if (eff) {
+        if (eff && !hasEffectBySourceId(message.actor, eff)) {
             setEffectToActor(message.actor, eff, message?.item?.level)
         }
         handleBattleActions(message, _obj);
@@ -655,11 +657,24 @@ function ashenWind(message) {
     }
 }
 
+function acknowledgeFan(message) {
+    if (hasOption(message, 'item:slug:acknowledge-fan')) {
+        if (criticalFailureMessageOutcome(message)) {
+            effectWithActorNextTurnST(message, effect_paralyzed_next_turn)
+        } else if (failureMessageOutcome(message)) {
+            increaseConditionForActor(message, "stunned", 2);
+        } else if (successMessageOutcome(message)) {
+            increaseConditionForActor(message, "stunned", 1);
+        }
+    }
+}
+
 function battleSavingThrow(message) {
     animusMine(message)
     daze(message)
     saveRunes(message);
     ashenWind(message);
+    acknowledgeFan(message);
 }
 
 function handleEncounterMessage(message) {
