@@ -551,6 +551,10 @@ function handleBattleActions(message, _obj) {
         setEffectToActor(message.actor, "Compendium.botanical-bestiary.effects.DwxpHXwlTPuXq2wT")
     } else if (_obj?.slug ===  "retributive-strike") {
         setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.DawVHfoPKbPJsz4k")
+    } else if (_obj?.slug ===  "spin-tale") {
+        setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.UzIamWcEJTOjwfoA")
+    } else if (_obj?.slug ===  "screaming-skull") {
+        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.KmUCaFZSk9efn9AR")
     } else if (_obj?.slug ===  "liberating-step") {
         if (game.user.targets.size === 1) {
             setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.DawVHfoPKbPJsz4k")
@@ -601,6 +605,7 @@ async function handleBattleSpells(message, _obj) {
 async function handleBattleSelfAssignedEffects(message) {
     if (message?.flags?.pf2e?.origin?.type) {
         const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+        if (!_obj) {return}
         const eff = battleSelfEffectMap[_obj.slug]
         if (eff) {
             setEffectToActor(message.actor, eff, message?.item?.level)
@@ -634,8 +639,18 @@ function saveRunes(message) {
     } else if (eqMessageDCLabel(message, "Thundering DC")) {
         if (criticalFailureMessageOutcome(message)) {
             setEffectToActor(message.actor, effect_deafened_hour)
-        } else {
+        } else if (failureMessageOutcome(message)) {
             setEffectToActor(message.actor, effect_deafened_minute)
+        }
+    }
+}
+
+function ashenWind(message) {
+    if (hasOption(message, 'item:slug:ashen-wind')) {
+        if (criticalFailureMessageOutcome(message)) {
+            increaseConditionForActor(message, "sickened", 2);
+        } else if (failureMessageOutcome(message)) {
+            increaseConditionForActor(message, "sickened", 1);
         }
     }
 }
@@ -644,6 +659,7 @@ function battleSavingThrow(message) {
     animusMine(message)
     daze(message)
     saveRunes(message);
+    ashenWind(message);
 }
 
 function handleEncounterMessage(message) {

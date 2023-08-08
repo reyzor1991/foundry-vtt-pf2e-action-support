@@ -682,6 +682,7 @@ function handleSpells(message, _obj) {
 async function handleSelfAssignedEffects(message) {
     if (message?.flags?.pf2e?.origin?.type) {
         const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+        if (!_obj) {return}
         const eff = selfEffectMap[_obj.slug]
         if (eff) {
             setEffectToActor(message.actor, eff, message?.item?.level)

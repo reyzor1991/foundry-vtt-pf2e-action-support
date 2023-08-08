@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.2.8
+
+### New feature
+- Handling of Screaming Skull Action (Blind effect)
+- Handling of Spit Tale Action
+- Handling of Ashen Wind Spell
+
 ## Version 0.2.7
 
 ### New feature
