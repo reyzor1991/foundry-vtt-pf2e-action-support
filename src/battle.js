@@ -55,6 +55,17 @@ const battleSelfEffectMap = {
     "multishot-stance": "Compendium.pf2e.feat-effects.Item.l4QUaedYofnfXig0",
     "masquerade-of-seasons-stance": "Compendium.pf2e.feat-effects.Item.6IsZQpwRJQWIzdGx",
     "replenishment-of-war": "Compendium.pf2e.feat-effects.Item.BJc494USeyM011p3",
+    "watchful-gaze": "Compendium.pf2e.feat-effects.Item.a7qiSYdlaIRPe57i",
+    "striking-retribution": "Compendium.pf2e.feat-effects.Item.EzgW32MCOGov9h5C",
+    "ceremony-of-protection": "Compendium.pf2e.feat-effects.Item.9kNbiZPOM2wy60ao",
+    "clans-edge": "Compendium.pf2e.equipment-effects.Item.fRlvmul3LbLo2xvR",
+    "dualborn": "Compendium.pf2e.feat-effects.Item.XaZdQHF9GvaJINqH",
+    "elemental-assault": "Compendium.pf2e.feat-effects.Item.XaZdQHF9GvaJINqH",
+    "hydraulic-deflection": "Compendium.pf2e.feat-effects.Item.IfsglZ7fdegwem0E",
+    "life-giving-magic": "Compendium.pf2e.feat-effects.Item.YKJhjkerCW0Jl6HP",
+    "maidens-mending": "Compendium.pf2e.feat-effects.Item.FIgud5jqZgIjwkRE",
+    "nanite-surge": "Compendium.pf2e.feat-effects.Item.ErLweSmVAN57QIpp",
+    "psychic-rapport": "Compendium.pf2e.feat-effects.Item.Dbr5hInQXH904Ca7",
 };
 
 function tumbleThrough(message) {
@@ -287,6 +298,17 @@ function tamper(message) {
     }
 }
 
+function catfolkDance(message) {
+    if (hasOption(message, "action:catfolk-dance")) {
+        if (anySuccessMessageOutcome(message)) {
+            setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.5bEnBqVOgdp4gROP")
+        }
+        if (criticalSuccessMessageOutcome(message)) {
+            setEffectToTarget(message, effect_off_guard_start_turn);
+        }
+    }
+}
+
 function battleSkillCheck(message) {
     tumbleThrough(message);
     demoralize(message);
@@ -303,6 +325,7 @@ function battleSkillCheck(message) {
     acrobaticFailProne(message);
     subsist(message);
     tamper(message);
+    catfolkDance(message);
 }
 
 function battlePerceptionCheck(message) {
@@ -509,6 +532,12 @@ function layOnHands(message) {
     }
 }
 
+function seedpod(message) {
+    if (hasDomain(message, "seedpod-damage") && hasOption(message, "check:outcome:critical-success")) {
+        setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.wQDHpOKY3GZqvS2v")
+    }
+}
+
 function battleDamageRoll(message) {
     firstAttack(message);
     gravityWeapon(message);
@@ -517,6 +546,7 @@ function battleDamageRoll(message) {
     frostVial(message);
     ghostCharge(message);
     layOnHands(message);
+    seedpod(message);
 }
 
 function deleteShieldEffect(message) {
@@ -573,6 +603,12 @@ function handleBattleFeats(message, _obj) {
         } else {
             ui.notifications.info(`${message.actor.name} heeds to have free hand to grab`);
         }
+    } else if (_obj.slug === "known-weaknesses") {
+        game.user.targets.forEach(tt => {
+            if (!hasEffect(tt.actor, 'effect-known-weakness')) {
+                effectWithActorNextTurn(message, tt.actor, "Compendium.pf2e.feat-effects.Item.DvyyA11a63FBwV7x")
+            }
+        });
     }
 };
 
@@ -669,12 +705,19 @@ function acknowledgeFan(message) {
     }
 }
 
+function tremor(message) {
+    if (hasOption(message, 'item:slug:tremor') && criticalFailureMessageOutcome(message)) {
+        increaseConditionForActor(message, "prone");
+    }
+}
+
 function battleSavingThrow(message) {
     animusMine(message)
     daze(message)
     saveRunes(message);
     ashenWind(message);
     acknowledgeFan(message);
+    tremor(message);
 }
 
 function handleEncounterMessage(message) {

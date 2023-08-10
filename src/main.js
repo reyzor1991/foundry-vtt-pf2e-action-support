@@ -778,7 +778,7 @@ Hooks.on('preCreateChatMessage', async (message, user, _options, userId)=>{
     handleGeneralMessage(message);
 
     if (game.settings.get(moduleName, "decreaseFrequency")) {
-        if (message?.actor) {
+        if (message?.actor && (!message?.flags?.pf2e?.context || !( 'type' in message?.flags?.pf2e?.context))) {
             const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
             if (_obj?.system?.frequency?.value > 0) {
                 _obj.update({

@@ -20,6 +20,10 @@ const selfEffectMap = {
     "buckler-dance": "Compendium.pf2e.feat-effects.Item.PS17dsXkTdQmOv7w",
     "twinned-defense-swashbuckler": "Compendium.pf2e.feat-effects.Item.3eHMqVx30JGiJqtM",
     "bone-spikes": "Compendium.pf2e.feat-effects.Item.ZsO5juyylVoxUkXh",
+    "avenge-in-glory": "Compendium.pf2e.feat-effects.Item.JQUoBlZKT5N5zO5k",
+    "cat-nap": "Compendium.pf2e.feat-effects.Item.l3S9i2UWGhSO58YX",
+    "radiant-circuitry": "Compendium.pf2e.feat-effects.Item.263Cd5JMj8Lgc9yz",
+    "saoc-astrology": "Compendium.pf2e.feat-effects.Item.6ACbQIpmmemxmoBJ",
     //spell
     "false-life": "Compendium.pf2e.spell-effects.Item.PANUWN5xXC20WBg2",
     "unusual-anatomy": "Compendium.pf2e.spell-effects.Item.LMzFBnOEPzDGzHg4",
@@ -383,11 +387,24 @@ function pistolTwirl(message, _obj) {
     }
 }
 
+function rootMagic(message, _obj) {
+    if (_obj.slug === "root-magic") {
+        setEffectToActorOrTarget(
+            message,
+            "Compendium.pf2e.feat-effects.Item.jO7wMhnjT7yoAtQg",
+            "Root Magic",
+            500,
+            true
+        )
+    }
+}
+
 function handleFeats(message, _obj) {
     rage(message, _obj);
     reactiveShield(message, _obj);
     kipUp(message, _obj);
     pistolTwirl(message, _obj);
+    rootMagic(message, _obj);
 }
 
 function guidance(message, _obj) {

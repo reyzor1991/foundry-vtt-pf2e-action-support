@@ -158,6 +158,25 @@
 - Bloodline Wyrmblessed
 - Accelerating Touch
 - Acknowledge Fan
+- Tremor
+- Watchful Gaze
+- Striking Retribution
+- Seedpod
+- Avenge in Glory
+- Cat Nap
+- Ceremony of Protection
+- Clans Edge
+- Dualborn
+- Elemental Assault
+- Hydraulic Deflection
+- Known Weakness
+- Life-Giving Magic
+- Maiden's Mending
+- Nanite Surge
+- Psychic Rapport
+- Radiant Circuitry
+- Root Magic
+- Saoc Astrology
 
 ### Items
 

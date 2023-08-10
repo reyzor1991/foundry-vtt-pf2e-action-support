@@ -1,5 +1,28 @@
 # Changelog
 
+## Version 0.2.10
+
+### New feature
+- Handling of Avenge in Glory Feat
+- Handling of Cat Nap Feat
+- Handling of Tremor Feat
+- Handling of Dualborn Feat
+- Handling of Root Magic Feat
+- Handling of Saoc Astrology Feat
+- Handling of Radiant Circuitry Feat
+- Handling of Psychic Rapport Feat
+- Handling of Nanite Surge Feat
+- Handling of Maiden's Mending Feat
+- Handling of Life-Giving Magic Feat
+- Handling of Known Weakness Feat
+- Handling of Hydraulic Deflection Feat
+- Handling of Elemental Assault Feat
+- Handling of Clans Edge Feat
+- Handling of Ceremony of Protection Feat
+- Handling of Seedpod Feat
+- Handling of Watchful Gaze Feat
+- Handling of Striking Retribution Feat
+
 ## Version 0.2.9
 
 ### New feature
