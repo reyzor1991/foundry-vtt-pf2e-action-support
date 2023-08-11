@@ -29,3 +29,11 @@
   display: table;
   clear: both;
 }
+
+.first-flurry {
+    box-shadow: 0 0 12px #0cf043;
+}
+
+.second-flurry {
+    box-shadow: 0 0 12px #0eaaf2;
+}

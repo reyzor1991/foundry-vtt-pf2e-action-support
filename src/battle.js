@@ -66,6 +66,9 @@ const battleSelfEffectMap = {
     "maidens-mending": "Compendium.pf2e.feat-effects.Item.FIgud5jqZgIjwkRE",
     "nanite-surge": "Compendium.pf2e.feat-effects.Item.ErLweSmVAN57QIpp",
     "psychic-rapport": "Compendium.pf2e.feat-effects.Item.Dbr5hInQXH904Ca7",
+    "divine-aegis": "Compendium.pf2e.feat-effects.Item.K1IgNCf3Hh2EJwQ9",
+    "sniping-duo-dedication": "Compendium.pf2e.feat-effects.Item.zQHF2kkhZRAcrQvR",
+    "aldori-parry": "Compendium.pf2e.feat-effects.Item.aEuDaQY1GnrrnDRA",
 };
 
 function tumbleThrough(message) {
@@ -131,6 +134,9 @@ function feint(message) {
         if (anySuccessMessageOutcome(message) && message?.target) {
             if (criticalSuccessMessageOutcome(message)) {
                 setFeintEffect(message, true)
+                if (actorFeat(message.actor, "distracting-feint")) {
+                    effectWithActorNextTurn(message, message.target.actor, "Compendium.pf2e.feat-effects.Item.7hRgBo0fRQBxMK7g")
+                }
             } else {
                 setFeintEffect(message, false)
             }
@@ -586,7 +592,7 @@ function handleBattleActions(message, _obj) {
     } else if (_obj?.slug ===  "spin-tale") {
         setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.UzIamWcEJTOjwfoA")
     } else if (_obj?.slug ===  "screaming-skull") {
-        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.KmUCaFZSk9efn9AR")
+        setEffectToActor(message.actor, effect_blinded1_round)
     } else if (_obj?.slug ===  "liberating-step") {
         if (game.user.targets.size === 1) {
             setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.DawVHfoPKbPJsz4k")
@@ -711,6 +717,50 @@ function tremor(message) {
     }
 }
 
+function painfulVibrations(message) {
+    if (hasOption(message, 'item:slug:painful-vibrations')) {
+        if (failureMessageOutcome(message)) {
+            increaseConditionForActor(message, "sickened", 1);
+            setEffectToActor(message.actor, effect_deafened_round)
+        } else if (criticalFailureMessageOutcome(message)) {
+            increaseConditionForActor(message, "sickened", 2);
+            setEffectToActor(message.actor, effect_deafened_minute)
+        }
+    }
+}
+
+function divineWrath(message) {
+    if (hasOption(message, 'item:slug:divine-wrath')) {
+        if (failureMessageOutcome(message)) {
+            increaseConditionForActor(message, "sickened", 1);
+        } else if (criticalFailureMessageOutcome(message)) {
+            setEffectToActor(message.actor, effect_skunk_bomb_cfail)
+        }
+    }
+}
+
+function ashCloud(message) {
+    if (hasOption(message, 'item:slug:ash-cloud')) {
+        if (failureMessageOutcome(message)) {
+            setEffectToActor(message.actor, effect_dazzled1_round)
+        } else if (criticalFailureMessageOutcome(message)) {
+            setEffectToActor(message.actor, effect_blinded1_round)
+        }
+    }
+}
+
+function aromaticLure(message) {
+    if (hasOption(message, 'item:slug:aromatic-lure')) {
+        if (successMessageOutcome(message)) {
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.KQ0TqKFPn64tkzkt")
+        } else if (failureMessageOutcome(message)) {
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.gp7QMc2Nw9LoXu64")
+        } else if (criticalFailureMessageOutcome(message)) {
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.ubBrL0lNSrpAHO6G")
+        }
+    }
+}
+
 function battleSavingThrow(message) {
     animusMine(message)
     daze(message)
@@ -718,6 +768,10 @@ function battleSavingThrow(message) {
     ashenWind(message);
     acknowledgeFan(message);
     tremor(message);
+    painfulVibrations(message);
+    divineWrath(message);
+    ashCloud(message);
+    aromaticLure(message);
 }
 
 function handleEncounterMessage(message) {

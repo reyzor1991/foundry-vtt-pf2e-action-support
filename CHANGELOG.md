@@ -1,5 +1,31 @@
 # Changelog
 
+## Version 0.2.11
+
+### New feature
+- Handling of Bloodline Undead Feat
+- Handling of Bloodline Psychopomp Feat
+- Handling of Bloodline Phoenix Feat
+- Handling of Anoint Ally Feat
+- Handling of Divine Aegis Feat
+- Handling of Aldori Parry Feat
+- Handling of Eye of the Arclords Feat
+- Handling of Harrower Dedication Feat
+- Handling of Marshal Dedication Feat
+- Handling of Monster Warden Feat
+- Handling of Elementalist Dedication Feat
+- Handling of Emblazon Armament Feat
+- Handling of Sniping Duo Dedication Feat
+- Handling of Dragonslayer Oath (Liberator) Feat
+- Handling of Shining Oath (Liberator) Feat
+- Handling of Esoteric Oath (Liberator) Feat
+- Handling of Fiendsbane Oath (Liberator) Feat
+- Handling of Painful Vibrations Spell
+- Handling of Divine Wrath Spell
+- Handling of Ash Cloud Spell
+- Handling of Aromatic Lure Spell
+- Decrease eidolon effects/conditions
+
 ## Version 0.2.10
 
 ### New feature

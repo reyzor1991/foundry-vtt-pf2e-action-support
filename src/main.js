@@ -1,274 +1,5 @@
 let socketlibSocket = undefined;
 
-//async function flurryOfBlows(actor) {
-//    if ( !actor ) { return ui.notifications.info("Please select 1 token") }
-//    if ( game.user.targets.size !== 1 ) { return ui.notifications.info("Please select 1 target for Flurry of Blows") }
-//
-//    if ( !actorAction(actor, "flurry-of-blows") && !actorFeat(actor, "flurry-of-blows" ) ) {
-//        return ui.notifications.warn(`${token.name} does not have Flurry of Blows!`)
-//    }
-//
-//    const DamageRoll = CONFIG.Dice.rolls.find( r => r.name === "DamageRoll" );
-//    const critRule = game.settings.get("pf2e", "critRule");
-//
-//    let weapons = actor.system.actions.filter( h => h.visible && h.item?.isMelee && h.item?.system?.traits?.value?.includes("unarmed") );
-//
-//    if ( actor.system.actions.some( e => e.visible && e.origin?.type === "effect" && e.origin?.slug.includes("stance") ) ) {
-//        weapons = actor.system.actions.filter( e => e.visible && e.origin?.type === "effect" && e.origin?.slug.includes("stance") ).concat(actor.system.actions.filter( h => h.visible && h.item?.isMelee && h.item?.system?.traits?.value?.includes("unarmed") && h.origin?.type !== "effect" ));
-//    }
-//
-//    if ( actor.itemTypes.feat.some( s => s.slug === "monastic-weaponry" ) && actor.system.actions.some( h => h.item?.isHeld && h.item?.system?.traits?.value.includes("monk") ) ) { weapons = actor.system.actions.filter( h => h.item?.isHeld && h.ready && h.item?.system?.traits?.value.includes("monk") ).concat(weapons) }
-//
-//    if ( actor.itemTypes.effect.some( s => s.slug === "stance-monastic-archer-stance" ) && actor.system.actions.some( h => h.item?.isHeld && h.item?.group === "bow" && h.item?.reload === "0" ) ) { weapons.unshift( actor.system.actions.find( h => h.item?.isHeld && h.item?.group === "bow" && h.item?.reload === "0" ) ) }
-//
-//    let wtcf = '';
-//    for ( const w of weapons ) {
-//        wtcf += `<option value=${w.item.id}>${w.item.name}</option>`
-//    }
-//
-//    const { cWeapon, map, dos} = await Dialog.wait({
-//        title:"Flurry of Blows",
-//        content: `
-//            <div class="row-flurry"><div class="column-flurry"><h3>First Attack</h2><select id="fob1" autofocus>
-//                ${wtcf}
-//            </select></div><div class="column-flurry"><h3>Second Attack</h2>
-//            <select id="fob2">
-//                ${wtcf}
-//            </select></div></div><hr><h3>Multiple Attack Penalty</h2>
-//                <select id="map">
-//                <option value=0>No MAP</option>
-//                <option value=1>MAP -5(-4 for agile)</option>
-//                <option value=2>MAP -10(-8 for agile)</option>
-//            </select><hr>
-//        `,
-//        buttons: {
-//                ok: {
-//                    label: "Attack",
-//                    icon: "<i class='fa-solid fa-hand-fist'></i>",
-//                    callback: (html) => { return { cWeapon: [html[0].querySelector("#fob1").value,html[0].querySelector("#fob2").value], map: parseInt(html[0].querySelector("#map").value)} }
-//                },
-//                cancel: {
-//                    label: "Cancel",
-//                    icon: "<i class='fa-solid fa-ban'></i>",
-//                }
-//        },
-//        default: "ok"
-//    },{width:"300"});
-//
-//    const map2 = map === 2 ? map : map + 1;
-//    if ( cWeapon === undefined ) { return; }
-//
-//    const primary = weapons.find( w => w.item.id === cWeapon[0] );
-//    const secondary = weapons.find( w => w.item.id === cWeapon[1] );
-//
-//    let options = actor.itemTypes.feat.some(s => s.slug === "stunning-fist") ? ["stunning-fist"] : [];
-//
-//    const cM = [];
-//    function PD(cm) {
-//        if ( cm.user.id === game.userId && cm.isDamageRoll ) {
-//            if ( !cM.map(f => f.flavor).includes(cm.flavor) ) {
-//                cM.push(cm);
-//            }
-//            return false;
-//        }
-//    }
-//
-//    Hooks.on('preCreateChatMessage', PD);
-//
-//    const pdos = (await primary.variants[map].roll({ event, createMessage: false, skipDialog: true    })).degreeOfSuccess;
-//    const sdos = (await secondary.variants[map2].roll({ event, createMessage: false, skipDialog: true    })).degreeOfSuccess;
-//
-//    let pd,sd;
-//    if ( pdos === 2 ) { pd = await primary.damage({event,options}); }
-//    if ( pdos === 3 ) { pd = await primary.critical({event,options}); }
-//    if ( sdos === 2 ) { sd = await secondary.damage({event,options}); }
-//    if ( sdos === 3 ) { sd = await secondary.critical({event,options}); }
-//
-//    Hooks.off('preCreateChatMessage', PD);
-//
-//    if ( sdos <= 1 ) {
-//        if ( pdos === 2) {
-//            await primary.damage({event,options});
-//            return;
-//        }
-//        if ( pdos === 3 ) {
-//            await primary.critical({event,options});
-//            return;
-//        }
-//    }
-//
-//    if ( pdos <= 1 ) {
-//        if ( sdos === 2) {
-//            await secondary.damage({event,options});
-//            return;
-//        }
-//        if ( sdos === 3 ) {
-//            await secondary.critical({event,options});
-//            return;
-//        }
-//    }
-//
-//    await new Promise( (resolve) => {
-//        setTimeout(resolve,0);
-//    });
-//
-//    if ( pdos <=0 && sdos <= 1 ) {
-//        return;
-//    } else {
-//        const terms = pd.terms[0].terms.concat(sd.terms[0].terms);
-//        const type = pd.terms[0].rolls.map(t => t.type).concat(sd.terms[0].rolls.map(t => t.type));
-//        const persistent = pd.terms[0].rolls.map(t => t.persistent).concat(sd.terms[0].rolls.map(t => t.persistent));
-//
-//        let preCombinedDamage = [];
-//        let combinedDamage = '{';
-//        let i = 0;
-//        for ( const t of terms ) {
-//            if ( persistent[i] && !preCombinedDamage.find( p => p.persistent && p.terms.includes(t) ) ) {
-//                preCombinedDamage.push({ terms: [t], type: type[i], persistent: persistent[i] });
-//            }
-//            if ( !preCombinedDamage.some(pre => pre.type === type[i]) && !persistent[i] ) {
-//                preCombinedDamage.push({ terms: [terms[i]], type: type[i], persistent: persistent[i] });
-//            }
-//            else if ( !persistent[i] ) {
-//                preCombinedDamage.find( pre => pre.type === type[i] ).terms.push(t);
-//            }
-//            i++;
-//        }
-//
-//        for ( const p of preCombinedDamage ) {
-//            if ( p.persistent ) {
-//            combinedDamage += `, ${p.terms.join(",")}`;
-//            }
-//            else{
-//                if ( combinedDamage === "{" ) {
-//                    if ( p.terms.length > 1 ){
-//                        combinedDamage += `(${p.terms.join(" + ")})[${p.type}]`;
-//
-//                    }
-//                    else {
-//                        combinedDamage += p.terms[0];
-//                    }
-//                }
-//                else if ( p.terms.length === 1 ) {
-//                    combinedDamage += `, ${p.terms[0]}`;
-//                }
-//                else {
-//                    combinedDamage += `, (${p.terms.join(" + ")})[${p.type}]`;
-//                }
-//            }
-//        }
-//
-//        combinedDamage += "}";
-//
-//        const rolls = [await new DamageRoll(combinedDamage).evaluate({ async: true })]
-//        let flavor = `<strong>Flurry of Blows Total Damage</strong>`;
-//        const color = (pdos || sdos) === 2 ? `<span style="color:rgb(0, 0, 255)">Success</span>` : `<span style="color:rgb(0, 128, 0)">Critical Success</span>`
-//        if ( cM.length === 1 ) { flavor += `<p>Same Weapon (${color})<hr>${cM[0].flavor}</p><hr>`; }
-//        else { flavor += `<hr>${cM[0].flavor}<hr>${cM[1].flavor}`; }
-//        if ( pdos === 3 || sdos === 3 ) {
-//            flavor += `<hr><strong>TOP DAMAGE USED FOR CREATURES IMMUNE TO CRITICALS`;
-//            if ( critRule === "doubledamage" ) {
-//                rolls.unshift(await new DamageRoll(combinedDamage.replaceAll("2 * ", "")).evaluate({ async: true }));
-//            }
-//            else if ( critRule === "doubledice" ) {
-//                const splitValues = combinedDamage.replaceAll("2 * ", "").replaceAll(/([\{\}])/g,"").split(" ");
-//                const toJoinVAlues = [];
-//                for ( const sv of splitValues ) {
-//                    if ( sv.includes("[doubled])") ) {
-//                        const sV = sv.replaceAll("[doubled])","");
-//                        if ( !sV.includes("d") ) {
-//                                toJoinVAlues.push("sV");
-//                                continue;
-//                        }
-//                        else {
-//                            const n = sV.split(/(d\d)/g);
-//                            if ( n[0].charAt(1) !== "(") {
-//                                n[0] = `${parseInt(n[0].charAt(1) / 2)}`;
-//                                toJoinVAlues.push(n.join(""));
-//                                continue;
-//                            }
-//                            else if ( n[0].charAt(2) !== "(") {
-//                                n[0] = `(${parseInt(n[0].charAt(2)) / 2}`;
-//                                toJoinVAlues.push(n.join(""));
-//                                continue;
-//                            }
-//                            else {
-//                                n[0] = `((${parseInt(n[0].charAt(3)) / 2}`;
-//                                toJoinVAlues.push(n.join(""));
-//                                continue;
-//                            }
-//                        }
-//                    }
-//                    else {
-//                    toJoinVAlues.push(sv);
-//                    continue;
-//                    }
-//                }
-//                rolls.unshift(await new DamageRoll(`{${toJoinVAlues.join(" ")}}`).evaluate( {async: true} ));
-//            }
-//        }
-//        if ( cM.length === 1) {
-//            options = cM[0].flags.pf2e.context.options;
-//        }
-//        else { options = [...new Set(cM[0].flags.pf2e.context.options.concat(cM[1].flags.pf2e.context.options))]; }
-//
-//        await ChatMessage.create({
-//            flags: {
-//                pf2e: {
-//                    context: {
-//                        options
-//                    }
-//                }
-//            },
-//            rolls,
-//            type: CONST.CHAT_MESSAGE_TYPES.ROLL,
-//            flavor,
-//            speaker: ChatMessage.getSpeaker(),
-//        });
-//    }
-//}
-
-async function setSummonerHP(actor) {
-    if (!game.user.isGM) {
-        ui.notifications.info(`Only GM can run script`);
-        return
-    }
-    if (!actor) {
-        ui.notifications.info(`Need to select Actor`);
-        return
-    }
-    if ("summoner" != actor?.class?.slug) {
-        ui.notifications.info(`Actor should be Summoner`);
-        return
-    }
-    if (game.user.targets.size != 1) {
-        ui.notifications.info(`Need to select 1 token of eidolon as target to set HP of summoner`);
-        return
-    }
-    const target = game.user.targets.first().actor;
-    if ("eidolon" != target?.class?.slug) {
-        ui.notifications.info(`Need to select 1 token of eidolon as target to set HP of summoner`);
-        return
-    }
-
-    const sHP = actor.system.attributes.hp.max;
-    const feat = (await fromUuid("Compendium.pf2e-action-support.action-support.Item.LnCPBh2F5tiDprR0")).toObject();
-    feat.system.rules[0].value = sHP;
-    feat.flags.summoner = actor.uuid
-
-    const curFeat = actorFeat(target, "summoner-hp");
-    if (curFeat) {
-        curFeat.delete()
-    }
-
-    await target.createEmbeddedDocuments("Item", [feat]);
-    actor.setFlag(moduleName, "eidolon", target.uuid);
-
-    target.update({
-        "system.attributes.hp.value": actor.system.attributes.hp.value,
-        "system.attributes.hp.temp": actor.system.attributes.hp.temp,
-    }, { "noHook": true })
-}
 
 Hooks.once("init", () => {
     game.settings.register(moduleName, "useHomebrew", {
@@ -286,14 +17,6 @@ Hooks.once("init", () => {
         default: false,
         type: Boolean,
     });
-    game.settings.register(moduleName, "useSocket", {
-        name: "Use socket",
-        hint: "Enable this setting to be able to drop effects on creatures they dont own",
-        scope: "world",
-        config: true,
-        default: false,
-        type: Boolean,
-    });
     game.settings.register(moduleName, "deleteScouting", {
         name: "Delete Scouting effect when combat ends",
         scope: "world",
@@ -303,6 +26,15 @@ Hooks.once("init", () => {
     });
     game.settings.register(moduleName, "sharedHP", {
         name: "Summoner-Eidolon shared HP",
+        hint: "Make the hp on your summoner go down when you damage their Eidolon. Need to run marco to link summoner and eidolon",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
+    game.settings.register(moduleName, "eidolonCondition", {
+        name: "Handle Eidolon conditions during combat",
+        hint: "Decrease eidolon effect/condition when start/end turn happens. May conflict with Workbench. Turn off if you use Workbench for decreasing conditions, or turn off in Workbench setting",
         scope: "world",
         config: true,
         default: false,
@@ -310,6 +42,7 @@ Hooks.once("init", () => {
     });
     game.settings.register(moduleName, "ignoreEncounterCheck", {
         name: "Ignore encounter check to apply effect and etc.",
+        hint: "Some action automations only work in a combat encounter, this allows you to pass that.",
         scope: "world",
         config: true,
         default: false,
@@ -317,6 +50,7 @@ Hooks.once("init", () => {
     });
     game.settings.register(moduleName, "affliction", {
         name: "Handle afflictions",
+        hint: "utomates things like Ghoul Fever. Under dev feature, need to update pf2e core manually (unstable feature)",
         scope: "world",
         config: true,
         default: false,
@@ -324,6 +58,7 @@ Hooks.once("init", () => {
     });
     game.settings.register(moduleName, "useBloodline", {
         name: "Handle Bloodlines ",
+        hint: "Automates the bloodline effect of the Sorcerer, when Sorcerer cast a spell from their bloodline it let's you choose between using it on yourself or on the target",
         scope: "world",
         config: true,
         default: false,
@@ -343,7 +78,6 @@ Hooks.once("init", () => {
 
     game.actionsupport = mergeObject(game.actionsupport ?? {}, {
         "setSummonerHP": setSummonerHP,
-//        "flurryOfBlows": flurryOfBlows,
     })
 });
 
@@ -429,7 +163,6 @@ const setupSocket = () => {
       socketlibSocket.register("createFeintEffectOnTarget", _socketCreateFeintEffectOnTarget);
       socketlibSocket.register("deleteEffect", _socketDeleteEffect);
       socketlibSocket.register("sendGMNotification", sendGMNotification);
-      socketlibSocket.register("bloodlineDemonic", bloodlineDemonic);
   }
   return !!globalThis.socketlib
 }
@@ -578,20 +311,16 @@ function deleteEffectFromActor(actor, eff) {
     if (!effect) {return}
     if (hasPermissions(actor)) {
         actor.deleteEmbeddedDocuments("Item", [effect._id])
-    } else if (game.settings.get(moduleName, "useSocket")) {
-        socketlibSocket._sendRequest("deleteEffects", [{'actorUuid': actor.uuid, 'eff': eff}], 0)
     } else {
-        sendNotificationChatMessage(`Need delete ${effect.name} effect from ${actor.name}`);
+        socketlibSocket._sendRequest("deleteEffects", [{'actorUuid': actor.uuid, 'eff': eff}], 0)
     }
 }
 
 function deleteEffectById(actor, effId) {
     if (hasPermissions(actor)) {
         actor.deleteEmbeddedDocuments("Item", [effId])
-    } else if (game.settings.get(moduleName, "useSocket")) {
-        socketlibSocket._sendRequest("deleteEffectsById", [{'actorUuid': actor.uuid, 'effId': effId}], 0)
     } else {
-        sendNotificationChatMessage(`Need delete effect with id ${effId} from ${actor.name}`);
+        socketlibSocket._sendRequest("deleteEffectsById", [{'actorUuid': actor.uuid, 'effId': effId}], 0)
     }
 }
 
@@ -669,10 +398,8 @@ async function setEffectToActor(actor, eff, level=undefined) {
             }
             await actor.createEmbeddedDocuments("Item", [source]);
         }
-    } else if (game.settings.get(moduleName, "useSocket")) {
-        socketlibSocket._sendRequest("createEffects", [{'actorUuid': actor.uuid, 'eff': eff, "level": level}], 0)
     } else {
-        sendNotificationChatMessage(`Need add @UUID[${eff}] effect to ${actor.name}`);
+        socketlibSocket._sendRequest("createEffects", [{'actorUuid': actor.uuid, 'eff': eff, "level": level}], 0)
     }
 }
 
@@ -681,10 +408,8 @@ async function increaseConditionForActor(message, condition, value=undefined) {
 
     if (hasPermissions(message.actor)) {
         message.actor.increaseCondition(condition, valueObj);
-    } else if (game.settings.get(moduleName, "useSocket")) {
-        socketlibSocket._sendRequest("increaseConditions", [{'actorUuid': message.actor.uuid, 'value': value, 'condition': condition}], 0)
     } else {
-        sendNotificationChatMessage(`Set condition ${condition} ${value??''} to ${message.actor.name}`);
+        socketlibSocket._sendRequest("increaseConditions", [{'actorUuid': message.actor.uuid, 'value': value, 'condition': condition}], 0)
     }
 }
 
@@ -699,10 +424,8 @@ async function increaseConditionForTarget(message, condition, value=undefined) {
 
     if (hasPermissions(message.target.actor)) {
         message.target.actor.increaseCondition(condition, valueObj);
-    } else if (game.settings.get(moduleName, "useSocket")) {
-        socketlibSocket._sendRequest("increaseConditions", [{'actorUuid': message.target.actor.uuid, 'value': value, 'condition': condition}], 0)
     } else {
-        sendNotificationChatMessage(`Set condition ${condition} ${value??''} to ${message.target.actor.name}`);
+        socketlibSocket._sendRequest("increaseConditions", [{'actorUuid': message.target.actor.uuid, 'value': value, 'condition': condition}], 0)
     }
 }
 
@@ -984,52 +707,6 @@ Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
     precisionTurn(combat?.nextCombatant?.actor)
     gravityWeaponTurn(combat?.nextCombatant?.actor)
 });
-
-Hooks.on('pf2e.restForTheNight', async (actor) => {
-    if ("character" === actor?.type && "summoner" === actor?.class?.slug) {
-        const ei = actor.getFlag(moduleName, "eidolon");
-        if (ei) {
-            (await fromUuid(ei)).update({
-                "system.attributes.hp.value": actor.system.attributes.hp.value
-            }, { "noHook": true });
-        }
-    }
-})
-
-Hooks.on('preUpdateActor', async (actor, data, diff, id) => {
-    if (!game.settings.get(moduleName, "sharedHP")) {
-        return
-    }
-    if (data?.system?.attributes?.hp) {
-        if ("character" === actor?.type && "eidolon" === actor?.class?.slug) {
-            const f = actorFeat(actor, "summoner-hp")
-            if (f && f?.flags?.summoner) {
-                const as = await fromUuid(f.flags.summoner);
-
-                const hp = as.system.attributes.hp;
-                hp.value = data?.system?.attributes?.hp?.value;
-                hp.temp = data?.system?.attributes?.hp?.temp;
-
-                await as.update({
-                    "system.attributes.hp": hp
-                }, { "noHook": true })
-            }
-        } else if ("character" === actor?.type && "summoner" === actor?.class?.slug) {
-            const ei = actor.getFlag(moduleName, "eidolon");
-            if (ei) {
-                const as = await fromUuid(ei);
-
-                const hp = as.system.attributes.hp;
-                hp.value = data?.system?.attributes?.hp?.value;
-                hp.temp = data?.system?.attributes?.hp?.temp;
-
-                as.update({
-                    "system.attributes.hp": hp
-                }, { "noHook": true });
-            }
-        }
-    }
-})
 
 function gravityWeaponTurn(actor) {
     if (!actor) {return}

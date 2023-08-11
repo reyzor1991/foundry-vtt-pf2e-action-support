@@ -287,7 +287,7 @@ async function createDialog(actorId, selfEffect, targets, targetEffect) {
     </form>`
 
     new Dialog({
-        title: "Bloodline Demonic Selector",
+        title: "Bloodline Target Selector",
         content,
         buttons: {
             ok: {
@@ -364,9 +364,50 @@ async function bloodlineNymph(message) {
 }
 
 async function bloodlinePhoenix(message) {
+    const eff = "Compendium.pf2e-action-support.action-support.Item.yYvPtdlew2YctMgt";
+    const options = targetCharacters(message.actor.uuid).map(a => {
+        return `<option value="${a.uuid}" data-effect="${eff}">${a.name}</option>`
+    })
+
+    const content = `<form>
+        <div class="form-group">
+            <label>Target:</label>
+            <select name="bloodline-selector">
+                <option value="${message.actor.uuid}" data-effect="${eff}">Self</option>
+                ${options}
+            </select>
+        </div>
+    </form>`
+
+    new Dialog({
+        title: "Bloodline Target Selector",
+        content,
+        buttons: {
+            ok: {
+                label: "<span class='pf2-icon'>1</span> Apply effect",
+                callback: async (html) => {
+                    const tId = html.find("[name=bloodline-selector]").val();
+                    const eId = html.find("[name=bloodline-selector]").find(':selected').data('effect');
+                    const aEffect = (await fromUuid(eId)).toObject();
+                    aEffect.system.rules[0].value = message?.item?.level ?? 0;
+
+                    if (game.user.isGM) {
+                        await (await fromUuid(tId)).createEmbeddedDocuments("Item", [aEffect]);
+                    } else {
+                        socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, tId], 0)
+                    }
+                }
+            },
+            cancel: {
+                label: "<span class='pf2-icon'>R</span> Cancel"
+            }
+        },
+        default: "cancel",
+    }).render(true);
 }
 
 async function bloodlinePsychopomp(message) {
+    createDialog(message.actor.uuid, "Compendium.pf2e-action-support.action-support.Item.VhUcj6Ak2jLGEHQL", [], "");
 }
 
 async function bloodlineShadow(message) {
@@ -374,6 +415,46 @@ async function bloodlineShadow(message) {
 }
 
 async function bloodlineUndead(message) {
+    const eff = "Compendium.pf2e-action-support.action-support.Item.yYvPtdlew2YctMgt";
+    const options = targetCharacters(message.actor.uuid).map(a => {
+        return `<option value="${a.uuid}" data-effect="${eff}">${a.name}</option>`
+    })
+
+    const content = `<form>
+        <div class="form-group">
+            <label>Target:</label>
+            <select name="bloodline-selector">
+                <option value="${message.actor.uuid}" data-effect="${eff}">Self</option>
+                ${options}
+            </select>
+        </div>
+    </form>`
+
+    new Dialog({
+        title: "Bloodline Target Selector",
+        content,
+        buttons: {
+            ok: {
+                label: "<span class='pf2-icon'>1</span> Apply effect",
+                callback: async (html) => {
+                    const tId = html.find("[name=bloodline-selector]").val();
+                    const eId = html.find("[name=bloodline-selector]").find(':selected').data('effect');
+                    const aEffect = (await fromUuid(eId)).toObject();
+                    aEffect.system.rules[0].value = message?.item?.level ?? 0;
+
+                    if (game.user.isGM) {
+                        await (await fromUuid(tId)).createEmbeddedDocuments("Item", [aEffect]);
+                    } else {
+                        socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, tId], 0)
+                    }
+                }
+            },
+            cancel: {
+                label: "<span class='pf2-icon'>R</span> Cancel"
+            }
+        },
+        default: "cancel",
+    }).render(true);
 }
 
 async function bloodlineWyrmblessed(message) {
@@ -441,5 +522,5 @@ Hooks.on('preCreateChatMessage', async (message)=>{
 })
 
 function isActorCharacter(actor) {
-    return "character" === actor?.type || (actor?.type === "npc" && actor?.alliance === "party");
+    return ["character", "npc"].includes(actor?.type) && actor?.alliance === "party";
 }

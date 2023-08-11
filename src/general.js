@@ -24,6 +24,13 @@ const selfEffectMap = {
     "cat-nap": "Compendium.pf2e.feat-effects.Item.l3S9i2UWGhSO58YX",
     "radiant-circuitry": "Compendium.pf2e.feat-effects.Item.263Cd5JMj8Lgc9yz",
     "saoc-astrology": "Compendium.pf2e.feat-effects.Item.6ACbQIpmmemxmoBJ",
+    "elementalist-dedication": "Compendium.pf2e.feat-effects.Item.O8qithYQCv3e7DUQ",
+    "emblazon-armament": "Compendium.pf2e.feat-effects.Item.U1MpMtRnFqEDBJwd",
+    "eye-of-the-arclords": "Compendium.pf2e.feat-effects.Item.5IGz4iheaiUWm5KR",
+    "harrower-dedication": "Compendium.pf2e.feat-effects.Item.rp6hA52dWVwtuu5F",
+    "marshal-dedication": "Compendium.pf2e.feat-effects.Item.Ru4BNABCZ0hUbX7S",
+    "monster-warden": "Compendium.pf2e.feat-effects.Item.nlaxROgSSLVHZ1hx",
+    "ursine-avenger-form": "Compendium.pf2e.feat-effects.Item.m5xWMaDfV0PiTE6u",
     //spell
     "false-life": "Compendium.pf2e.spell-effects.Item.PANUWN5xXC20WBg2",
     "unusual-anatomy": "Compendium.pf2e.spell-effects.Item.LMzFBnOEPzDGzHg4",
@@ -399,12 +406,71 @@ function rootMagic(message, _obj) {
     }
 }
 
+function anointAlly(message, _obj) {
+    if  (_obj.slug === "anoint-ally") {
+        setEffectToActorOrTarget(message, "Compendium.pf2e.feat-effects.Item.nnF7RSVlC6swbSw8", "Anoint Ally", 5, true)
+    }
+}
+
+function dragonslayerOathLiberator(message, _obj) {
+    if (_obj.slug === "dragonslayer-oath-liberator") {
+        setEffectToActorOrTarget(
+            message,
+            "Compendium.pf2e.feat-effects.Item.iyONT1qgeRgoYHsZ",
+            "Dragonslayer Oath (Liberator)",
+            500,
+            true
+        )
+    }
+}
+
+function esotericOathLiberator(message, _obj) {
+    if (_obj.slug === "esoteric-oath-liberator") {
+        setEffectToActorOrTarget(
+            message,
+            "Compendium.pf2e.feat-effects.Item.tAsFXMzNkpj964X4",
+            "Esoteric Oath (Liberator)",
+            500,
+            true
+        )
+    }
+}
+
+function fiendsbaneOathLiberator(message, _obj) {
+    if (_obj.slug === "fiendsbane-oath-liberator") {
+        setEffectToActorOrTarget(
+            message,
+            "Compendium.pf2e.feat-effects.Item.9dCt0asv0kt7DR4q",
+            "Fiendsbane Oath (Liberator)",
+            500,
+            true
+        )
+    }
+}
+
+function shiningOathLiberator(message, _obj) {
+    if (_obj.slug === "shining-oath-liberator") {
+        setEffectToActorOrTarget(
+            message,
+            "Compendium.pf2e.feat-effects.Item.ZnKnOPPq3cG54PlG",
+            "Shining Oath (Liberator)",
+            500,
+            true
+        )
+    }
+}
+
 function handleFeats(message, _obj) {
     rage(message, _obj);
     reactiveShield(message, _obj);
     kipUp(message, _obj);
     pistolTwirl(message, _obj);
     rootMagic(message, _obj);
+    anointAlly(message, _obj);
+    dragonslayerOathLiberator(message, _obj);
+    esotericOathLiberator(message, _obj);
+    fiendsbaneOathLiberator(message, _obj);
+    shiningOathLiberator(message, _obj);
 }
 
 function guidance(message, _obj) {

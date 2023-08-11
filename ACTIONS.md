@@ -110,6 +110,10 @@
 - Enlarge
 - Unusual Anatomy
 - Ashen Wind
+- Painful Vibrations
+- Divine Wrath
+- Ash Cloud
+- Aromatic Lure
 
 
 ### 3rd party
@@ -177,6 +181,20 @@
 - Radiant Circuitry
 - Root Magic
 - Saoc Astrology
+- Anoint Ally
+- Divine Aegis
+- Emblazon Armament
+- Elementalist Dedication
+- Dragonslayer Oath (Liberator)
+- Esoteric Oath (Liberator)
+- Fiendsbane Oath (Liberator)
+- Shining Oath (Liberator)
+- Eye of the Arclords
+- Harrower Dedication
+- Marshal Dedication
+- Monster Warden
+- Sniping Duo Dedication
+- Aldori Parry
 
 ### Items
 
