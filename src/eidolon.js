@@ -38,7 +38,118 @@ async function setSummonerHP(actor) {
         "system.attributes.hp.value": actor.system.attributes.hp.value,
         "system.attributes.hp.temp": actor.system.attributes.hp.temp,
     }, { "noHook": true })
+};
+
+Hooks.on("preCreateItem", (item, data) => {
+    if ("condition" === data.type && data.system.slug === "drained") {
+        if ("character" === item.actor?.type && "eidolon" === item.actor?.class?.slug) {
+            addDrainedToSummoner(item.actor, actorFeat(item.actor, "summoner-hp"), data);
+            return false;
+        }
+    }
+});
+
+async function addDrainedToSummoner(eidolon, feat, data) {
+    if (!feat) {return;}
+    const summoner = await fromUuid(feat.flags.summoner);
+    const sumDrained = summoner.hasCondition(data.system.slug)
+    if (!sumDrained) {
+        await summoner.createEmbeddedDocuments("Item", [data]);
+    }
 }
+
+Hooks.on("updateItem", async (item) => {
+    if ("condition" === item.type && item.system.slug === "drained") {
+        if ("character" === item.actor?.type && "summoner" === item.actor?.class?.slug) {
+
+            let ei = item.actor.getFlag(moduleName, "eidolon");
+            if (ei) {
+                const eidolon = await fromUuid(ei);
+
+                let eff = hasEffect(eidolon, "drained-eidolon");
+                if (eff) {
+                    eff = eff.toObject();
+                    eff.system.rules[0].value = -(item.system.value.value ?? 1) * item.actor.level;
+                    await eidolon.updateEmbeddedDocuments("Item", [eff]);
+                }
+            }
+
+        }
+    }
+});
+
+Hooks.on("createItem", async (item) => {
+    if ("condition" === item.type && item.slug === "drained") {
+        if ("character" === item.actor?.type && "summoner" === item.actor?.class?.slug) {
+            let ei = item.actor.getFlag(moduleName, "eidolon");
+            if (ei) {
+                const eidolon = await fromUuid(ei);
+
+                let eff = hasEffect(eidolon, "drained-eidolon");
+                if (!eff) {
+                    eff = effectDrainEil();
+                    eff.system.rules[0].value = -(item.system.value.value ?? 1) * item.actor.level;
+                    await eidolon.createEmbeddedDocuments("Item", [eff]);
+                }
+            }
+        }
+    }
+});
+
+function effectDrainEil() {
+    return {
+      "name": "Drained Eidolon",
+      "type": "effect",
+      "system": {
+        "rules": [
+          {
+            "key": "FlatModifier",
+            "label": "drainedEidolon",
+            "selector": "hp",
+            "value": 0,
+            "type": "status"
+          }
+        ],
+        "slug": "drained-eidolon",
+        "level": {
+          "value": 1
+        },
+        "duration": {
+          "value": -1,
+          "unit": "unlimited",
+          "sustained": false,
+          "expiry": "turn-start"
+        },
+        "start": {
+          "value": 0,
+          "initiative": null
+        }
+      },
+      "img": "systems/pf2e/icons/conditions/drained.webp",
+      "_id": randomID()
+    };
+}
+
+Hooks.on("deleteItem", async (item) => {
+    if ("condition" === item.type && item.slug === "drained") {
+        if ("character" === item.actor?.type && "summoner" === item.actor?.class?.slug) {
+            let ei = item.actor.getFlag(moduleName, "eidolon");
+            if (ei) {
+                const eidolon = await fromUuid(ei);
+                const eff = hasEffect(eidolon, "drained-eidolon");
+                if (eff) {
+                    await eff.delete();
+                }
+            }
+        }
+    } else if ("character" === item.actor?.type && "eidolon" === item.actor?.class?.slug && item.slug === "drained-eidolon") {
+        const curFeat = actorFeat(item.actor, "summoner-hp");
+        if (curFeat) {
+            const summoner = await fromUuid(curFeat.flags.summoner);
+            await summoner.decreaseCondition("drained", {forceRemove: true})
+        }
+    }
+});
 
 Hooks.once("init", () => {
 
