@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.12
+
+### New feature
+- Use DC from summoner for spells
+
 ## Version 0.2.11
 
 ### New feature

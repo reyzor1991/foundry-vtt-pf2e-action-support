@@ -40,6 +40,14 @@ Hooks.once("init", () => {
         default: false,
         type: Boolean,
     });
+    game.settings.register(moduleName, "eidolonSpell", {
+        name: "Use summoner save dc for spells (Under dev)",
+        hint: "Need to reload after change",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
     game.settings.register(moduleName, "ignoreEncounterCheck", {
         name: "Ignore encounter check to apply effect and etc.",
         hint: "Some action automations only work in a combat encounter, this allows you to pass that.",
