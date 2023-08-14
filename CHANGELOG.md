@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.2.13
+
+### New feature
+- Drained Condition for Eidolon
+- Update RAW Affliction
+
 ## Version 0.2.12
 
 ### New feature
