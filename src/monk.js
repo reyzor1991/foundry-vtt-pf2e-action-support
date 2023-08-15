@@ -83,22 +83,20 @@ async function flurryOfBlows(actor) {
     const options = actorFeat(actor, "stunning-fist") ? ["stunning-fist"] : [];
 
     const damages = [];
-    const hits = [];
     function PD(cm) {
         if ( cm.user.id === game.userId && cm.isDamageRoll ) {
             damages.push(cm);
-            return false;
-        } else if ( cm.user.id === game.userId && cm.isCheckRoll ) {
-            hits.push(cm);
             return false;
         }
     }
 
     Hooks.on('preCreateChatMessage', PD);
 
-    const primaryMessage = await primary.variants[map].roll();
+    const altUsage = null;
+    const ev = new KeyboardEvent('keydown', {'shiftKey': true});
+    const primaryMessage = await primary.variants[map].roll({ event:ev, altUsage });
     const primaryDegreeOfSuccess = primaryMessage.degreeOfSuccess;
-    const secondaryMessage = await secondary.variants[map2].roll();
+    const secondaryMessage = await secondary.variants[map2].roll({ event:ev, altUsage });
     const secondaryDegreeOfSuccess = secondaryMessage.degreeOfSuccess;
 
     let pd,sd;

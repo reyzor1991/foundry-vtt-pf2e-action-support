@@ -38,7 +38,7 @@ const selfEffectMap = {
 }
 
 function handleTreatWounds(message) {
-    if (hasOption(message, "action:treat-wounds") && message?.flavor === message?.flags?.pf2e?.unsafe) {
+    if (!game.combat && hasOption(message, "action:treat-wounds") && message?.flavor === message?.flags?.pf2e?.unsafe) {
         if (game.user.targets.size === 1) {
             const [first] = game.user.targets;
             treatWounds(message, first.actor);

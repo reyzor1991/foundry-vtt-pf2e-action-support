@@ -232,9 +232,13 @@ function trip(message) {
 }
 
 function battleMedicine(message) {
-    if (hasOption(message, "action:treat-wounds")
-        && hasOption(message, "feat:battle-medicine")
+    if (game.combat && hasOption(message, "action:treat-wounds")
         && message?.flavor === message?.flags?.pf2e?.unsafe) {
+        if (!hasOption(message, "feat:battle-medicine")) {
+            ui.notifications.info(`${message.actor.name} hasn't Battle Medicine Feat`);
+            return;
+        }
+
         if (game.user.targets.size === 1) {
             const [first] = game.user.targets;
 
