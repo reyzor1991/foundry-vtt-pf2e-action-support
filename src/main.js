@@ -256,7 +256,7 @@ function hasEffects(actor, eff) {
 }
 
 function actorsWithEffect(eff) {
-    return game.combat.turns.filter(cc=>hasEffect(cc.actor, eff)).map(cc=>cc.actor);
+    return game.combat ? game.combat.turns.filter(cc=>hasEffect(cc.actor, eff)).map(cc=>cc.actor) : [];
 }
 
 function distanceIsCorrect(firstT, secondT, distance) {
@@ -677,43 +677,40 @@ Hooks.on("deleteCombat", function (combat, delta) {
 })
 
 Hooks.on('combatRound', async (combat, updateData, updateOptions) => {
-    game.combat.turns.map(cc=>cc.actor)
-        .forEach(a => {
-            if (hasEffect(a.actor, "effect-off-guard-tumble-behind")) {
-                deleteEffectFromActor(cc.actor, "effect-off-guard-tumble-behind")
+    game.combat.turns.map(cc=>cc.actor).forEach(a => {
+        Object.values(a?.itemTypes).flat(1).forEach(i => {
+            if (i?.system?.frequency?.per === "round") {
+                i.update({
+                    "system.frequency.value": i.system.frequency.max
+                });
             }
-            const qq = hasEffectStart(a.actor, "effect-feint-success");
-            if (qq) {
-                deleteEffectFromActor(a.actor, qq.slug)
-                deleteEffectFromActor(cc.actor, "effect-pistol-twirl")
-            }
-            Object.values(a?.itemTypes).flat(1).forEach(i => {
-                if (i?.system?.frequency?.per === "round" || i?.system?.frequency?.per === "turn") {
-                    i.update({
-                        "system.frequency.value": i.system.frequency.max
-                    });
-                }
-            })
         })
-
-    precisionTurn(game.combat.turns[0]?.actor)
-    gravityWeaponTurn(game.combat.turns[0]?.actor)
+    });
 });
 
-Hooks.on('combatTurn', async (combat, updateData, updateOptions) => {
-     game.combat.turns.forEach(cc => {
-        if (hasEffect(cc.actor, "effect-off-guard-tumble-behind")) {
-            deleteEffectFromActor(cc.actor, "effect-off-guard-tumble-behind")
-        }
-        const qq = hasEffectStart(cc.actor, "effect-feint-success");
+Hooks.on('pf2e.startTurn', (combatant, encounter, id) => {
+    precisionTurn(combatant.actor)
+    gravityWeaponTurn(combatant.actor)
+})
+
+Hooks.on('pf2e.endTurn', (combatant, encounter, id) => {
+    encounter.turns.map(cc=>cc.actor).forEach(a => {
+        deleteEffectFromActor(a, "effect-off-guard-tumble-behind")
+        deleteEffectFromActor(a, "effect-pistol-twirl")
+
+        const qq = hasEffectStart(a, "effect-feint-success");
         if (qq) {
-            deleteEffectFromActor(cc.actor, qq.slug)
-            deleteEffectFromActor(cc.actor, "effect-pistol-twirl")
+            deleteEffectFromActor(a, qq.slug)
+        }
+    });
+
+    Object.values(combatant?.actor?.itemTypes).flat(1).forEach(i => {
+        if (i?.system?.frequency?.per === "turn") {
+            i.update({
+                "system.frequency.value": i.system.frequency.max
+            });
         }
     })
-
-    precisionTurn(combat?.nextCombatant?.actor)
-    gravityWeaponTurn(combat?.nextCombatant?.actor)
 });
 
 function gravityWeaponTurn(actor) {

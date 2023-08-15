@@ -31,6 +31,7 @@ const selfEffectMap = {
     "marshal-dedication": "Compendium.pf2e.feat-effects.Item.Ru4BNABCZ0hUbX7S",
     "monster-warden": "Compendium.pf2e.feat-effects.Item.nlaxROgSSLVHZ1hx",
     "ursine-avenger-form": "Compendium.pf2e.feat-effects.Item.m5xWMaDfV0PiTE6u",
+    "consolidated-overlay-panopticon": "Compendium.pf2e.feat-effects.Item.qSKVcw6brzrvfhUM",
     //spell
     "false-life": "Compendium.pf2e.spell-effects.Item.PANUWN5xXC20WBg2",
     "unusual-anatomy": "Compendium.pf2e.spell-effects.Item.LMzFBnOEPzDGzHg4",
@@ -315,7 +316,7 @@ function acceptEcho(message, _obj) {
 
 function huntPrey(message, _obj) {
     if (_obj.slug === "hunt-prey") {
-        game.combat.turns.map(cc=>cc.actor).forEach(a => {
+        game.combat?.turns?.map(cc=>cc.actor)?.forEach(a => {
             const qq = hasEffects(a, `effect-hunt-prey-${message.actor.id}`)
             .forEach(eff => {
                 deleteEffectById(a, eff.id)
@@ -714,8 +715,6 @@ function handleSpells(message, _obj) {
     longstrider(message, _obj);
     enlarge(message, _obj);
 
-
-
     if  (_obj.slug === "fly") {
         setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.MuRBCiZn5IKeaoxi", "Fly", getSpellRange(message.actor, _obj))
     } else if  (_obj.slug === "protection") {
@@ -760,11 +759,18 @@ function handleSpells(message, _obj) {
         setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.0PO5mFRhh9HxGAtv", message?.item?.level)
     } else if (_obj.slug === "spectral-hand") {
         setEffectToActor(message.actor, effect_spectral_hand, message?.item?.level)
+    } else if (_obj.slug === "see-the-unseen") {
+        if (message?.item?.level >= 5) {
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.ToBOvG7N8cNxa8uX", message?.item?.level)
+        } else {
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.T5bk6UH7yuYog1Fp", message?.item?.level)
+        }
     }
 }
 
 async function handleSelfAssignedEffects(message) {
     if (message?.flags?.pf2e?.origin?.type) {
+        if (!messageType(message, undefined) && !messageType(message, "spell-cast")) {return}
         const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
         if (!_obj) {return}
         const eff = selfEffectMap[_obj.slug]

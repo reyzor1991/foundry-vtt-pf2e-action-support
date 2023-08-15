@@ -18,13 +18,13 @@
 }
 
 
-.column-flurry {
+.column-flurry, .column-hunted-shot {
   float: left;
   width: 50%;
   padding: 10px;
 }
 
-.row-flurry:after {
+.row-flurry:after, .row-hunted-shot:after {
   content: "";
   display: table;
   clear: both;

@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.2.14
+
+### New feature
+- Handling of Decry Thief Feat
+- Handling of See the Unseen Spell
+- Handling of Hunted Shot Feat (Add macro)
+
 ## Version 0.2.13
 
 ### New feature

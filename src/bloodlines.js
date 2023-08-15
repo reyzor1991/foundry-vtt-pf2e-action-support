@@ -81,7 +81,7 @@ const bloodlineDraconicSpells = [
 
 const bloodlineElementalSpells = [
     "produce-flame",
-    "burning-hands",
+    "breathe-fire",
     "resist-energy",
     "fireball",
     "freedom-of-movement",
@@ -164,7 +164,7 @@ const bloodlineImperialSpells = [
     "magic-missile",
     "dispel-magic",
     "haste",
-    "dimension-door",
+    "translocate",
     "prying-eye",
     "disintegrate",
     "prismatic-spray",
@@ -176,9 +176,9 @@ const bloodlineImperialSpells = [
 ];
 
 const bloodlineNymphSpells = [
-    "tanglefoot",
+    "tangle-vine",
     "charm",
-    "calm-emotions",
+    "calm",
     "animal-vision",
     "vital-beacon",
     "crushing-despair",
@@ -193,15 +193,15 @@ const bloodlineNymphSpells = [
 
 const bloodlinePhoenixSpells = [
     "detect-magic",
-    "burning-hands",
-    "see-invisibility",
+    "breathe-fire",
+    "see-the-unseen",
     "fireball",
     "remove-curse",
     "breath-of-life",
     "disintegrate",
     "contingency",
     "moment-of-renewal",
-    "meteor-swarm",
+    "falling-stars",
     "rejuvenating-flames",
     "shroud-of-flame",
     "cleansing-flames",
@@ -210,7 +210,7 @@ const bloodlinePhoenixSpells = [
 const bloodlinePsychopompSpells = [
     "disrupt-undead",
     "heal",
-    "calm-emotions",
+    "calm",
     "searing-light",
     "dimensional-anchor",
     "death-ward",
@@ -257,7 +257,7 @@ const bloodlineUndeadSpells = [
 
 const bloodlineWyrmblessedSpells = [
     "read-aura",
-    "mage-armor",
+    "mystic-armor",
     "resist-energy",
     "haste",
     "reflective-scales",
@@ -296,6 +296,74 @@ async function createDialog(actorId, selfEffect, targets, targetEffect) {
                     const tId = html.find("[name=bloodline-selector]").val();
                     const eId = html.find("[name=bloodline-selector]").find(':selected').data('effect');
                     const aEffect = await fromUuid(eId);
+
+                    if (game.user.isGM) {
+                        await (await fromUuid(tId)).createEmbeddedDocuments("Item", [aEffect]);
+                    } else {
+                        socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, tId], 0)
+                    }
+                }
+            },
+            cancel: {
+                label: "<span class='pf2-icon'>R</span> Cancel"
+            }
+        },
+        default: "cancel",
+    }).render(true);
+}
+
+async function createDialogDamageOrTempHP(message, spell, damageEff, selfSpells, allySpells, comboSpells) {
+    //self apply
+    const eff = "Compendium.pf2e-action-support.action-support.Item.yYvPtdlew2YctMgt";
+
+    const aEffect = (await fromUuid(eff)).toObject();
+    aEffect.system.rules[0].value = message?.item?.level ?? 0;
+
+    if (selfSpells.includes(spell.slug)) {
+        if (game.user.isGM) {
+            await message.actor.createEmbeddedDocuments("Item", [aEffect]);
+        } else {
+            socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, message.actor.uuid], 0)
+        }
+        return
+    }
+
+    let options = []
+    if (allySpells.includes(spell.slug)) {
+        options = targetCharacters(message.actor.uuid).map(a => {
+            return `<option value="${a.uuid}" data-effect="${eff}">${a.name}</option>`
+        })
+    } else if (comboSpells.includes(spell.slug)) {
+        options = targetCharacters(message.actor.uuid).map(a => {
+            return `<option value="${a.uuid}" data-effect="${eff}">${a.name}</option>`
+        })
+        options.push(`<option value="${message.actor.uuid}" data-effect="${damageEff}">Add damage to target</option>`)
+    } else {
+        options.push(`<option value="${message.actor.uuid}" data-effect="${damageEff}">Add damage to target</option>`)
+    }
+
+
+    const content = `<form>
+        <div class="form-group">
+            <label>Target:</label>
+            <select name="bloodline-selector">
+                <option value="${message.actor.uuid}" data-effect="${eff}">Self</option>
+                ${options}
+            </select>
+        </div>
+    </form>`
+
+    new Dialog({
+        title: "Bloodline Target Selector",
+        content,
+        buttons: {
+            ok: {
+                label: "<span class='pf2-icon'>1</span> Apply effect",
+                callback: async (html) => {
+                    const tId = html.find("[name=bloodline-selector]").val();
+                    const eId = html.find("[name=bloodline-selector]").find(':selected').data('effect');
+                    const aEffect = (await fromUuid(eId)).toObject();
+                    aEffect.system.rules[0].value = message?.item?.level ?? 0;
 
                     if (game.user.isGM) {
                         await (await fromUuid(tId)).createEmbeddedDocuments("Item", [aEffect]);
@@ -363,47 +431,16 @@ async function bloodlineNymph(message) {
     createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.SVGW8CLKwixFlnTv", targetNpcs(), "Compendium.pf2e.feat-effects.Item.ruRAfGJnik7lRavk");
 }
 
-async function bloodlinePhoenix(message) {
-    const eff = "Compendium.pf2e-action-support.action-support.Item.yYvPtdlew2YctMgt";
-    const options = targetCharacters(message.actor.uuid).map(a => {
-        return `<option value="${a.uuid}" data-effect="${eff}">${a.name}</option>`
-    })
-
-    const content = `<form>
-        <div class="form-group">
-            <label>Target:</label>
-            <select name="bloodline-selector">
-                <option value="${message.actor.uuid}" data-effect="${eff}">Self</option>
-                ${options}
-            </select>
-        </div>
-    </form>`
-
-    new Dialog({
-        title: "Bloodline Target Selector",
-        content,
-        buttons: {
-            ok: {
-                label: "<span class='pf2-icon'>1</span> Apply effect",
-                callback: async (html) => {
-                    const tId = html.find("[name=bloodline-selector]").val();
-                    const eId = html.find("[name=bloodline-selector]").find(':selected').data('effect');
-                    const aEffect = (await fromUuid(eId)).toObject();
-                    aEffect.system.rules[0].value = message?.item?.level ?? 0;
-
-                    if (game.user.isGM) {
-                        await (await fromUuid(tId)).createEmbeddedDocuments("Item", [aEffect]);
-                    } else {
-                        socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, tId], 0)
-                    }
-                }
-            },
-            cancel: {
-                label: "<span class='pf2-icon'>R</span> Cancel"
-            }
-        },
-        default: "cancel",
-    }).render(true);
+async function bloodlinePhoenix(message, spell) {
+    const damageEff = "Compendium.pf2e-action-support.action-support.Item.2yWSBNLWWYXXSfKZ";
+    createDialogDamageOrTempHP(
+        message,
+        spell,
+        damageEff,
+        ["detect-magic", "see-the-unseen", "contingency", "shroud-of-flame"],
+        ["remove-curse","breath-of-life","moment-of-renewal"],
+        ["rejuvenating-flames"]
+    )
 }
 
 async function bloodlinePsychopomp(message) {
@@ -414,47 +451,16 @@ async function bloodlineShadow(message) {
     createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.OqH6IaeOwRWkGPrk", targetNpcs(), "Compendium.pf2e.feat-effects.Item.Nv70aqcQgCBpDYp8");
 }
 
-async function bloodlineUndead(message) {
-    const eff = "Compendium.pf2e-action-support.action-support.Item.yYvPtdlew2YctMgt";
-    const options = targetCharacters(message.actor.uuid).map(a => {
-        return `<option value="${a.uuid}" data-effect="${eff}">${a.name}</option>`
-    })
-
-    const content = `<form>
-        <div class="form-group">
-            <label>Target:</label>
-            <select name="bloodline-selector">
-                <option value="${message.actor.uuid}" data-effect="${eff}">Self</option>
-                ${options}
-            </select>
-        </div>
-    </form>`
-
-    new Dialog({
-        title: "Bloodline Target Selector",
-        content,
-        buttons: {
-            ok: {
-                label: "<span class='pf2-icon'>1</span> Apply effect",
-                callback: async (html) => {
-                    const tId = html.find("[name=bloodline-selector]").val();
-                    const eId = html.find("[name=bloodline-selector]").find(':selected').data('effect');
-                    const aEffect = (await fromUuid(eId)).toObject();
-                    aEffect.system.rules[0].value = message?.item?.level ?? 0;
-
-                    if (game.user.isGM) {
-                        await (await fromUuid(tId)).createEmbeddedDocuments("Item", [aEffect]);
-                    } else {
-                        socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, tId], 0)
-                    }
-                }
-            },
-            cancel: {
-                label: "<span class='pf2-icon'>R</span> Cancel"
-            }
-        },
-        default: "cancel",
-    }).render(true);
+async function bloodlineUndead(message, spell) {
+    const damageEff = "Compendium.pf2e-action-support.action-support.Item.UQEqBomwGFkTOomK";
+    createDialogDamageOrTempHP(
+        message,
+        spell,
+        damageEff,
+        ["false-life", "bind-undead", "talking-corpse"],
+        ["remove-curse"],
+        ["harm", "undeaths-blessing"]
+    )
 }
 
 async function bloodlineWyrmblessed(message) {
@@ -481,24 +487,24 @@ const bloodlineFeatMap = {
 }
 
 function targetNpcs() {
-    return game.combat.turns.filter(a=>!isActorCharacter(a.actor)).map(a=>a.actor)
+    return game.combat ? game.combat.turns.filter(a=>!isActorCharacter(a.actor)).map(a=>a.actor) : [];
 }
 
 function targetCharacters(self) {
-    return game.combat.turns.filter(a=>isActorCharacter(a.actor) && a.actor.uuid != self).map(a=>a.actor)
+    return game.combat ? game.combat.turns.filter(a=>isActorCharacter(a.actor) && a.actor.uuid != self).map(a=>a.actor) : [];
 }
 
 Hooks.on('preCreateChatMessage', async (message)=>{
     if (!game.settings.get(moduleName, "useBloodline")) {return}
-    if (messageType(message, "saving-throw")) {return}
-    if (!game?.combats?.active) {return}
+    if (!messageType(message, undefined) && !messageType(message, "spell-cast")){return}
+    if (!game?.combats?.active && !game.settings.get(moduleName, "ignoreEncounterCheck")) {return}
 
     const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
     if (_obj?.type !== "spell") {return}
 
     for (const featName in bloodlineFeatMap) {
         if (actorFeat(message.actor, featName) && bloodlineFeatMap[featName].spells.includes(_obj.slug)) {
-            bloodlineFeatMap[featName].handler.call(this, message)
+            bloodlineFeatMap[featName].handler.call(this, message, _obj)
         }
     }
 

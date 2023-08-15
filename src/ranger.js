@@ -1,34 +1,22 @@
-function flurryOfBlowsWeapons(actor) {
-    let weapons = actor.system.actions.filter( h => h.visible && h.item?.isMelee && h.item?.system?.traits?.value?.includes("unarmed") );
-
-    if ( actor.system.actions.some( e => e.visible && e.origin?.type === "effect" && e.origin?.slug.includes("stance") ) ) {
-        weapons = actor.system.actions.filter( e => e.visible && e.origin?.type === "effect" && e.origin?.slug.includes("stance") ).concat(actor.system.actions.filter( h => h.visible && h.item?.isMelee && h.item?.system?.traits?.value?.includes("unarmed") && h.origin?.type !== "effect" ));
-    }
-
-    if ( actor.itemTypes.feat.some( s => s.slug === "monastic-weaponry" ) && actor.system.actions.some( h => h.item?.isHeld && h.item?.system?.traits?.value.includes("monk") ) ) {
-        weapons = actor.system.actions.filter( h => h.item?.isHeld && h.ready && h.item?.system?.traits?.value.includes("monk") ).concat(weapons)
-    }
-
-    if ( actor.itemTypes.effect.some( s => s.slug === "stance-monastic-archer-stance" ) && actor.system.actions.some( h => h.item?.isHeld && h.item?.group === "bow" && h.item?.reload === "0" ) ) {
-        weapons.unshift( actor.system.actions.find( h => h.item?.isHeld && h.item?.group === "bow" && h.item?.reload === "0" ) )
-    }
-
-    return weapons;
+function huntedShotWeapons(actor) {
+    return actor.system.actions
+        .filter( h => h.visible && h.item?.isRanged)
+        .filter( h => "0" === h?.item?.reload);
 };
 
-async function flurryOfBlows(actor) {
+async function huntedShot(actor) {
     if ( !actor ) { ui.notifications.info("Please select 1 token"); return;}
     if (game.user.targets.size != 1) { ui.notifications.info(`Need to select 1 token as target`);return; }
 
-    if ( !actorAction(actor, "flurry-of-blows") && !actorFeat(actor, "flurry-of-blows" ) ) {
-        ui.notifications.warn(`${actor.name} does not have Flurry of Blows!`);
+    if ( !actorAction(actor, "hunted-shot") && !actorFeat(actor, "hunted-shot" ) ) {
+        ui.notifications.warn(`${actor.name} does not have Hunted Shot!`);
         return;
     }
 
     const DamageRoll = CONFIG.Dice.rolls.find( r => r.name === "DamageRoll" );
     const critRule = game.settings.get("pf2e", "critRule");
 
-    const weapons = flurryOfBlowsWeapons(actor)
+    const weapons = huntedShotWeapons(actor)
     if (weapons.length === 0) {
         ui.notifications.warn(`${actor.name} doesn't have correct weapon'`);
         return;
@@ -40,11 +28,11 @@ async function flurryOfBlows(actor) {
     }
 
     const { currentWeapon, map, dos} = await Dialog.wait({
-        title:"Flurry of Blows",
+        title:"Hunted Shot",
         content: `
-            <div class="row-flurry"><div class="column-flurry first-flurry"><h3>First Attack</h2><select id="fob1" autofocus>
+            <div class="row-hunted-shot"><div class="column-hunted-shot first-hunted-shot"><h3>First Attack</h2><select id="fob1" autofocus>
                 ${weaponOptions}
-            </select></div><div class="column-flurry second-flurry"><h3>Second Attack</h2>
+            </select></div><div class="column-hunted-shot second-hunted-shot"><h3>Second Attack</h2>
             <select id="fob2">
                 ${weaponOptions}
             </select></div></div><hr><h3>Multiple Attack Penalty</h2>
@@ -66,10 +54,7 @@ async function flurryOfBlows(actor) {
                 }
         },
         render: (html) => {
-            html.parent().parent()[0].style.cssText += 'box-shadow: 0 0 30px red;';
-            for (const child of html.parent().parent().children()) {
-                child.style.cssText += 'box-shadow: 0 0 15px yellow;';
-            }
+            html.parent().parent()[0].style.cssText += 'box-shadow: 0 0 30px green;';
         },
         default: "ok"
     });
@@ -180,7 +165,7 @@ async function flurryOfBlows(actor) {
         combinedDamage += "}";
 
         const rolls = [await new DamageRoll(combinedDamage).evaluate({ async: true })]
-        let flavor = `<strong>Flurry of Blows Total Damage</strong>`;
+        let flavor = `<strong>Hunted Shot Total Damage</strong>`;
         const color = (pdos || sdos) === 2 ? `<span style="color:rgb(0, 0, 255)">Success</span>` : `<span style="color:rgb(0, 128, 0)">Critical Success</span>`
         if ( cM.length === 1 ) { flavor += `<p>Same Weapon (${color})<hr>${cM[0].flavor}</p><hr>`; }
         else { flavor += `<hr>${cM[0].flavor}<hr>${cM[1].flavor}`; }
@@ -250,6 +235,6 @@ async function flurryOfBlows(actor) {
 
 Hooks.once("init", () => {
     game.actionsupport = mergeObject(game.actionsupport ?? {}, {
-        "flurryOfBlows": flurryOfBlows,
+        "huntedShot": huntedShot,
     })
 });

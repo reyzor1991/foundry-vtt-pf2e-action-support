@@ -92,10 +92,17 @@ function demoralize(message) {
             if (i.some(d=>["mental", "fear-effects", "emotion"].includes(d))) {
                 sendGMNotification(`${message.target.actor.name} has Immunity to Demoralize action. Has mental, fear or emotion immunity`);
             } else {
+                const decryThief = actorFeat(message.actor, "decry-thief");
                 if (successMessageOutcome(message)) {
                     increaseConditionForTarget(message, "frightened", 1);
+                    if (decryThief) {
+                        setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.FyaekbWsazkJhJda");
+                    }
                 } else if (criticalSuccessMessageOutcome(message)) {
                     increaseConditionForTarget(message, "frightened", 2);
+                    if (decryThief) {
+                        setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.kAgUld9PcI4XkHbq");
+                    }
                 }
             }
             if (anySuccessMessageOutcome(message) && actorFeat(message.actor, "braggart")) {
@@ -648,6 +655,7 @@ async function handleBattleSpells(message, _obj) {
 
 async function handleBattleSelfAssignedEffects(message) {
     if (message?.flags?.pf2e?.origin?.type) {
+        if (!messageType(message, undefined) && !messageType(message, "spell-cast")){return}
         const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
         if (!_obj) {return}
         const eff = battleSelfEffectMap[_obj.slug]

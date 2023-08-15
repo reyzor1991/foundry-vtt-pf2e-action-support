@@ -114,6 +114,7 @@
 - Divine Wrath
 - Ash Cloud
 - Aromatic Lure
+- See the Unseen
 
 
 ### 3rd party
@@ -195,6 +196,7 @@
 - Monster Warden
 - Sniping Duo Dedication
 - Aldori Parry
+- Decry Thief
 
 ### Items
 
