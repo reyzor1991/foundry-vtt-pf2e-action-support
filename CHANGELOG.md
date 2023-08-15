@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.15
+
+### Bug Fixes
+- Fix issue with Hunted Shot and Flurry Of Blows macros
+
 ## Version 0.2.14
 
 ### New feature

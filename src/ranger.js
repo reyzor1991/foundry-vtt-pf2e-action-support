@@ -30,12 +30,9 @@ async function huntedShot(actor) {
     const { currentWeapon, map, dos} = await Dialog.wait({
         title:"Hunted Shot",
         content: `
-            <div class="row-hunted-shot"><div class="column-hunted-shot first-hunted-shot"><h3>First Attack</h2><select id="fob1" autofocus>
+            <div class="row-hunted-shot"><div class="column-hunted-shot first-hunted-shot"><h3>First Attack</h3><select id="fob1" autofocus>
                 ${weaponOptions}
-            </select></div><div class="column-hunted-shot second-hunted-shot"><h3>Second Attack</h2>
-            <select id="fob2">
-                ${weaponOptions}
-            </select></div></div><hr><h3>Multiple Attack Penalty</h2>
+            </select></div></div><hr><h3>Multiple Attack Penalty</h3>
                 <select id="map">
                 <option value=0>No MAP</option>
                 <option value=1>MAP -5(-4 for agile)</option>
@@ -46,7 +43,7 @@ async function huntedShot(actor) {
                 ok: {
                     label: "Attack",
                     icon: "<i class='fa-solid fa-hand-fist'></i>",
-                    callback: (html) => { return { currentWeapon: [html[0].querySelector("#fob1").value,html[0].querySelector("#fob2").value], map: parseInt(html[0].querySelector("#map").value)} }
+                    callback: (html) => { return { currentWeapon: [html[0].querySelector("#fob1").value], map: parseInt(html[0].querySelector("#map").value)} }
                 },
                 cancel: {
                     label: "Cancel",
@@ -63,174 +60,79 @@ async function huntedShot(actor) {
     if ( currentWeapon === undefined ) { return; }
 
     const primary = weapons.find( w => w.item.id === currentWeapon[0] );
-    const secondary = weapons.find( w => w.item.id === currentWeapon[1] );
+    const secondary = weapons.find( w => w.item.id === currentWeapon[0] );
 
-    let options = actor.itemTypes.feat.some(s => s.slug === "stunning-fist") ? ["stunning-fist"] : [];
+    let options = [];
 
-    const cM = [];
+    const damages = [];
+    const hits = [];
     function PD(cm) {
         if ( cm.user.id === game.userId && cm.isDamageRoll ) {
-            if ( !cM.map(f => f.flavor).includes(cm.flavor) ) {
-                cM.push(cm);
-            }
+            damages.push(cm);
+            return false;
+        } else if ( cm.user.id === game.userId && cm.isCheckRoll ) {
+            hits.push(cm);
             return false;
         }
     }
 
     Hooks.on('preCreateChatMessage', PD);
 
-    const pdos = (await primary.variants[map].roll({ event, createMessage: false, skipDialog: true    })).degreeOfSuccess;
-    const sdos = (await secondary.variants[map2].roll({ event, createMessage: false, skipDialog: true    })).degreeOfSuccess;
+    const primaryMessage = await primary.variants[map].roll();
+    const primaryDegreeOfSuccess = primaryMessage.degreeOfSuccess;
+    const secondaryMessage = await secondary.variants[map2].roll();
+    const secondaryDegreeOfSuccess = secondaryMessage.degreeOfSuccess;
 
     let pd,sd;
-    if ( pdos === 2 ) { pd = await primary.damage({event,options}); }
-    if ( pdos === 3 ) { pd = await primary.critical({event,options}); }
-    if ( sdos === 2 ) { sd = await secondary.damage({event,options}); }
-    if ( sdos === 3 ) { sd = await secondary.critical({event,options}); }
+    if ( primaryDegreeOfSuccess === 2 ) { pd = await primary.damage({event,options}); }
+    if ( primaryDegreeOfSuccess === 3 ) { pd = await primary.critical({event,options}); }
+    if ( secondaryDegreeOfSuccess === 2 ) { sd = await secondary.damage({event,options}); }
+    if ( secondaryDegreeOfSuccess === 3 ) { sd = await secondary.critical({event,options}); }
 
     Hooks.off('preCreateChatMessage', PD);
 
-    if ( sdos <= 1 ) {
-        if ( pdos === 2) {
-            await primary.damage({event,options});
-            return;
-        }
-        if ( pdos === 3 ) {
-            await primary.critical({event,options});
-            return;
-        }
+    if (damages.length === 0) {
+        ChatMessage.create({
+            type: CONST.CHAT_MESSAGE_TYPES.OOC,
+            content: "Both attacks missed"
+        });
+        return;
     }
 
-    if ( pdos <= 1 ) {
-        if ( sdos === 2) {
-            await secondary.damage({event,options});
-            return;
-        }
-        if ( sdos === 3 ) {
-            await secondary.critical({event,options});
-            return;
-        }
-    }
 
+    if ( (primaryDegreeOfSuccess <= 1 && secondaryDegreeOfSuccess >= 2) || (secondaryDegreeOfSuccess <= 1 && primaryDegreeOfSuccess >= 2)) {
+        ChatMessage.createDocuments(damages);
+        return;
+    }
     await new Promise( (resolve) => {
         setTimeout(resolve,0);
     });
 
-    if ( pdos <=0 && sdos <= 1 ) {
-        return;
+    console.log(damages);
+
+    let flavor = '<strong>Hunted Shot Total Damage</strong>'
+    const color = (primaryDegreeOfSuccess || secondaryDegreeOfSuccess) === 2 ? `<span style="color:rgb(0, 0, 255)">Success</span>` : `<span style="color:rgb(0, 128, 0)">Critical Success</span>`
+    if (damages[0].flavor === damages[1].flavor) {
+        flavor += `<p>Same Weapon (${color})<hr>${damages[0].flavor}</p><hr>`;
     } else {
-        const terms = pd.terms[0].terms.concat(sd.terms[0].terms);
-        const type = pd.terms[0].rolls.map(t => t.type).concat(sd.terms[0].rolls.map(t => t.type));
-        const persistent = pd.terms[0].rolls.map(t => t.persistent).concat(sd.terms[0].rolls.map(t => t.persistent));
-
-        let preCombinedDamage = [];
-        let combinedDamage = '{';
-        let i = 0;
-        for ( const t of terms ) {
-            if ( persistent[i] && !preCombinedDamage.find( p => p.persistent && p.terms.includes(t) ) ) {
-                preCombinedDamage.push({ terms: [t], type: type[i], persistent: persistent[i] });
-            }
-            if ( !preCombinedDamage.some(pre => pre.type === type[i]) && !persistent[i] ) {
-                preCombinedDamage.push({ terms: [terms[i]], type: type[i], persistent: persistent[i] });
-            }
-            else if ( !persistent[i] ) {
-                preCombinedDamage.find( pre => pre.type === type[i] ).terms.push(t);
-            }
-            i++;
-        }
-
-        for ( const p of preCombinedDamage ) {
-            if ( p.persistent ) {
-            combinedDamage += `, ${p.terms.join(",")}`;
-            }
-            else{
-                if ( combinedDamage === "{" ) {
-                    if ( p.terms.length > 1 ){
-                        combinedDamage += `(${p.terms.join(" + ")})[${p.type}]`;
-
-                    }
-                    else {
-                        combinedDamage += p.terms[0];
-                    }
-                }
-                else if ( p.terms.length === 1 ) {
-                    combinedDamage += `, ${p.terms[0]}`;
-                }
-                else {
-                    combinedDamage += `, (${p.terms.join(" + ")})[${p.type}]`;
-                }
-            }
-        }
-
-        combinedDamage += "}";
-
-        const rolls = [await new DamageRoll(combinedDamage).evaluate({ async: true })]
-        let flavor = `<strong>Hunted Shot Total Damage</strong>`;
-        const color = (pdos || sdos) === 2 ? `<span style="color:rgb(0, 0, 255)">Success</span>` : `<span style="color:rgb(0, 128, 0)">Critical Success</span>`
-        if ( cM.length === 1 ) { flavor += `<p>Same Weapon (${color})<hr>${cM[0].flavor}</p><hr>`; }
-        else { flavor += `<hr>${cM[0].flavor}<hr>${cM[1].flavor}`; }
-        if ( pdos === 3 || sdos === 3 ) {
-            flavor += `<hr><strong>TOP DAMAGE USED FOR CREATURES IMMUNE TO CRITICALS`;
-            if ( critRule === "doubledamage" ) {
-                rolls.unshift(await new DamageRoll(combinedDamage.replaceAll("2 * ", "")).evaluate({ async: true }));
-            }
-            else if ( critRule === "doubledice" ) {
-                const splitValues = combinedDamage.replaceAll("2 * ", "").replaceAll(/([\{\}])/g,"").split(" ");
-                const toJoinVAlues = [];
-                for ( const sv of splitValues ) {
-                    if ( sv.includes("[doubled])") ) {
-                        const sV = sv.replaceAll("[doubled])","");
-                        if ( !sV.includes("d") ) {
-                                toJoinVAlues.push("sV");
-                                continue;
-                        }
-                        else {
-                            const n = sV.split(/(d\d)/g);
-                            if ( n[0].charAt(1) !== "(") {
-                                n[0] = `${parseInt(n[0].charAt(1) / 2)}`;
-                                toJoinVAlues.push(n.join(""));
-                                continue;
-                            }
-                            else if ( n[0].charAt(2) !== "(") {
-                                n[0] = `(${parseInt(n[0].charAt(2)) / 2}`;
-                                toJoinVAlues.push(n.join(""));
-                                continue;
-                            }
-                            else {
-                                n[0] = `((${parseInt(n[0].charAt(3)) / 2}`;
-                                toJoinVAlues.push(n.join(""));
-                                continue;
-                            }
-                        }
-                    }
-                    else {
-                    toJoinVAlues.push(sv);
-                    continue;
-                    }
-                }
-                rolls.unshift(await new DamageRoll(`{${toJoinVAlues.join(" ")}}`).evaluate( {async: true} ));
-            }
-        }
-        if ( cM.length === 1) {
-            options = cM[0].flags.pf2e.context.options;
-        } else {
-            options = [...new Set(cM[0].flags.pf2e.context.options.concat(cM[1].flags.pf2e.context.options))];
-        }
-
-        await ChatMessage.create({
-            flags: {
-                pf2e: {
-                    context: {
-                        options
-                    }
-                }
-            },
-            rolls,
-            type: CONST.CHAT_MESSAGE_TYPES.ROLL,
-            flavor,
-            speaker: ChatMessage.getSpeaker(),
-        });
+        flavor += `<hr>${damages[0].flavor}<hr>${damages[1].flavor}`;
     }
+
+    const opts = damages[0].flags.pf2e.context.options.concat(damages[1].flags.pf2e.context.options);
+    const rolls = [await new DamageRoll(damages.map(a=>a.rolls).flat().map(a=>a._formula.replace("{","").replace("}","")).join(",")).evaluate( {async: true} )];
+    await ChatMessage.create({
+        flags: {
+            pf2e: {
+                context: {
+                    options: [...new Set(opts)]
+                }
+            }
+        },
+        rolls,
+        type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+        flavor,
+        speaker: ChatMessage.getSpeaker(),
+    });
 }
 
 Hooks.once("init", () => {
