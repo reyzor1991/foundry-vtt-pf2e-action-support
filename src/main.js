@@ -75,15 +75,6 @@ Hooks.once("init", () => {
 
     PF2eActionSupportHomebrewSettings.init()
 
-    const originGetRollContext = CONFIG.Actor.documentClass.prototype.getRollContext;
-    CONFIG.Actor.documentClass.prototype.getRollContext = async function(prefix) {
-        const r = await originGetRollContext.call(this, prefix);
-        if (r.options.has("first-attack") && !r.options.has(`target:effect:hunt-prey-${this.id}`)) {
-            r.options.delete("first-attack");
-        }
-        return r;
-    }
-
     game.actionsupport = mergeObject(game.actionsupport ?? {}, {
         "setSummonerHP": setSummonerHP,
     })
@@ -726,11 +717,18 @@ function eqMessageDCLabel(message, l) {
     return message?.flags?.pf2e?.context?.dc?.label?.includes(l);
 }
 
-function precisionTurn(actor) {
+async function precisionTurn(actor) {
     if (!actor) {return}
     if (actorFeat(actor, "precision")) {
         if (!actor.rollOptions?.["all"]?.["first-attack"]) {
             actor.toggleRollOption("all", "first-attack")
+        }
+
+        if (actor.getFlag(moduleName, "animalCompanion")) {
+            const aComp = await fromUuid(actor.getFlag(moduleName, "animalCompanion"));
+            if (!aComp.rollOptions?.["all"]?.["first-attack"]) {
+                aComp.toggleRollOption("all", "first-attack")
+            }
         }
     }
 }

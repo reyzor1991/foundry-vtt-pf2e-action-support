@@ -475,8 +475,10 @@ function firstAttack(message) {
         && hasDomain(message, "strike-damage")
         && actorFeat(message.actor, "precision")
     ) {
-        const dd = hasEffects(message?.target?.actor, `effect-hunt-prey-${message.actor.id}`);
-        if (dd.some(d=>d.system?.context?.origin?.actor === message.actor.uuid)) {
+        const ranger = message.actor.getFlag(moduleName, "ranger");
+        if (ranger && hasEffect(message?.target?.actor, `effect-hunt-prey-${ranger}`)) {
+            message.actor.toggleRollOption("all", "first-attack")
+        } else if (hasEffect(message?.target?.actor, `effect-hunt-prey-${message.actor.id}`)) {
             message.actor.toggleRollOption("all", "first-attack")
         }
     }

@@ -133,8 +133,55 @@ async function huntedShot(actor) {
     });
 }
 
+async function rangerLink(actor) {
+    if (!game.user.isGM) {
+        ui.notifications.info(`Only GM can run script`);
+        return
+    }
+    if (!actor) {
+        ui.notifications.info(`Need to select Actor`);
+        return
+    }
+    if ("ranger" != actor?.class?.slug) {
+        ui.notifications.info(`Actor should be Ranger`);
+        return
+    }
+    if (game.user.targets.size != 1) {
+        ui.notifications.info(`Need to select 1 token of animal companion as target`);
+        return
+    }
+    const target = game.user.targets.first().actor;
+    if ("animal-companion" != target?.class?.slug) {
+        ui.notifications.info(`Need to select 1 token of animal companion as target`);
+        return
+    }
+
+    target.setFlag(moduleName, "ranger", actor.id);
+    actor.setFlag(moduleName, "animalCompanion", target.uuid);
+
+    ui.notifications.info(`Ranger and Animal Companion were linked`);
+}
+
 Hooks.once("init", () => {
+
+    const originGetRollContext = CONFIG.Actor.documentClass.prototype.getRollContext;
+    CONFIG.Actor.documentClass.prototype.getRollContext = async function(prefix) {
+        const r = await originGetRollContext.call(this, prefix);
+        if (r.options.has("first-attack")) {
+            const ranger=this.getFlag(moduleName, "ranger");
+            if (ranger) {
+                if (!r.options.has(`target:effect:hunt-prey-${ranger}`)) {
+                    r.options.delete("first-attack");
+                }
+            } else if (!r.options.has(`target:effect:hunt-prey-${this.id}`)) {
+                r.options.delete("first-attack");
+            }
+        }
+        return r;
+    }
+
     game.actionsupport = mergeObject(game.actionsupport ?? {}, {
         "huntedShot": huntedShot,
+        "rangerLink": rangerLink,
     })
 });
