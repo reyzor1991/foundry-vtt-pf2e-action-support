@@ -124,8 +124,6 @@ async function flurryOfBlows(actor) {
         setTimeout(resolve,0);
     });
 
-    console.log(damages);
-
     let flavor = '<strong>Flurry Of Blows Total Damage</strong>'
     const color = (primaryDegreeOfSuccess || secondaryDegreeOfSuccess) === 2 ? `<span style="color:rgb(0, 0, 255)">Success</span>` : `<span style="color:rgb(0, 128, 0)">Critical Success</span>`
     if (damages[0].flavor === damages[1].flavor) {
@@ -134,8 +132,24 @@ async function flurryOfBlows(actor) {
         flavor += `<hr>${damages[0].flavor}<hr>${damages[1].flavor}`;
     }
 
+    const damageRolls = damages.map(a=>a.rolls).flat().map(a=>a.terms).flat().map(a=>a.rolls).flat();
+    const data = {};
+    for ( const dr of damageRolls ) {
+        if (dr.options.flavor in data) {
+            data[dr.options.flavor].push(dr.head.expression);
+        } else {
+            data[dr.options.flavor] = [dr.head.expression]
+        }
+    }
+    const formulas = [];
+    Object.keys(data).forEach(k=>{
+        console.log(k);
+        console.log(data[k]);
+         formulas.push(`(${data[k].join('+')})[${k}]`);
+    })
+
+    const rolls = [await new DamageRoll(formulas.join(',')).evaluate( {async: true} )];
     const opts = damages[0].flags.pf2e.context.options.concat(damages[1].flags.pf2e.context.options);
-    const rolls = [await new DamageRoll(damages.map(a=>a.rolls).flat().map(a=>a._formula.replace("{","").replace("}","")).join(",")).evaluate( {async: true} )];
     await ChatMessage.create({
         flags: {
             pf2e: {

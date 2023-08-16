@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.18
+
+### Bug Fixes
+- Fix issue with combined damage
+
 ## Version 0.2.17
 
 ### New feature
