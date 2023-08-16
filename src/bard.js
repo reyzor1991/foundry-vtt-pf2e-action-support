@@ -6,12 +6,14 @@ async function inspireHeroics(actor) {
         return;
     }
 
+    const defDC = (dcByLevel.get(actor.level) ?? 50) + 5;
+
     const { dc, spell } = await Dialog.wait({
         title:"Use spell",
         content: `
             <h3>DC of performance check</h3>
-            <input id="spell-dc" type="number" min="0" value="0"/>
-            <hr><h3>Spell for aura effect</h3><select id="spells">
+            <input id="spell-dc" type="number" min="0" value=${defDC} />
+            <hr><h3>Spell effect for aura</h3><select id="spells">
                 <option value=0>Inspire Courage</option>
                 <option value=1>Inspire Defense</option>
             </select><hr>
