@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.2.17
+
+### New feature
+- Handle Critical Specialization effects
+- Add Inspire Heroics macro
+- First attack works for animal companion
+- Skip dialog for macro, add hit messages to chat
+
 ## Version 0.2.15
 
 ### Bug Fixes
