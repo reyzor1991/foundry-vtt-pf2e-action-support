@@ -2,6 +2,7 @@ const moduleName = "pf2e-action-support";
 
 const effect_off_guard = "Compendium.pf2e-action-support.action-support.Item.Vh5E1Qgp34sTKfVs";
 const effect_off_guard_start_turn = "Compendium.pf2e-action-support.action-support.Item.YsNqG4OocHoErbc9";
+const effect_clumsy_start_turn = "Compendium.pf2e-action-support.action-support.Item.lsICo0LAyrWy2cDm";
 const effect_enfeebled1_start_turn = "Compendium.pf2e-action-support.action-support.Item.9QvJm6xIKWjti3PD";
 const effect_paralyzed_next_turn = "Compendium.pf2e-action-support.action-support.Item.aLqCfr4Yl6g2eyoO";
 const effect_enfeebled2_start_turn = "Compendium.pf2e-action-support.action-support.Item.66Sg7uVVaIb3tOib";

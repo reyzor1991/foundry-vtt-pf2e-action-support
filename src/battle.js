@@ -557,6 +557,35 @@ function seedpod(message) {
     }
 }
 
+function criticalSpecialization(message) {
+    if (!game.settings.get(moduleName, "criticalSpecialization")){return;}
+    if (message.actor && message.item?.group) {
+        if (["dart","knife","pick"].includes(message.item.group)) {
+            return;
+        }
+        if (
+            !message.actor.synthetics.criticalSpecalizations.standard.some(b=>b(message.item, message.flags.pf2e?.context?.options))
+            && !message.actor.synthetics.criticalSpecalizations.alternate.some(b=>b(message.item, message.flags.pf2e?.context?.options))
+        ) {
+            return;
+        }
+
+        if (message.target?.actor) {
+            if (message.item.group === "sword") {
+               effectWithActorNextTurn(message, message.target.actor, effect_off_guard_start_turn)
+            } else if (message.item.group === "hammer" || message.item.group === "flail") {
+                increaseConditionForTarget(message, "prone");
+            } else if (message.item.group === "spear") {
+               effectWithActorNextTurn(message, message.target.actor, effect_clumsy_start_turn)
+            } else if (message.item.group === "bow") {
+                if (message.target.token.elevation === 0) {
+                    increaseConditionForTarget(message, "immobilized");
+                }
+            }
+        }
+    }
+}
+
 function battleDamageRoll(message) {
     firstAttack(message);
     gravityWeapon(message);
@@ -566,6 +595,8 @@ function battleDamageRoll(message) {
     ghostCharge(message);
     layOnHands(message);
     seedpod(message);
+
+    criticalSpecialization(message);
 }
 
 function deleteShieldEffect(message) {
@@ -775,6 +806,19 @@ function aromaticLure(message) {
     }
 }
 
+function saveCriticalSpecialization(message) {
+    if (!game.settings.get(moduleName, "criticalSpecialization")){return;}
+    if (!anyFailureMessageOutcome(message)) {return}
+
+    if (eqMessageDCLabel(message, "Firearm Critical Specialization DC")) {
+        increaseConditionForActor(message, "stunned", 1);
+    } else if (eqMessageDCLabel(message, "Sling Critical Specialization DC")) {
+        increaseConditionForActor(message, "stunned", 1);
+    } else if (eqMessageDCLabel(message, "Brawling Critical Specialization DC")) {
+        increaseConditionForActor(message, "slowed", 1);
+    }
+}
+
 function battleSavingThrow(message) {
     animusMine(message)
     daze(message)
@@ -786,6 +830,7 @@ function battleSavingThrow(message) {
     divineWrath(message);
     ashCloud(message);
     aromaticLure(message);
+    saveCriticalSpecialization(message);
 }
 
 function handleEncounterMessage(message) {

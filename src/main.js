@@ -17,6 +17,13 @@ Hooks.once("init", () => {
         default: false,
         type: Boolean,
     });
+    game.settings.register(moduleName, "criticalSpecialization", {
+        name: "Handle Critical Specialization effects",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
     game.settings.register(moduleName, "deleteScouting", {
         name: "Delete Scouting effect when combat ends",
         scope: "world",
