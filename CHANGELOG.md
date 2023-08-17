@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 0.2.19
+
+### New feature
+- Change bane spell logic: Add immunity for save check, add auto roll for npc in aura
+- Add Twin Takedown macro
+- Add Double Slice macro
+- Update Diabolic/Elemental/Psychopomp Bloodline
+- Handling of Boost Eidolon Spell
+- Handling of Reinforce Eidolon Spell
+- Handling of Wolf Drag Feat
+
 ## Version 0.2.18
 
 ### Bug Fixes

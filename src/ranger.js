@@ -1,7 +1,12 @@
 function huntedShotWeapons(actor) {
     return actor.system.actions
-        .filter( h => h.visible && h.item?.isRanged)
+        .filter( h => h.visible && h.item?.isRanged && h.item?.ammo)
         .filter( h => "0" === h?.item?.reload);
+};
+
+function twinTakedownWeapons(actor) {
+    return actor.system.actions
+        .filter( h => h.item?.isMelee && h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1 && !h.item?.system?.traits?.value?.includes("unarmed") );
 };
 
 async function huntedShot(actor) {
@@ -12,9 +17,6 @@ async function huntedShot(actor) {
         ui.notifications.warn(`${actor.name} does not have Hunted Shot!`);
         return;
     }
-
-    const DamageRoll = CONFIG.Dice.rolls.find( r => r.name === "DamageRoll" );
-    const critRule = game.settings.get("pf2e", "critRule");
 
     const weapons = huntedShotWeapons(actor)
     if (weapons.length === 0) {
@@ -27,7 +29,7 @@ async function huntedShot(actor) {
         weaponOptions += `<option value=${w.item.id}>${w.item.name}</option>`
     }
 
-    const { currentWeapon, map, dos} = await Dialog.wait({
+    const { currentWeapon, map } = await Dialog.wait({
         title:"Hunted Shot",
         content: `
             <div class="row-hunted-shot"><div class="column-hunted-shot first-hunted-shot"><h3>First Attack</h3><select id="fob1" autofocus>
@@ -56,89 +58,68 @@ async function huntedShot(actor) {
         default: "ok"
     });
 
+    if ( currentWeapon === undefined || map === undefined ) { return; }
     const map2 = map === 2 ? map : map + 1;
-    if ( currentWeapon === undefined ) { return; }
 
     const primary = weapons.find( w => w.item.id === currentWeapon[0] );
     const secondary = weapons.find( w => w.item.id === currentWeapon[0] );
 
-    let options = [];
+    combinedDamage("Hunted Shot", primary, secondary, [], map, map2);
+}
 
-    const damages = [];
-    function PD(cm) {
-        if ( cm.user.id === game.userId && cm.isDamageRoll ) {
-            damages.push(cm);
-            return false;
-        }
-    }
+async function twinTakedown(actor) {
+    if ( !actor ) { ui.notifications.info("Please select 1 token"); return;}
+    if (game.user.targets.size != 1) { ui.notifications.info(`Need to select 1 token as target`);return; }
 
-    Hooks.on('preCreateChatMessage', PD);
-
-    const altUsage = null;
-    const ev = new KeyboardEvent('keydown', {'shiftKey': true});
-    const primaryMessage = await primary.variants[map].roll({ event:ev, altUsage });
-    const primaryDegreeOfSuccess = primaryMessage.degreeOfSuccess;
-    const secondaryMessage = await secondary.variants[map2].roll({ event:ev, altUsage });
-    const secondaryDegreeOfSuccess = secondaryMessage.degreeOfSuccess;
-
-    let pd,sd;
-    if ( primaryDegreeOfSuccess === 2 ) { pd = await primary.damage({event,options}); }
-    if ( primaryDegreeOfSuccess === 3 ) { pd = await primary.critical({event,options}); }
-    if ( secondaryDegreeOfSuccess === 2 ) { sd = await secondary.damage({event,options}); }
-    if ( secondaryDegreeOfSuccess === 3 ) { sd = await secondary.critical({event,options}); }
-
-    Hooks.off('preCreateChatMessage', PD);
-
-    if (damages.length === 0) {
-        ChatMessage.create({
-            type: CONST.CHAT_MESSAGE_TYPES.OOC,
-            content: "Both attacks missed"
-        });
+    if ( !actorFeat(actor, "twin-takedown" ) ) {
+        ui.notifications.warn(`${actor.name} does not have Twin Takedown!`);
         return;
     }
 
-
-    if ( (primaryDegreeOfSuccess <= 1 && secondaryDegreeOfSuccess >= 2) || (secondaryDegreeOfSuccess <= 1 && primaryDegreeOfSuccess >= 2)) {
-        ChatMessage.createDocuments(damages);
+    const weapons = twinTakedownWeapons(actor);
+    if (weapons.length != 2) {
+        ui.notifications.warn(`${actor.name} needs only 2 one-handed melee weapons can be equipped at a time.'`);
         return;
     }
-    await new Promise( (resolve) => {
-        setTimeout(resolve,0);
-    });
 
-    const flavor = `<strong>Hunted Shot Total Damage</strong><p>${damages[0].flavor}</p><hr>`
-
-    const damageRolls = damages.map(a=>a.rolls).flat().map(a=>a.terms).flat().map(a=>a.rolls).flat();
-    const data = {};
-    for ( const dr of damageRolls ) {
-        if (dr.options.flavor in data) {
-            data[dr.options.flavor].push(dr.head.expression);
-        } else {
-            data[dr.options.flavor] = [dr.head.expression]
-        }
-    }
-    const formulas = [];
-    Object.keys(data).forEach(k=>{
-        console.log(k);
-        console.log(data[k]);
-         formulas.push(`(${data[k].join('+')})[${k}]`);
-    })
-
-    const rolls = [await new DamageRoll(formulas.join(',')).evaluate( {async: true} )];
-    const opts = damages[0].flags.pf2e.context.options.concat(damages[1].flags.pf2e.context.options);
-    await ChatMessage.create({
-        flags: {
-            pf2e: {
-                context: {
-                    options: [...new Set(opts)]
+    const { map } = await Dialog.wait({
+        title:"Twin Takedown",
+        content: `
+            <h3>Multiple Attack Penalty</h3>
+                <select id="map">
+                <option value=0>No MAP</option>
+                <option value=1>MAP -5(-4 for agile)</option>
+                <option value=2>MAP -10(-8 for agile)</option>
+            </select><hr>
+        `,
+        buttons: {
+                ok: {
+                    label: "Attack",
+                    icon: "<i class='fa-solid fa-hand-fist'></i>",
+                    callback: (html) => { return { map: parseInt(html[0].querySelector("#map").value)} }
+                },
+                cancel: {
+                    label: "Cancel",
+                    icon: "<i class='fa-solid fa-ban'></i>",
                 }
-            }
         },
-        rolls,
-        type: CONST.CHAT_MESSAGE_TYPES.ROLL,
-        flavor,
-        speaker: ChatMessage.getSpeaker(),
+        render: (html) => {
+            html.parent().parent()[0].style.cssText += 'box-shadow: 0 0 30px green;';
+        },
+        default: "ok"
     });
+
+    if ( map === undefined ) { return; }
+    const map2 = map === 2 ? map : map + 1;
+
+    let primary = weapons[0];
+    let secondary = weapons[1];
+    if (primary.item.system.traits.value.includes("agile")) {
+        primary = weapons[1];
+        secondary = weapons[0];
+    }
+
+    combinedDamage("Twin Takedown", primary, secondary, [], map, map2);
 }
 
 async function rangerLink(actor) {
@@ -190,6 +171,7 @@ Hooks.once("init", () => {
 
     game.actionsupport = mergeObject(game.actionsupport ?? {}, {
         "huntedShot": huntedShot,
+        "twinTakedown": twinTakedown,
         "rangerLink": rangerLink,
     })
 });

@@ -374,6 +374,10 @@ function meleeStrike(message) {
             }
             deleteEffectById(message.actor, is.id)
         }
+
+        if (hasOption(message, "item:slug:wolf-jaws") && hasOption(message, "wolf-drag")) {
+            increaseConditionForTarget(message, "prone");
+        }
     }
 }
 
@@ -559,6 +563,7 @@ function seedpod(message) {
 
 function criticalSpecialization(message) {
     if (!game.settings.get(moduleName, "criticalSpecialization")){return;}
+    if (!criticalSuccessMessageOutcome(message)) {return;}
     if (message.actor && message.item?.group) {
         if (["dart","knife","pick"].includes(message.item.group)) {
             return;
@@ -659,6 +664,10 @@ function handleBattleFeats(message, _obj) {
                 effectWithActorNextTurn(message, tt.actor, "Compendium.pf2e.feat-effects.Item.DvyyA11a63FBwV7x")
             }
         });
+    } else if (_obj.slug === "wolf-drag") {
+        if (hasEffect(message.actor, "stance-wolf-stance") && !message.actor.rollOptions?.["all"]?.["wolf-drag"]) {
+            message.actor.toggleRollOption("all", "wolf-drag")
+        }
     }
 };
 
@@ -687,6 +696,16 @@ async function handleBattleSpells(message, _obj) {
         setEffectToActorOrTarget(message, effect_allegro, "Allegro", getSpellRange(message.actor, _obj))
     } else if (_obj.slug === "ki-strike") {
         setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.8olfnTmWh0GGPDqX")
+    } else if (_obj.slug === "boost-eidolon") {
+        const ei = await fromUuid(message.actor.getFlag(moduleName, "eidolon"));
+        if (ei) {
+            setEffectToActor(ei, "Compendium.pf2e.spell-effects.Item.h0CKGrgjGNSg21BW")
+        }
+    } else if (_obj.slug === "reinforce-eidolon") {
+        const ei = await fromUuid(message.actor.getFlag(moduleName, "eidolon"));
+        if (ei) {
+            setEffectToActor(ei, "Compendium.pf2e.spell-effects.Item.UVrEe0nukiSmiwfF")
+        }
     }
 }
 

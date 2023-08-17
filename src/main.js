@@ -1,7 +1,8 @@
 let socketlibSocket = undefined;
-
+let DamageRoll = undefined;
 
 Hooks.once("init", () => {
+    DamageRoll = CONFIG.Dice.rolls.find( r => r.name === "DamageRoll" );
     game.settings.register(moduleName, "useHomebrew", {
         name: "Use Homebrew",
         scope: "world",
@@ -41,7 +42,7 @@ Hooks.once("init", () => {
     });
     game.settings.register(moduleName, "eidolonCondition", {
         name: "Handle Eidolon conditions during combat",
-        hint: "Decrease eidolon effect/condition when start/end turn happens. May conflict with Workbench. Turn off if you use Workbench for decreasing conditions, or turn off in Workbench setting",
+        hint: "Decrease eidolon effect/condition when start/end turn happens",
         scope: "world",
         config: true,
         default: false,
@@ -738,4 +739,78 @@ async function precisionTurn(actor) {
             }
         }
     }
+}
+
+async function combinedDamage(name, primary, secondary, options, map, map2) {
+    const damages = [];
+    function PD(cm) {
+        if ( cm.user.id === game.userId && cm.isDamageRoll ) {
+            damages.push(cm);
+            return false;
+        }
+    }
+
+    Hooks.on('preCreateChatMessage', PD);
+
+    const altUsage = null;
+    const ev = new KeyboardEvent('keydown', {'shiftKey': true});
+    const primaryMessage = await primary.variants[map].roll({ event:ev, altUsage });
+    const primaryDegreeOfSuccess = primaryMessage.degreeOfSuccess;
+    const secondaryMessage = await secondary.variants[map2].roll({ event:ev, altUsage });
+    const secondaryDegreeOfSuccess = secondaryMessage.degreeOfSuccess;
+
+    let pd,sd;
+    if ( primaryDegreeOfSuccess === 2 ) { pd = await primary.damage({event,options}); }
+    if ( primaryDegreeOfSuccess === 3 ) { pd = await primary.critical({event,options}); }
+    if ( secondaryDegreeOfSuccess === 2 ) { sd = await secondary.damage({event,options}); }
+    if ( secondaryDegreeOfSuccess === 3 ) { sd = await secondary.critical({event,options}); }
+
+    Hooks.off('preCreateChatMessage', PD);
+
+    if (damages.length === 0) {
+        ChatMessage.create({
+            type: CONST.CHAT_MESSAGE_TYPES.OOC,
+            content: "Both attacks missed"
+        });
+        return;
+    }
+
+    if ( (primaryDegreeOfSuccess <= 1 && secondaryDegreeOfSuccess >= 2) || (secondaryDegreeOfSuccess <= 1 && primaryDegreeOfSuccess >= 2)) {
+        ChatMessage.createDocuments(damages);
+        return;
+    }
+
+    const damageRolls = damages.map(a=>a.rolls).flat().map(a=>a.terms).flat().map(a=>a.rolls).flat();
+    const data = {};
+    for ( const dr of damageRolls ) {
+        if (dr.options.flavor in data) {
+            data[dr.options.flavor].push(dr.head.expression);
+        } else {
+            data[dr.options.flavor] = [dr.head.expression]
+        }
+    }
+    const formulas = [];
+    Object.keys(data).forEach(k=>{
+         formulas.push(`(${data[k].join('+')})[${k}]`);
+    })
+
+    const rolls = [await new DamageRoll(formulas.join(',')).evaluate( {async: true} )];
+    const opts = damages[0].flags.pf2e.context.options.concat(damages[1].flags.pf2e.context.options);
+    const flavor = `<strong>${name} Total Damage</strong>`
+        + (damages[0].flavor === damages[1].flavor
+            ? `<p>Both Attack<hr>${damages[0].flavor}</p><hr>`
+            : `<hr>${damages[0].flavor}<hr>${damages[1].flavor}`)
+    await ChatMessage.create({
+        flags: {
+            pf2e: {
+                context: {
+                    options: [...new Set(opts)]
+                }
+            }
+        },
+        rolls,
+        type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+        flavor,
+        speaker: ChatMessage.getSpeaker(),
+    });
 }

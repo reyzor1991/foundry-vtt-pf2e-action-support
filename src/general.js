@@ -278,6 +278,13 @@ function saveAffliction(message) {
     }
 }
 
+function saveBane(message) {
+    if (hasOption(message, 'item:slug:bane') && anySuccessMessageOutcome(message)) {
+        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.kLpCaiCZjenXCebV")
+        deleteEffectFromActor(message.actor, "spell-effect-bane")
+    }
+}
+
 function savingThrow(message) {
     jinx(message)
     agonizingDespair(message)
@@ -291,6 +298,7 @@ function savingThrow(message) {
     trueShapeBomb(message)
     saveBombs(message)
     saveAffliction(message)
+    saveBane(message)
 }
 
 function scout(message, _obj) {
@@ -613,18 +621,28 @@ function augmentSummoning(message, _obj) {
     }
 }
 
+async function rollDCBane(combatants,dc,item, origin) {
+    combatants.forEach(c=>{
+        c.actor.saves.will.roll({skipDialog:true, dc, item, origin})
+    })
+}
+
 async function bane(message, _obj) {
     if (_obj.slug === "bane") {
-        const aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.YcyN7BDbL0Nt3CFN");
-        if (aura) {
-            setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.YcyN7BDbL0Nt3CFN");
-        } else {
-            game.user.targets.forEach(tt => {
-                if (!hasEffect(tt.actor, 'spell-effect-bane')) {
-                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.UTLp7omqsiC36bso")
-                }
-            });
-        }
+        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.FcUe8TT7bhqlURIf").then(()=> {
+            if (_obj.spellcasting.statistic.dc.value) {
+                const dc = _obj.spellcasting.statistic.dc.value;
+                const baneLevel = hasEffect(message.actor, "effect-aura-bane")?.system?.badge?.value ?? 1;
+                const all = (isActorCharacter(message.actor) ? enemyCombatant() :allyCombatant())
+                    .filter(a=>!hasEffect(a.actor, "spell-effect-bane"))
+                    .filter(a=>!hasEffect(a.actor, "effect-bane-immunity"))
+                    .filter(a=>distanceIsCorrect(message.token, a.token, 5 * baneLevel))
+
+                setTimeout(function() {
+                    rollDCBane(all, dc, _obj, _obj?.actor ?? message.actor);
+                }, 1000)
+            }
+        });
     }
 }
 

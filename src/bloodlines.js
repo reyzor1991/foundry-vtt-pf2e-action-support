@@ -95,6 +95,17 @@ const bloodlineElementalSpells = [
     "elemental-blast",
 ];
 
+const elementalistSpells = [
+    "combustion",
+    "crushing-ground",
+    "powerful-inhalation",
+    "pulverizing-cascade",
+    "rising-surf",
+    "stone-lance",
+    "updraft",
+    "wildfire",
+];
+
 const bloodlineFeySpells = [
     "ghost-sound",
     "charm",
@@ -317,8 +328,15 @@ async function createDialogDamageOrTempHP(message, spell, damageEff, selfSpells,
     const eff = "Compendium.pf2e-action-support.action-support.Item.yYvPtdlew2YctMgt";
 
     const aEffect = (await fromUuid(eff)).toObject();
+    aEffect.flags = mergeObject(aEffect.flags ?? {}, { core: { sourceId: eff } });
+
     aEffect.system.rules[0].value = message?.item?.level ?? 0;
 
+    createDialogDamageOrSelfEffect(message, spell, damageEff, selfSpells, allySpells, comboSpells, aEffect)
+}
+
+async function createDialogDamageOrSelfEffect(message, spell, damageEff, selfSpells, allySpells, comboSpells, aEffect) {
+    const eff = aEffect.flags.core.sourceId;
     if (selfSpells.includes(spell.slug)) {
         if (game.user.isGM) {
             await message.actor.createEmbeddedDocuments("Item", [aEffect]);
@@ -364,6 +382,9 @@ async function createDialogDamageOrTempHP(message, spell, damageEff, selfSpells,
                     const eId = html.find("[name=bloodline-selector]").find(':selected').data('effect');
                     const aEffect = (await fromUuid(eId)).toObject();
                     aEffect.system.rules[0].value = message?.item?.level ?? 0;
+                    if (aEffect.system.rules.length > 1) {
+                        aEffect.system.rules[1].value = message?.item?.level ?? 0;
+                    }
 
                     if (game.user.isGM) {
                         await (await fromUuid(tId)).createEmbeddedDocuments("Item", [aEffect]);
@@ -380,6 +401,7 @@ async function createDialogDamageOrTempHP(message, spell, damageEff, selfSpells,
     }).render(true);
 }
 
+
 async function bloodlineAberrant(message) {
     createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.UQ7vZgmfK0VSFS8A", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.Item.UQ7vZgmfK0VSFS8A");
 }
@@ -392,16 +414,47 @@ async function bloodlineDemonic(message) {
     createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.aKRo5TIhUtu0kyEr", targetNpcs(), "Compendium.pf2e.feat-effects.Item.yfbP64r4a9e5oyli");
 }
 
-async function bloodlineDiabolic(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.n1vhmOd7aNiuR3nk", [], "");
+async function bloodlineDiabolic(message, spell) {
+    const damageEff = "Compendium.pf2e-action-support.action-support.Item.2yWSBNLWWYXXSfKZ";
+    createDialogDamageOrSelfEffect(
+        message,
+        spell,
+        damageEff,
+        ["true-seeing", "divine-aura", "embrace-the-pit"],//self
+        [],//ally
+        [],//combo
+        (await fromUuid("Compendium.pf2e.feat-effects.Item.n1vhmOd7aNiuR3nk")).toObject()
+    )
 }
 
 async function bloodlineDraconic(message) {
     createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.FNTTeJHiK6iOjrSq", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.Item.FNTTeJHiK6iOjrSq");
 }
 
-async function bloodlineElemental(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.3gGBZHcUFsHLJeQH", [], "");
+async function bloodlineElemental(message, spell, isElem=false) {
+    const damageEff = "Compendium.pf2e-action-support.action-support.Item.2yWSBNLWWYXXSfKZ";
+    const bludDamageEff = "Compendium.pf2e-action-support.action-support.Item.KFoh6XzV382S9DDr";
+
+    let ee = damageEff;
+    const ff = actorFeat(message.actor, "bloodline-elemental")
+    if (ff && ff?.flags?.pf2e?.rulesSelections?.bloodlineElemental != 'fire') {
+        ee = bludDamageEff;
+    }
+
+    const selfE = ["resist-energy", "freedom-of-movement", "elemental-form", "repulsion", "energy-aegis", "elemental-motion"];
+    if (isElem) {
+        selfE.push("rising-surf")
+    }
+
+    createDialogDamageOrSelfEffect(
+        message,
+        spell,
+        ee,
+        selfE,//self
+        [],//ally
+        [],//combo
+        (await fromUuid("Compendium.pf2e.feat-effects.Item.3gGBZHcUFsHLJeQH")).toObject()
+    )
 }
 
 async function bloodlineFey(message) {
@@ -443,8 +496,17 @@ async function bloodlinePhoenix(message, spell) {
     )
 }
 
-async function bloodlinePsychopomp(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e-action-support.action-support.Item.VhUcj6Ak2jLGEHQL", [], "");
+async function bloodlinePsychopomp(message, spell) {
+    const damageEff = "Compendium.pf2e-action-support.action-support.Item.CUMpeosjhqDpj4KK";
+    createDialogDamageOrSelfEffect(
+        message,
+        spell,
+        damageEff,
+        ["heal", "death-ward"],//self
+        [],//ally
+        [],//combo
+        (await fromUuid("Compendium.pf2e.feat-effects.Item.7BFd8A9HFrmg6vwL")).toObject()
+    )
 }
 
 async function bloodlineShadow(message) {
@@ -494,6 +556,14 @@ function targetCharacters(self) {
     return game.combat ? game.combat.turns.filter(a=>isActorCharacter(a.actor) && a.actor.uuid != self).map(a=>a.actor) : [];
 }
 
+function enemyCombatant() {
+    return game.combat ? game.combat.turns.filter(a=>!isActorCharacter(a.actor)) : [];
+}
+
+function allyCombatant() {
+    return game.combat ? game.combat.turns.filter(a=>isActorCharacter(a.actor)) : [];
+}
+
 Hooks.on('preCreateChatMessage', async (message)=>{
     if (!game.settings.get(moduleName, "useBloodline")) {return}
     if (!messageType(message, undefined) && !messageType(message, "spell-cast")){return}
@@ -502,9 +572,19 @@ Hooks.on('preCreateChatMessage', async (message)=>{
     const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
     if (_obj?.type !== "spell") {return}
 
+    if (actorFeat(message.actor, "bloodline-elemental") && actorFeat(message.actor, "elementalist-dedication")) {
+        if (bloodlineFeatMap["bloodline-elemental"].spells.includes(_obj.slug)
+            || elementalistSpells.includes(_obj.slug)
+        ) {
+            bloodlineFeatMap["bloodline-elemental"].handler.call(this, message, _obj, true)
+            return;
+        }
+    }
+
     for (const featName in bloodlineFeatMap) {
         if (actorFeat(message.actor, featName) && bloodlineFeatMap[featName].spells.includes(_obj.slug)) {
-            bloodlineFeatMap[featName].handler.call(this, message, _obj)
+            bloodlineFeatMap[featName].handler.call(this, message, _obj);
+            return;
         }
     }
 

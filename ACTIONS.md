@@ -115,6 +115,8 @@
 - Ash Cloud
 - Aromatic Lure
 - See the Unseen
+- Boost Eidolon
+- Reinforce Eidolon
 
 
 ### 3rd party
@@ -197,6 +199,11 @@
 - Sniping Duo Dedication
 - Aldori Parry
 - Decry Thief
+- Double Slice
+- Twin Takedown
+- Flurry Of Blows
+- Hunted Shot
+- Wolf Drag
 
 ### Items
 
