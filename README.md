@@ -13,7 +13,7 @@
 [Version]: https://img.shields.io/badge/Version-0.2.18-yellow?style=flat-square
 [Version URL]: https://github.com/reyzor1991/foundry-vtt-pf2e-action-support
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W2LF8UA)
+[Support me on Patreon](https://www.patreon.com/reyzor1991)
 
 ### Module which automate work with actions
 ### Updating frequency of spell/actions(decrease when using, updating when new round begin for round frequency)
