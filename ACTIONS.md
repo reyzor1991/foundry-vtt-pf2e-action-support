@@ -117,6 +117,7 @@
 - See the Unseen
 - Boost Eidolon
 - Reinforce Eidolon
+- Lingering Composition
 
 
 ### 3rd party

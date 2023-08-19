@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.2.20
+
+### Bug Fixes
+- Fix issue Double Slice
+
+### New feature
+- Handling of Lingering Composition Spell (call macro from Workbench)
+- Delete Aid after use
+
 ## Version 0.2.19
 
 ### New feature

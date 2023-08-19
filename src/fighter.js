@@ -61,7 +61,7 @@ async function doubleSlice(actor) {
         }
     }
 
-    combinedDamage("Double Slice", primary, secondary, ["double-slice-second"], map, map);
+    combinedDamage("Double Slice", primary, secondary, ["double-slice-second"], map, map, "double-slice");
 }
 
 Hooks.once("init", () => {

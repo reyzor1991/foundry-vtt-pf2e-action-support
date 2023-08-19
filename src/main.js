@@ -66,7 +66,7 @@ Hooks.once("init", () => {
     });
     game.settings.register(moduleName, "affliction", {
         name: "Handle afflictions",
-        hint: "utomates things like Ghoul Fever. Under dev feature, need to update pf2e core manually (unstable feature)",
+        hint: "Automates things like Ghoul Fever. Under dev feature, need to update pf2e core manually (unstable feature)",
         scope: "world",
         config: true,
         default: false,
@@ -523,6 +523,10 @@ Hooks.on('preCreateChatMessage', async (message, user, _options, userId)=>{
     if (message?.flags?.pf2e?.modifiers?.find(a=>a.slug === "guidance" && a.enabled)) {
         deleteEffectFromActor(message.actor, "spell-effect-guidance")
     }
+
+    if (message?.flags?.pf2e?.modifiers?.find(a=>a.slug === "aid" && a.enabled)) {
+        deleteEffectFromActor(message.actor, "effect-aid")
+    }
 });
 
 async function deleteFeintEffects(message) {
@@ -741,10 +745,12 @@ async function precisionTurn(actor) {
     }
 }
 
-async function combinedDamage(name, primary, secondary, options, map, map2) {
+async function combinedDamage(name, primary, secondary, options, map, map2, source=undefined) {
     const damages = [];
     function PD(cm) {
-        if ( cm.user.id === game.userId && cm.isDamageRoll ) {
+        if ( cm.user.id === game.userId && cm.isDamageRoll
+            && (hasOption(cm, "macro:first-damage") || hasOption(cm, "macro:second-damage"))
+        ) {
             damages.push(cm);
             return false;
         }
@@ -759,11 +765,14 @@ async function combinedDamage(name, primary, secondary, options, map, map2) {
     const secondaryMessage = await secondary.variants[map2].roll({ event:ev, altUsage });
     const secondaryDegreeOfSuccess = secondaryMessage.degreeOfSuccess;
 
+    const fOpt = [...options, "macro:first-damage"];
+    const sOpt = [...options, "macro:second-damage"];
+
     let pd,sd;
-    if ( primaryDegreeOfSuccess === 2 ) { pd = await primary.damage({event,options}); }
-    if ( primaryDegreeOfSuccess === 3 ) { pd = await primary.critical({event,options}); }
-    if ( secondaryDegreeOfSuccess === 2 ) { sd = await secondary.damage({event,options}); }
-    if ( secondaryDegreeOfSuccess === 3 ) { sd = await secondary.critical({event,options}); }
+    if ( primaryDegreeOfSuccess === 2 ) { pd = await primary.damage({event, options: fOpt}); }
+    if ( primaryDegreeOfSuccess === 3 ) { pd = await primary.critical({event, options: fOpt}); }
+    if ( secondaryDegreeOfSuccess === 2 ) { sd = await secondary.damage({event, options: sOpt}); }
+    if ( secondaryDegreeOfSuccess === 3 ) { sd = await secondary.critical({event, options: sOpt}); }
 
     Hooks.off('preCreateChatMessage', PD);
 
@@ -782,17 +791,38 @@ async function combinedDamage(name, primary, secondary, options, map, map2) {
 
     const damageRolls = damages.map(a=>a.rolls).flat().map(a=>a.terms).flat().map(a=>a.rolls).flat();
     const data = {};
+
     for ( const dr of damageRolls ) {
         if (dr.options.flavor in data) {
-            data[dr.options.flavor].push(dr.head.expression);
+            data[dr.options.flavor].push(dr.head.formula);
         } else {
-            data[dr.options.flavor] = [dr.head.expression]
+            data[dr.options.flavor] = [dr.head.formula]
         }
     }
+
+    if (source === "double-slice") {
+        if (damages[0].rolls[0]._formula.includes('precision') && damages[1].rolls[0]._formula.includes('precision')) {
+            //need to delete second precision
+            Object.keys(data).forEach(k=>{
+                if (data[k][0].includes('precision')) {
+                    const fR = data[k][0].match(/\+ ([0-9]{1,})d(4|6|8|10|12)\[precision\]/);
+                    const sR = data[k][1].match(/\+ ([0-9]{1,})d(4|6|8|10|12)\[precision\]/);
+
+                    if (fR[1]*fR[2] > sR[1]*sR[2]) {
+                        //delete second prec
+                        data[k][1] = data[k][1].replace(sR[0], "");
+                    } else {
+                        data[k][0] = data[k][0].replace(fR[0], "");
+                    }
+                }
+            });
+        }
+    }
+
     const formulas = [];
     Object.keys(data).forEach(k=>{
          formulas.push(`(${data[k].join('+')})[${k}]`);
-    })
+    });
 
     const rolls = [await new DamageRoll(formulas.join(',')).evaluate( {async: true} )];
     const opts = damages[0].flags.pf2e.context.options.concat(damages[1].flags.pf2e.context.options);
@@ -813,4 +843,4 @@ async function combinedDamage(name, primary, secondary, options, map, map2) {
         flavor,
         speaker: ChatMessage.getSpeaker(),
     });
-}
+};

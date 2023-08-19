@@ -706,6 +706,11 @@ async function handleBattleSpells(message, _obj) {
         if (ei) {
             setEffectToActor(ei, "Compendium.pf2e.spell-effects.Item.UVrEe0nukiSmiwfF")
         }
+    } else if (_obj.slug === "lingering-composition") {
+        const macLC = await fromUuid('Compendium.xdy-pf2e-workbench.asymonous-benefactor-macros-internal.Macro.5CLSiG3QPj5xbhBk');
+        if (macLC) {
+            macLC.execute();
+        }
     }
 }
 
