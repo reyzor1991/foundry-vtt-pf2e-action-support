@@ -1,55 +1,94 @@
-export default const effect_flat_footed = "Compendium.pf2e-action-support.action-support.Vh5E1Qgp34sTKfVs";
-export const effect_flat_footed_start_turn = "Compendium.pf2e-action-support.action-support.YsNqG4OocHoErbc9";
-export const effect_battle_medicine_immunity_hour = "Compendium.pf2e-action-support.action-support.GMb4x4eHVGD9Tfzp";
-export const effect_treat_wounds_immunity_minutes = "Compendium.pf2e-action-support.action-support.b1ILZ8YQvBd9XA2b";
-export const effect_demoralize_immunity_minutes = "Compendium.pf2e-action-support.action-support.DFLW2gzu0PGeX6zu";
-export const effect_concealed_start_turn = "Compendium.pf2e-action-support.action-support.1KroJZ72a4Hc10fW";
-export const effect_restrained_end_attacker_next_turn = "Compendium.pf2e-action-support.action-support.zol83j7l2cBSmY3a";
-export const effect_grabbed_end_attacker_next_turn = "Compendium.pf2e-action-support.action-support.5MNn6cmXxbORB8x8";
-export const effect_panache = "Compendium.pf2e.feat-effects.uBJsxCzNhje8m8jj";
-export const effect_disarm_success = "Compendium.pf2e.equipment-effects.z3ATL8DcRVrT0Uzt";
-export const effect_adverse_subsist_situation = "Compendium.pf2e.other-effects.wHWWHkjDXmJl4Ia6";
-export const effect_conduct_energy = "Compendium.pf2e.equipment-effects.lU8IO9FIGK1DXVMy";
-export const effect_daydream_trance = "Compendium.pf2e.feat-effects.RATDyLyxXN3qmOas";
-export const effect_energy_shot = "Compendium.pf2e.feat-effects.zocU4IYIlWwRKUuE";
-export const effect_entitys_resurgence = "Compendium.pf2e.feat-effects.yr5ey5qC8dXH749T";
-export const effect_follow_the_expert = "Compendium.pf2e.other-effects.VCSpuc3Tf3XWMkd3";
-export const effect_feint_success = "Compendium.pf2e-action-support.action-support.P6DGk2h38xE8O0pw";
-export const effect_feint_critical_success = "Compendium.pf2e-action-support.action-support.lwcyhD03jVchmPGm";
-export const effect_feint_success_attacker_target = "Compendium.pf2e-action-support.action-support.XcJAldj3qsmLKjSL";
-export const effect_feint_crit_success_attacker_target = "Compendium.pf2e-action-support.action-support.jfn0eHEAnoxNI7YS";
-export const effect_bend_time = "Compendium.pf2e-action-support.action-support.w4iqlhWrlHLlOiYP";
-export const effect_jinx_immunity = "Compendium.pf2e-action-support.action-support.DGGVvtjm7r8yhSKG";
-export const effect_jinx_clumsy1 = "Compendium.pf2e-action-support.action-support.aEhh2kWTcKJacdHe";
-export const effect_jinx_clumsy2 = "Compendium.pf2e-action-support.action-support.MkWyAtPU3CAFpgdQ";
-export const effect_aberrant_whispers_immunity = "Compendium.pf2e-action-support.action-support.zt5GIv9435SF0fYn";
+const moduleName = "pf2e-action-support";
 
-export const spellEffectMap = {
-    'adaptive-ablation': ['Compendium.pf2e.spell-effects.6GAztnHuQSwAp1k1'],
-    'agile-feet': ['Compendium.pf2e.spell-effects.y9PJdDYFemhk6Z5o'],
-    'ancestral-form': ['Compendium.pf2e.spell-effects.l8HkOKfiUqd3BUwT'],
-    'angelic-wings': ['Compendium.pf2e.spell-effects.iZYjxY0qYvg5yPP3'],
-    'armor-of-bones': ['Compendium.pf2e.spell-effects.6BjslHgY01cNbKp5'],
-    'athletic-rush': ['Compendium.pf2e.spell-effects.57lnrCzGUcNUBP2O'],
-}
+const effect_off_guard = "Compendium.pf2e-action-support.action-support.Item.Vh5E1Qgp34sTKfVs";
+const effect_off_guard_start_turn = "Compendium.pf2e-action-support.action-support.Item.YsNqG4OocHoErbc9";
+const effect_clumsy_start_turn = "Compendium.pf2e-action-support.action-support.Item.lsICo0LAyrWy2cDm";
+const effect_enfeebled1_start_turn = "Compendium.pf2e-action-support.action-support.Item.9QvJm6xIKWjti3PD";
+const effect_paralyzed_next_turn = "Compendium.pf2e-action-support.action-support.Item.aLqCfr4Yl6g2eyoO";
+const effect_enfeebled2_start_turn = "Compendium.pf2e-action-support.action-support.Item.66Sg7uVVaIb3tOib";
+const effect_immobilized1_round = "Compendium.pf2e-action-support.action-support.Item.FCKm1dZKZzF7Jkxl";
+const effect_blinded1_round = "Compendium.pf2e-action-support.action-support.Item.KmUCaFZSk9efn9AR";
+const effect_dazzled1_round = "Compendium.pf2e-action-support.action-support.Item.1u4ZAmfeWKyN3uKK";
+const effect_slowed1_round = "Compendium.pf2e-action-support.action-support.Item.xTHKw0VHuqu6SI93";
+const effect_deafened_round = "Compendium.pf2e-action-support.action-support.Item.7roTkQ4QHWDWZkJM";
+const effect_deafened_minute = "Compendium.pf2e-action-support.action-support.Item.enKjIoLFr4T0gfEe";
+const effect_deafened_hour = "Compendium.pf2e-action-support.action-support.Item.KnjwOiVZr5Twwoum";
+const effect_skunk_bomb_fail = "Compendium.pf2e-action-support.action-support.Item.Ed57eZ72j6RGAIp4";
+const effect_skunk_bomb_cfail = "Compendium.pf2e-action-support.action-support.Item.0v7THqjruKWI0wJ4";
+const effect_battle_medicine_immunity_hour = "Compendium.pf2e-action-support.action-support.Item.GMb4x4eHVGD9Tfzp";
+const effect_treat_wounds_immunity_minutes = "Compendium.pf2e-action-support.action-support.Item.b1ILZ8YQvBd9XA2b";
+const effect_demoralize_immunity_minutes = "Compendium.pf2e-action-support.action-support.Item.DFLW2gzu0PGeX6zu";
+const effect_concealed_start_turn = "Compendium.pf2e-action-support.action-support.Item.1KroJZ72a4Hc10fW";
+const effect_restrained_end_attacker_next_turn = "Compendium.pf2e-action-support.action-support.Item.zol83j7l2cBSmY3a";
+const effect_grabbed_end_attacker_next_turn = "Compendium.pf2e-action-support.action-support.Item.5MNn6cmXxbORB8x8";
+const effect_panache = "Compendium.pf2e.feat-effects.Item.uBJsxCzNhje8m8jj";
+const effect_disarm_success = "Compendium.pf2e.equipment-effects.Item.z3ATL8DcRVrT0Uzt";
+const effect_adverse_subsist_situation = "Compendium.pf2e.other-effects.Item.wHWWHkjDXmJl4Ia6";
+const effect_conduct_energy = "Compendium.pf2e.equipment-effects.Item.lU8IO9FIGK1DXVMy";
+const effect_daydream_trance = "Compendium.pf2e.feat-effects.Item.RATDyLyxXN3qmOas";
+const effect_energy_shot = "Compendium.pf2e.feat-effects.Item.zocU4IYIlWwRKUuE";
+const effect_entitys_resurgence = "Compendium.pf2e.feat-effects.Item.yr5ey5qC8dXH749T";
+const effect_follow_the_expert = "Compendium.pf2e.other-effects.Item.VCSpuc3Tf3XWMkd3";
+const effect_feint_success = "Compendium.pf2e-action-support.action-support.Item.P6DGk2h38xE8O0pw";
+const effect_feint_critical_success = "Compendium.pf2e-action-support.action-support.Item.lwcyhD03jVchmPGm";
+const effect_feint_success_attacker_target = "Compendium.pf2e-action-support.action-support.Item.XcJAldj3qsmLKjSL";
+const effect_feint_crit_success_attacker_target = "Compendium.pf2e-action-support.action-support.Item.jfn0eHEAnoxNI7YS";
+const effect_bend_time = "Compendium.pf2e-action-support.action-support.Item.w4iqlhWrlHLlOiYP";
+const effect_jinx_immunity = "Compendium.pf2e-action-support.action-support.Item.DGGVvtjm7r8yhSKG";
+const effect_jinx_clumsy1 = "Compendium.pf2e-action-support.action-support.Item.aEhh2kWTcKJacdHe";
+const effect_jinx_clumsy2 = "Compendium.pf2e-action-support.action-support.Item.MkWyAtPU3CAFpgdQ";
+const effect_aberrant_whispers_immunity = "Compendium.pf2e-action-support.action-support.Item.zt5GIv9435SF0fYn";
+const effect_intimidating_strike = "Compendium.pf2e-action-support.action-support.Item.w9i0aY2IQ3jvCX9K";
+const effect_reach_spell = "Compendium.pf2e-action-support.action-support.Item.jLxv3W9FgO2SbxVC";
+const effect_spectral_hand = "Compendium.pf2e-action-support.action-support.Item.wArBvC6i6Das3r8I";
+const effect_hunt_prey = "Compendium.pf2e-action-support.action-support.Item.a51AN6VfpW9b4ttm";
+const effect_allegro = "Compendium.pf2e-action-support.action-support.Item.kZmteGRpdP6qgIdC";
 
-export const actionEffectMap = {
-    "conduct-energy": effect_conduct_energy,
-    "daydream-trance": effect_daydream_trance,
-    "energy-shot": effect_energy_shot,
-    "entitys-resurgence": effect_entitys_resurgence,
-    "fade-into-daydreams": effect_concealed_start_turn,
-    "follow-the-expert": effect_follow_the_expert,
-    "anadi-venom": "Compendium.pf2e.feat-effects.gN1LbKYQgi8Fx98V",
-    "arcane-cascade": "Compendium.pf2e.feat-effects.fsjO5oTKttsbpaKl",
-    "bend-time": effect_bend_time,
-    "blizzard-evasion": "Compendium.pf2e.feat-effects.JF2xCqL6t4UJZtUi",
-    "calculate-threats": "Compendium.pf2e.feat-effects.P6druSuWIVoLrXJR",
-    "call-upon-the-brightness": "Compendium.pf2e.feat-effects.xPg5wzzKNxJy18rU",
-    "catharsis": "Compendium.pf2e.feat-effects.JysvElDwGZ5ABQ6x",
-    "clue-in": "Compendium.pf2e.feat-effects.vhSYlQiAQMLuXqoc",
-    "harrow-the-fiend": "Compendium.pf2e.feat-effects.MSkspeBsbXm6LQ19",
-    "recall-under-pressure": "Compendium.pf2e.feat-effects.CW4zphOOpeaLJIWc",
-    "tail-toxin": "Compendium.pf2e.feat-effects.Q0DKJRnDuuUnLpvn",
-    "tenacious-stance": "Compendium.pf2e.feat-effects.Ms6WPXRWfXb2KpG2",
-}
+const pol = ["spell-effect-wild-morph", "spell-effect-juvenile-companion",
+"spell-effect-pest-form", "spell-effect-wild-shape", "spell-effect-enlarge", "spell-effect-enlarge-heightened-4th",
+ "spell-effect-shrink", "spell-effect-summoners-visage", "spell-effect-ooze-form-ochre-jelly", "spell-effect-elephant-form",
+ "spell-effect-gaseous-form", "spell-effect-swarm-form", "spell-effect-unusual-anatomy",
+ "spell-effect-righteous-might", "spell-effect-corrosive-body", "spell-effect-corrosive-body-heightened-9th",
+ "spell-effect-cosmic-form-moon", "spell-effect-cosmic-form-sun", "spell-effect-fiery-body",
+ "spell-effect-fiery-body-9th-level", "spell-effect-ki-form", "spell-effect-apex-companion",
+ "spell-effect-nature-incarnate-kaiju", "spell-effect-nature-incarnate-green-man", "spell-effect-dragon-claws",
+ "spell-effect-evolution-surge", "spell-effect-gluttons-jaw", "spell-effect-embrace-the-pit", "spell-effect-moon-frenzy",
+ "spell-effect-divine-vessel", "spell-effect-divine-vessel-9th-level"];
+
+const polAnim = ["spell-effect-aberrant-form-", "spell-effect-animal-form-", "spell-effect-insect-form-",
+"spell-effect-ooze-form-", "spell-effect-aerial-form-", "spell-effect-bestial-curse-", "spell-effect-dinosaur-form-",
+"spell-effect-fey-form-", "spell-effect-elemental-form-", "spell-effect-plant-form-", "spell-effect-daemon-form-",
+"spell-effect-devil-form-", "spell-effect-dragon-form-", "spell-effect-tempest-form-", "spell-effect-angel-form-",
+"spell-effect-monstrosity-form-", "spell-effect-element-embodied-",
+"spell-effect-animal-feature-", "spell-effect-adapt-self-", "spell-effect-shifting-form-", "spell-effect-dragon-wings-",
+"spell-effect-mantle-of-the-frozen-heart-", "spell-effect-mantle-of-the-magma-heart-"]
+
+const dcByLevel = new Map([
+    [-1, 13],
+    [0, 14],
+    [1, 15],
+    [2, 16],
+    [3, 18],
+    [4, 19],
+    [5, 20],
+    [6, 22],
+    [7, 23],
+    [8, 24],
+    [9, 26],
+    [10, 27],
+    [11, 28],
+    [12, 30],
+    [13, 31],
+    [14, 32],
+    [15, 34],
+    [16, 35],
+    [17, 36],
+    [18, 38],
+    [19, 39],
+    [20, 40],
+    [21, 42],
+    [22, 44],
+    [23, 46],
+    [24, 48],
+    [25, 50],
+]);

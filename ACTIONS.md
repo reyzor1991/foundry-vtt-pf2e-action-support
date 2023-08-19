@@ -1,7 +1,7 @@
 ### Actions:
 
 - Stand
-- Scout
+- Scout (to actor and targets)
 - Battle Medicine
 - Treat Wounds
 - Drop Prone
@@ -41,30 +41,180 @@
 - Grab
 - Treat Disease
 - Tumble Through
+- Retributive Strike
+- Aid
+- Blizzard Evasion
+- Bullet Dancer Stance
+- Overdrive
+- Spit Tale
+- Screaming Skull
+
 
 ### Spells
-- Stabilize Spell
-- Aberrant Whispers Spell
-- Adaptive Ablation Spell
-- Agile Feet Spell
-- Ancestral Form spell
-- Angelic Wings Spell
-- Anticipate Peril Spell
-- Shield Spell
-- Vital Beacon Spell
-- Protective Ward Spell
-- Bane Spell (Using the Workbench aura if available, if not apply PF2e system effect to targets)
-- Bane Bless (Using the Workbench aura if available, if not apply PF2e system effect to targets)
-- Inspire Courage Spell (Using the Workbench aura if available, if not apply PF2e system effect to targets)
-- Inspire Defense Spell (Using the Workbench aura if available, if not apply PF2e system effect to targets)
-- Mirror Image Spell
+
+- Stabilize
+- Aberrant Whispers
+- Adaptive Ablation
+- Agile Feet
+- Ancestral Form
+- Angelic Wings
+- Anticipate Peril
+- Shield
+- Vital Beacon
+- Protective Ward
+- Bane (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Bless (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Inspire Courage (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Inspire Defense (Using the Workbench aura if available, if not apply PF2e system effect to targets)
+- Mirror Image
+- True Strike
+- See Invisibility
+- Mage Armor
+- Darkvision
+- Longstrider
+- Blur to target
+- Fly to target
+- Protection to target
+- Energy aegis to target
+- Stoneskin to target
+- Regenerate to target
+- Heroism to target
+- Death Ward to target
+- Spectral Hand
+- Soothe
+- Countermeasure
+- Armor of Bones
+- Athletic Rush
+- Augment Summoning
+- Ray of Enfeeblement
+- Life Boost
+- Resist energy
+- Haste
+- Dimension Door
+- Lay on hands (Target gets buff if it's ally, undead gets debuff if fails saving-throw)
+- Gravity Weapon
+- Aberrant Form
+- Adapt Self
+- Aerial Form
+- Angel Form
+- Animal Form
+- Animal Feature
+- Ant Haul
+- Agonizing Despair
+- Allegro
+- Ancestral Touch
+- Animus Mine
+- Apex Companion
+- Aqueous Blast
+- Ki Strike
+- Enlarge
+- Unusual Anatomy
+- Ashen Wind
+- Painful Vibrations
+- Divine Wrath
+- Ash Cloud
+- Aromatic Lure
+- See the Unseen
+- Boost Eidolon
+- Reinforce Eidolon
 
 
 ### 3rd party
+
 - Lichen's Tenacity 
 - Rose's Tranquility
 
 ### Feats
+
 - Medic Dedication
 - Swashbucklers Style - All Styles (add Panache when Tumble Through or specific action of style)
-- Tumble Behind (Rogue) feat
+- Tumble Behind (Rogue)
+- Didactic Strike
+- Reactive Shield
+- Smite Evil
+- Heaven's thunder
+- Intimidating Strike
+- Reach Spell
+- Monk's stances
+- Champion's stances
+- Fighter's stances
+- Rogue's stances
+- Bard's stances
+- Swashbuckler's stances
+- Predictable
+- Precision
+- Hunt Prey
+- Pistol Twirl
+- Combat Grab
+- Godless Healing
+- Kip Up
+- Replenishment Of War
+- Bloodline Aberrant
+- Bloodline Angelic
+- Bloodline Demonic
+- Bloodline Diabolic
+- Bloodline Draconic
+- Bloodline Elemental
+- Bloodline Fey
+- Bloodline Genie
+- Bloodline Hag
+- Bloodline Harrow
+- Bloodline Imperial
+- Bloodline Nymph
+- Bloodline Shadow
+- Bloodline Wyrmblessed
+- Accelerating Touch
+- Acknowledge Fan
+- Tremor
+- Watchful Gaze
+- Striking Retribution
+- Seedpod
+- Avenge in Glory
+- Cat Nap
+- Ceremony of Protection
+- Clans Edge
+- Dualborn
+- Elemental Assault
+- Hydraulic Deflection
+- Known Weakness
+- Life-Giving Magic
+- Maiden's Mending
+- Nanite Surge
+- Psychic Rapport
+- Radiant Circuitry
+- Root Magic
+- Saoc Astrology
+- Anoint Ally
+- Divine Aegis
+- Emblazon Armament
+- Elementalist Dedication
+- Dragonslayer Oath (Liberator)
+- Esoteric Oath (Liberator)
+- Fiendsbane Oath (Liberator)
+- Shining Oath (Liberator)
+- Eye of the Arclords
+- Harrower Dedication
+- Marshal Dedication
+- Monster Warden
+- Sniping Duo Dedication
+- Aldori Parry
+- Decry Thief
+- Double Slice
+- Twin Takedown
+- Flurry Of Blows
+- Hunted Shot
+- Wolf Drag
+
+### Items
+
+- Bottled Lightning
+- Dread Ampoule
+- Frost Vial
+- Ghost Charge
+- Tanglefoot Bag
+- Thunderstone
+- Skunk Bomb
+- Necrotic Bomb
+- Boulder Seed
+- Shatterstone
+- Trueshape Bomb (Delete Wild Morph and notification)

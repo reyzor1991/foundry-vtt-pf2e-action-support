@@ -14,7 +14,23 @@
   "esmodules": [
     "pf2e-action-support.js"
   ],
-  "styles": [],
+  "styles": [
+    "pf2e-action-support.css"
+  ],
+  "packFolders": [
+    {
+      "name": "PF2e Action Support",
+      "sorting": "m",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "packs": [
+        "action-support",
+        "action-support-macros"
+      ]
+    }
+  ],
   "packs": [
     {
       "label": "Action Support",
@@ -23,6 +39,19 @@
       "system": "pf2e",
       "private": false,
       "type": "Item",
+      "flags": {}
+    },
+    {
+      "label": "Action Support Macros",
+      "name": "action-support-macros",
+      "path": "packs/action-support-macros.db",
+      "system": "pf2e",
+      "private": false,
+      "type": "Macro",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
       "flags": {}
     }
   ],
@@ -49,6 +78,13 @@
           "minimum": "4.12.9",
           "verified": "4.12.9"
         }
+      }
+    ],
+    "requires": [
+      {
+        "id": "socketlib",
+        "type": "module",
+        "manifest": "https://raw.githubusercontent.com/manuelVo/foundryvtt-socketlib/master/module.json"
       }
     ]
   }

@@ -1,0 +1,39 @@
+#pf2e-action-support-homebrew-settings form .form-group > label {
+    flex: 2;
+    padding-left: 4px;
+}
+
+#pf2e-action-support-homebrew-settings button.homebrew-delete {
+    flex: 0.5;
+}
+#pf2e-action-support-homebrew-settings .form-group > label {
+    flex: 2;
+    padding-left: 4px;
+}
+#pf2e-action-support-homebrew-settings .first-line > label {
+    flex: 2.2!important;
+}
+#pf2e-action-support-homebrew-settings form button.homebrew-delete {
+    flex: 0.2;
+}
+
+
+.column-flurry, .column-hunted-shot {
+  float: left;
+  width: 50%;
+  padding: 10px;
+}
+
+.row-flurry:after, .row-hunted-shot:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.first-flurry {
+    box-shadow: 0 0 12px #0cf043;
+}
+
+.second-flurry {
+    box-shadow: 0 0 12px #0eaaf2;
+}
