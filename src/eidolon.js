@@ -22,7 +22,7 @@ async function setSummonerHP(actor) {
     }
 
     const sHP = actor.system.attributes.hp.max;
-    const feat = (await fromUuid("Compendium.pf2e-action-support.action-support.Item.LnCPBh2F5tiDprR0")).toObject();
+    const feat = (await fromUuid("Compendium.pf2e-action-support.action-support.LnCPBh2F5tiDprR0")).toObject();
     feat.system.rules[0].value = sHP;
     feat.flags.summoner = actor.uuid
 
@@ -155,8 +155,8 @@ Hooks.once("init", () => {
 
     if (game.settings.get(moduleName, "eidolonSpell")) {
 
-        const originGetChatData = CONFIG.PF2E.Item.documentClasses.spell.prototype.getChatData;
-        CONFIG.PF2E.Item.documentClasses.spell.prototype.getChatData = async function(htmlOptions={}, _rollOptions2={}) {
+        const originGetChatData = CONFIG.PF2E.documentClasses.spell.prototype.getChatData;
+        CONFIG.PF2E.documentClasses.spell.prototype.getChatData = async function(htmlOptions={}, _rollOptions2={}) {
             const r = await originGetChatData.call(this, htmlOptions, _rollOptions2);
             if ("character" === this.actor?.type && "eidolon" === this.actor?.class?.slug) {
                 const f = actorFeat(this.actor, "summoner-hp")

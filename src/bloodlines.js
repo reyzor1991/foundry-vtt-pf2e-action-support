@@ -325,7 +325,7 @@ async function createDialog(actorId, selfEffect, targets, targetEffect) {
 
 async function createDialogDamageOrTempHP(message, spell, damageEff, selfSpells, allySpells, comboSpells) {
     //self apply
-    const eff = "Compendium.pf2e-action-support.action-support.Item.yYvPtdlew2YctMgt";
+    const eff = "Compendium.pf2e-action-support.action-support.yYvPtdlew2YctMgt";
 
     const aEffect = (await fromUuid(eff)).toObject();
     aEffect.flags = mergeObject(aEffect.flags ?? {}, { core: { sourceId: eff } });
@@ -403,19 +403,19 @@ async function createDialogDamageOrSelfEffect(message, spell, damageEff, selfSpe
 
 
 async function bloodlineAberrant(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.UQ7vZgmfK0VSFS8A", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.Item.UQ7vZgmfK0VSFS8A");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.UQ7vZgmfK0VSFS8A", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.UQ7vZgmfK0VSFS8A");
 }
 
 async function bloodlineAngelic(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.s1tulrmW6teTFjVd", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.Item.s1tulrmW6teTFjVd");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.s1tulrmW6teTFjVd", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.s1tulrmW6teTFjVd");
 }
 
 async function bloodlineDemonic(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.aKRo5TIhUtu0kyEr", targetNpcs(), "Compendium.pf2e.feat-effects.Item.yfbP64r4a9e5oyli");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.aKRo5TIhUtu0kyEr", targetNpcs(), "Compendium.pf2e.feat-effects.yfbP64r4a9e5oyli");
 }
 
 async function bloodlineDiabolic(message, spell) {
-    const damageEff = "Compendium.pf2e-action-support.action-support.Item.2yWSBNLWWYXXSfKZ";
+    const damageEff = "Compendium.pf2e-action-support.action-support.2yWSBNLWWYXXSfKZ";
     createDialogDamageOrSelfEffect(
         message,
         spell,
@@ -423,17 +423,17 @@ async function bloodlineDiabolic(message, spell) {
         ["true-seeing", "divine-aura", "embrace-the-pit"],//self
         [],//ally
         [],//combo
-        (await fromUuid("Compendium.pf2e.feat-effects.Item.n1vhmOd7aNiuR3nk")).toObject()
+        (await fromUuid("Compendium.pf2e.feat-effects.n1vhmOd7aNiuR3nk")).toObject()
     )
 }
 
 async function bloodlineDraconic(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.FNTTeJHiK6iOjrSq", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.Item.FNTTeJHiK6iOjrSq");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.FNTTeJHiK6iOjrSq", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.FNTTeJHiK6iOjrSq");
 }
 
 async function bloodlineElemental(message, spell, isElem=false) {
-    const damageEff = "Compendium.pf2e-action-support.action-support.Item.2yWSBNLWWYXXSfKZ";
-    const bludDamageEff = "Compendium.pf2e-action-support.action-support.Item.KFoh6XzV382S9DDr";
+    const damageEff = "Compendium.pf2e-action-support.action-support.2yWSBNLWWYXXSfKZ";
+    const bludDamageEff = "Compendium.pf2e-action-support.action-support.KFoh6XzV382S9DDr";
 
     let ee = damageEff;
     const ff = actorFeat(message.actor, "bloodline-elemental")
@@ -453,39 +453,39 @@ async function bloodlineElemental(message, spell, isElem=false) {
         selfE,//self
         [],//ally
         [],//combo
-        (await fromUuid("Compendium.pf2e.feat-effects.Item.3gGBZHcUFsHLJeQH")).toObject()
+        (await fromUuid("Compendium.pf2e.feat-effects.3gGBZHcUFsHLJeQH")).toObject()
     )
 }
 
 async function bloodlineFey(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.rJpkKaPRGaH0pLse", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.Item.rJpkKaPRGaH0pLse");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.rJpkKaPRGaH0pLse", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.rJpkKaPRGaH0pLse");
 }
 
 async function bloodlineGenie(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.9AUcoY48H5LrVZiF", targetNpcs(), "Compendium.pf2e.feat-effects.Item.KVbS7AbhQdeuA0J6");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.9AUcoY48H5LrVZiF", targetNpcs(), "Compendium.pf2e.feat-effects.KVbS7AbhQdeuA0J6");
 }
 
 async function bloodlineHag(message) {
-    const effect = (await fromUuid("Compendium.pf2e.feat-effects.Item.6fb15XuSV4TNuVAT")).toObject();
+    const effect = (await fromUuid("Compendium.pf2e.feat-effects.6fb15XuSV4TNuVAT")).toObject();
     effect.system.level = {value: message?.item?.level ?? 1};
 
     message.actor.createEmbeddedDocuments("Item", [effect]);
 }
 
 async function bloodlineHarrow(message) {
-    setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.SbYoI8G8Ze6oE4we")
+    setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.SbYoI8G8Ze6oE4we")
 }
 
 async function bloodlineImperial(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.vguxP8ukwVTWWWaA", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.Item.vguxP8ukwVTWWWaA");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.vguxP8ukwVTWWWaA", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.vguxP8ukwVTWWWaA");
 }
 
 async function bloodlineNymph(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.SVGW8CLKwixFlnTv", targetNpcs(), "Compendium.pf2e.feat-effects.Item.ruRAfGJnik7lRavk");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.SVGW8CLKwixFlnTv", targetNpcs(), "Compendium.pf2e.feat-effects.ruRAfGJnik7lRavk");
 }
 
 async function bloodlinePhoenix(message, spell) {
-    const damageEff = "Compendium.pf2e-action-support.action-support.Item.2yWSBNLWWYXXSfKZ";
+    const damageEff = "Compendium.pf2e-action-support.action-support.2yWSBNLWWYXXSfKZ";
     createDialogDamageOrTempHP(
         message,
         spell,
@@ -497,7 +497,7 @@ async function bloodlinePhoenix(message, spell) {
 }
 
 async function bloodlinePsychopomp(message, spell) {
-    const damageEff = "Compendium.pf2e-action-support.action-support.Item.CUMpeosjhqDpj4KK";
+    const damageEff = "Compendium.pf2e-action-support.action-support.CUMpeosjhqDpj4KK";
     createDialogDamageOrSelfEffect(
         message,
         spell,
@@ -505,16 +505,16 @@ async function bloodlinePsychopomp(message, spell) {
         ["heal", "death-ward"],//self
         [],//ally
         [],//combo
-        (await fromUuid("Compendium.pf2e.feat-effects.Item.7BFd8A9HFrmg6vwL")).toObject()
+        (await fromUuid("Compendium.pf2e.feat-effects.7BFd8A9HFrmg6vwL")).toObject()
     )
 }
 
 async function bloodlineShadow(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.OqH6IaeOwRWkGPrk", targetNpcs(), "Compendium.pf2e.feat-effects.Item.Nv70aqcQgCBpDYp8");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.OqH6IaeOwRWkGPrk", targetNpcs(), "Compendium.pf2e.feat-effects.Nv70aqcQgCBpDYp8");
 }
 
 async function bloodlineUndead(message, spell) {
-    const damageEff = "Compendium.pf2e-action-support.action-support.Item.UQEqBomwGFkTOomK";
+    const damageEff = "Compendium.pf2e-action-support.action-support.UQEqBomwGFkTOomK";
     createDialogDamageOrTempHP(
         message,
         spell,
@@ -526,7 +526,7 @@ async function bloodlineUndead(message, spell) {
 }
 
 async function bloodlineWyrmblessed(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.fILVhS5NuCtGXfri", targetNpcs(), "Compendium.pf2e.feat-effects.Item.aqnx6IDcB7ARLxS5");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.fILVhS5NuCtGXfri", targetNpcs(), "Compendium.pf2e.feat-effects.aqnx6IDcB7ARLxS5");
 }
 
 const bloodlineFeatMap = {

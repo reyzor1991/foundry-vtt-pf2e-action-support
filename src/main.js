@@ -91,7 +91,7 @@ Hooks.once("init", () => {
 Hooks.on('deleteItem', async (effect, data, id) => {
     if (game.user.isGM) {
         if (effect.slug === "spell-effect-guidance" && !hasEffect(effect.actor, "effect-guidance-immunity")) {
-            setEffectToActor(effect.actor, "Compendium.pf2e.spell-effects.Item.3LyOkV25p7wA181H");
+            setEffectToActor(effect.actor, "Compendium.pf2e.spell-effects.3LyOkV25p7wA181H");
         }
     }
 });
@@ -577,7 +577,7 @@ async function afflictionEffect(message, eff, crit=false) {
 }
 
 async function guidanceEffect(message, target) {
-    const aEffect = (await fromUuid("Compendium.pf2e.spell-effects.Item.3qHKBDF7lrHw8jFK")).toObject();
+    const aEffect = (await fromUuid("Compendium.pf2e.spell-effects.3qHKBDF7lrHw8jFK")).toObject();
 
     aEffect.system.context = mergeObject(aEffect.system.context ?? {}, {
         "origin": {

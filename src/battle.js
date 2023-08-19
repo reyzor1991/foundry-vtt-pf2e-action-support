@@ -3,72 +3,72 @@ const battleSelfEffectMap = {
     "conduct-energy": effect_conduct_energy,
     "energy-shot": effect_energy_shot,
     "fade-into-daydreams": effect_concealed_start_turn,
-    "anadi-venom": "Compendium.pf2e.feat-effects.Item.gN1LbKYQgi8Fx98V",
-    "arcane-cascade": "Compendium.pf2e.feat-effects.Item.fsjO5oTKttsbpaKl",
+    "anadi-venom": "Compendium.pf2e.feat-effects.gN1LbKYQgi8Fx98V",
+    "arcane-cascade": "Compendium.pf2e.feat-effects.fsjO5oTKttsbpaKl",
     "bend-time": effect_bend_time,
-    "blizzard-evasion": "Compendium.pf2e.feat-effects.Item.JF2xCqL6t4UJZtUi",
-    "calculate-threats": "Compendium.pf2e.feat-effects.Item.P6druSuWIVoLrXJR",
-    "catharsis": "Compendium.pf2e.feat-effects.Item.JysvElDwGZ5ABQ6x",
-    "harrow-the-fiend": "Compendium.pf2e.feat-effects.Item.MSkspeBsbXm6LQ19",
-    "recall-under-pressure": "Compendium.pf2e.feat-effects.Item.CW4zphOOpeaLJIWc",
-    "tail-toxin": "Compendium.pf2e.feat-effects.Item.Q0DKJRnDuuUnLpvn",
-    "tenacious-stance": "Compendium.pf2e.feat-effects.Item.Ms6WPXRWfXb2KpG2",
+    "blizzard-evasion": "Compendium.pf2e.feat-effects.JF2xCqL6t4UJZtUi",
+    "calculate-threats": "Compendium.pf2e.feat-effects.P6druSuWIVoLrXJR",
+    "catharsis": "Compendium.pf2e.feat-effects.JysvElDwGZ5ABQ6x",
+    "harrow-the-fiend": "Compendium.pf2e.feat-effects.MSkspeBsbXm6LQ19",
+    "recall-under-pressure": "Compendium.pf2e.feat-effects.CW4zphOOpeaLJIWc",
+    "tail-toxin": "Compendium.pf2e.feat-effects.Q0DKJRnDuuUnLpvn",
+    "tenacious-stance": "Compendium.pf2e.feat-effects.Ms6WPXRWfXb2KpG2",
     //spell
-    'adaptive-ablation': 'Compendium.pf2e.spell-effects.Item.6GAztnHuQSwAp1k1',//?maybe general
-    'agile-feet': 'Compendium.pf2e.spell-effects.Item.y9PJdDYFemhk6Z5o',
-    'ancestral-form': 'Compendium.pf2e.spell-effects.Item.l8HkOKfiUqd3BUwT',//?maybe general
-    'angelic-wings': 'Compendium.pf2e.spell-effects.Item.iZYjxY0qYvg5yPP3',
-    'armor-of-bones': 'Compendium.pf2e.spell-effects.Item.6BjslHgY01cNbKp5',//?maybe general
-    'athletic-rush': 'Compendium.pf2e.spell-effects.Item.57lnrCzGUcNUBP2O',
-    'true-strike': 'Compendium.pf2e.spell-effects.Item.fpGDAz2v5PG0zUSl',
-    'gravity-weapon': 'Compendium.pf2e.spell-effects.Item.tNjimcyUwn8afeH6',//?maybe general
+    'adaptive-ablation': 'Compendium.pf2e.spell-effects.6GAztnHuQSwAp1k1',//?maybe general
+    'agile-feet': 'Compendium.pf2e.spell-effects.y9PJdDYFemhk6Z5o',
+    'ancestral-form': 'Compendium.pf2e.spell-effects.l8HkOKfiUqd3BUwT',//?maybe general
+    'angelic-wings': 'Compendium.pf2e.spell-effects.iZYjxY0qYvg5yPP3',
+    'armor-of-bones': 'Compendium.pf2e.spell-effects.6BjslHgY01cNbKp5',//?maybe general
+    'athletic-rush': 'Compendium.pf2e.spell-effects.57lnrCzGUcNUBP2O',
+    'true-strike': 'Compendium.pf2e.spell-effects.fpGDAz2v5PG0zUSl',
+    'gravity-weapon': 'Compendium.pf2e.spell-effects.tNjimcyUwn8afeH6',//?maybe general
     //feat
-    "smite-evil":"Compendium.pf2e.feat-effects.Item.AlnxieIRjqNqsdVu",
-    "heavens-thunder":"Compendium.pf2e.feat-effects.Item.L9g3EMCT3imX650b",
+    "smite-evil":"Compendium.pf2e.feat-effects.AlnxieIRjqNqsdVu",
+    "heavens-thunder":"Compendium.pf2e.feat-effects.L9g3EMCT3imX650b",
     "intimidating-strike":effect_intimidating_strike,
     "reach-spell":effect_reach_spell,
-    "crane-stance":"Compendium.pf2e.feat-effects.Item.nwkYZs6YwXYAJ4ps",
-    "dragon-stance":"Compendium.pf2e.feat-effects.Item.qUowHpn79Dpt1hVn",
-    "gorilla-stance":"Compendium.pf2e.feat-effects.Item.RozqjLocahvQWERr",
-    "monastic-archer-stance":"Compendium.pf2e.feat-effects.Item.1dxD3xsTzak6GNj5",
-    "mountain-stance":"Compendium.pf2e.feat-effects.Item.gYpy9XBPScIlY93p",
-    "rain-of-embers-stance":"Compendium.pf2e.feat-effects.Item.Im5JBInybWFbHEYS",
-    "tiger-stance":"Compendium.pf2e.feat-effects.Item.pf9yvKNg6jZLrE30",
-    "wolf-stance":"Compendium.pf2e.feat-effects.Item.b2kWJuCPj1rDMdwz",
-    "reflective-ripple-stance":"Compendium.pf2e.feat-effects.Item.QDQwHxNowRwzUx9R",
-    "stoked-flame-stance":"Compendium.pf2e.feat-effects.Item.rp1YauUSULuqW8rs",
-    "stumbling-stance":"Compendium.pf2e.feat-effects.Item.BCyGDKcplkJiSAKJ",
-    "shooting-stars-stance":"Compendium.pf2e.feat-effects.Item.RXbfq6oqzVnW6xOV",
-    "cobra-stance":"Compendium.pf2e.feat-effects.Item.CgxYa0lrLUjS2ZhI",
-    "peafowl-stance":"Compendium.pf2e.feat-effects.Item.vjvcccAwdkOLA1Fc",
-    "ironblood":"Compendium.pf2e.feat-effects.Item.tPKXLtDJ3bzJcXlv",
-    "jellyfish-stance":"Compendium.pf2e.feat-effects.Item.pkcr9w5x6bKzl3om",
-    "tangled-forest-stance":"Compendium.pf2e.feat-effects.Item.PMHwCrnh9W4sMu5b",
-    "whirling-blade-stance":"Compendium.pf2e.feat-effects.Item.JefXqvhzUeBArkAP",
-    "vitality-manipulating-stance":"Compendium.pf2e.feat-effects.Item.h45sUZFs5jhuQdCE",
-    "everstand-stance": "Compendium.pf2e.feat-effects.Item.GGebXpRPyONZB3eS",
-    "point-blank-shot": "Compendium.pf2e.feat-effects.Item.9HPxAKpP3WJmICBx",
-    "disarming-stance": "Compendium.pf2e.feat-effects.Item.LxSev4GNKv26DbZw",
-    "dueling-dance-fighter": "Compendium.pf2e.feat-effects.Item.1nCwQErK6hpkNvfw",
-    "dueling-dance-swashbuckler": "Compendium.pf2e.feat-effects.Item.1nCwQErK6hpkNvfw",
-    "paragons-guard": "Compendium.pf2e.feat-effects.Item.6EDoy3OSFZ4L3Vs7",
-    "multishot-stance": "Compendium.pf2e.feat-effects.Item.l4QUaedYofnfXig0",
-    "masquerade-of-seasons-stance": "Compendium.pf2e.feat-effects.Item.6IsZQpwRJQWIzdGx",
-    "replenishment-of-war": "Compendium.pf2e.feat-effects.Item.BJc494USeyM011p3",
-    "watchful-gaze": "Compendium.pf2e.feat-effects.Item.a7qiSYdlaIRPe57i",
-    "striking-retribution": "Compendium.pf2e.feat-effects.Item.EzgW32MCOGov9h5C",
-    "ceremony-of-protection": "Compendium.pf2e.feat-effects.Item.9kNbiZPOM2wy60ao",
-    "clans-edge": "Compendium.pf2e.equipment-effects.Item.fRlvmul3LbLo2xvR",
-    "dualborn": "Compendium.pf2e.feat-effects.Item.XaZdQHF9GvaJINqH",
-    "elemental-assault": "Compendium.pf2e.feat-effects.Item.XaZdQHF9GvaJINqH",
-    "hydraulic-deflection": "Compendium.pf2e.feat-effects.Item.IfsglZ7fdegwem0E",
-    "life-giving-magic": "Compendium.pf2e.feat-effects.Item.YKJhjkerCW0Jl6HP",
-    "maidens-mending": "Compendium.pf2e.feat-effects.Item.FIgud5jqZgIjwkRE",
-    "nanite-surge": "Compendium.pf2e.feat-effects.Item.ErLweSmVAN57QIpp",
-    "psychic-rapport": "Compendium.pf2e.feat-effects.Item.Dbr5hInQXH904Ca7",
-    "divine-aegis": "Compendium.pf2e.feat-effects.Item.K1IgNCf3Hh2EJwQ9",
-    "sniping-duo-dedication": "Compendium.pf2e.feat-effects.Item.zQHF2kkhZRAcrQvR",
-    "aldori-parry": "Compendium.pf2e.feat-effects.Item.aEuDaQY1GnrrnDRA",
+    "crane-stance":"Compendium.pf2e.feat-effects.nwkYZs6YwXYAJ4ps",
+    "dragon-stance":"Compendium.pf2e.feat-effects.qUowHpn79Dpt1hVn",
+    "gorilla-stance":"Compendium.pf2e.feat-effects.RozqjLocahvQWERr",
+    "monastic-archer-stance":"Compendium.pf2e.feat-effects.1dxD3xsTzak6GNj5",
+    "mountain-stance":"Compendium.pf2e.feat-effects.gYpy9XBPScIlY93p",
+    "rain-of-embers-stance":"Compendium.pf2e.feat-effects.Im5JBInybWFbHEYS",
+    "tiger-stance":"Compendium.pf2e.feat-effects.pf9yvKNg6jZLrE30",
+    "wolf-stance":"Compendium.pf2e.feat-effects.b2kWJuCPj1rDMdwz",
+    "reflective-ripple-stance":"Compendium.pf2e.feat-effects.QDQwHxNowRwzUx9R",
+    "stoked-flame-stance":"Compendium.pf2e.feat-effects.rp1YauUSULuqW8rs",
+    "stumbling-stance":"Compendium.pf2e.feat-effects.BCyGDKcplkJiSAKJ",
+    "shooting-stars-stance":"Compendium.pf2e.feat-effects.RXbfq6oqzVnW6xOV",
+    "cobra-stance":"Compendium.pf2e.feat-effects.CgxYa0lrLUjS2ZhI",
+    "peafowl-stance":"Compendium.pf2e.feat-effects.vjvcccAwdkOLA1Fc",
+    "ironblood":"Compendium.pf2e.feat-effects.tPKXLtDJ3bzJcXlv",
+    "jellyfish-stance":"Compendium.pf2e.feat-effects.pkcr9w5x6bKzl3om",
+    "tangled-forest-stance":"Compendium.pf2e.feat-effects.PMHwCrnh9W4sMu5b",
+    "whirling-blade-stance":"Compendium.pf2e.feat-effects.JefXqvhzUeBArkAP",
+    "vitality-manipulating-stance":"Compendium.pf2e.feat-effects.h45sUZFs5jhuQdCE",
+    "everstand-stance": "Compendium.pf2e.feat-effects.GGebXpRPyONZB3eS",
+    "point-blank-shot": "Compendium.pf2e.feat-effects.9HPxAKpP3WJmICBx",
+    "disarming-stance": "Compendium.pf2e.feat-effects.LxSev4GNKv26DbZw",
+    "dueling-dance-fighter": "Compendium.pf2e.feat-effects.1nCwQErK6hpkNvfw",
+    "dueling-dance-swashbuckler": "Compendium.pf2e.feat-effects.1nCwQErK6hpkNvfw",
+    "paragons-guard": "Compendium.pf2e.feat-effects.6EDoy3OSFZ4L3Vs7",
+    "multishot-stance": "Compendium.pf2e.feat-effects.l4QUaedYofnfXig0",
+    "masquerade-of-seasons-stance": "Compendium.pf2e.feat-effects.6IsZQpwRJQWIzdGx",
+    "replenishment-of-war": "Compendium.pf2e.feat-effects.BJc494USeyM011p3",
+    "watchful-gaze": "Compendium.pf2e.feat-effects.a7qiSYdlaIRPe57i",
+    "striking-retribution": "Compendium.pf2e.feat-effects.EzgW32MCOGov9h5C",
+    "ceremony-of-protection": "Compendium.pf2e.feat-effects.9kNbiZPOM2wy60ao",
+    "clans-edge": "Compendium.pf2e.equipment-effects.fRlvmul3LbLo2xvR",
+    "dualborn": "Compendium.pf2e.feat-effects.XaZdQHF9GvaJINqH",
+    "elemental-assault": "Compendium.pf2e.feat-effects.XaZdQHF9GvaJINqH",
+    "hydraulic-deflection": "Compendium.pf2e.feat-effects.IfsglZ7fdegwem0E",
+    "life-giving-magic": "Compendium.pf2e.feat-effects.YKJhjkerCW0Jl6HP",
+    "maidens-mending": "Compendium.pf2e.feat-effects.FIgud5jqZgIjwkRE",
+    "nanite-surge": "Compendium.pf2e.feat-effects.ErLweSmVAN57QIpp",
+    "psychic-rapport": "Compendium.pf2e.feat-effects.Dbr5hInQXH904Ca7",
+    "divine-aegis": "Compendium.pf2e.feat-effects.K1IgNCf3Hh2EJwQ9",
+    "sniping-duo-dedication": "Compendium.pf2e.feat-effects.zQHF2kkhZRAcrQvR",
+    "aldori-parry": "Compendium.pf2e.feat-effects.aEuDaQY1GnrrnDRA",
 };
 
 function tumbleThrough(message) {
@@ -96,12 +96,12 @@ function demoralize(message) {
                 if (successMessageOutcome(message)) {
                     increaseConditionForTarget(message, "frightened", 1);
                     if (decryThief) {
-                        setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.FyaekbWsazkJhJda");
+                        setEffectToTarget(message, "Compendium.pf2e.feat-effects.FyaekbWsazkJhJda");
                     }
                 } else if (criticalSuccessMessageOutcome(message)) {
                     increaseConditionForTarget(message, "frightened", 2);
                     if (decryThief) {
-                        setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.kAgUld9PcI4XkHbq");
+                        setEffectToTarget(message, "Compendium.pf2e.feat-effects.kAgUld9PcI4XkHbq");
                     }
                 }
             }
@@ -142,7 +142,7 @@ function feint(message) {
             if (criticalSuccessMessageOutcome(message)) {
                 setFeintEffect(message, true)
                 if (actorFeat(message.actor, "distracting-feint")) {
-                    effectWithActorNextTurn(message, message.target.actor, "Compendium.pf2e.feat-effects.Item.7hRgBo0fRQBxMK7g")
+                    effectWithActorNextTurn(message, message.target.actor, "Compendium.pf2e.feat-effects.7hRgBo0fRQBxMK7g")
                 }
             } else {
                 setFeintEffect(message, false)
@@ -194,12 +194,12 @@ function bonMot(message) {
                 setEffectToActor(message.actor, effect_panache)
             }
             if (successMessageOutcome(message)) {
-                setEffectToActor(message.target.actor, "Compendium.pf2e.feat-effects.Item.GoSls6SKCFmSoDxT")
+                setEffectToActor(message.target.actor, "Compendium.pf2e.feat-effects.GoSls6SKCFmSoDxT")
             } else {
-                setEffectToActor(message.target.actor, "Compendium.pf2e.feat-effects.Item.CtrZFI3RV0yPNzTv")
+                setEffectToActor(message.target.actor, "Compendium.pf2e.feat-effects.CtrZFI3RV0yPNzTv")
             }
         } else if (criticalFailureMessageOutcome(message)) {
-            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.GoSls6SKCFmSoDxT")
+            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.GoSls6SKCFmSoDxT")
         }
     }
 }
@@ -275,7 +275,7 @@ function battleMedicine(message) {
                 ) {//1 hour
                     effectWithActorNextTurn(message, first.actor, effect_battle_medicine_immunity_hour, optName, true)
                 } else {
-                    effectWithActorNextTurn(message, first.actor, "Compendium.pf2e.feat-effects.Item.2XEYQNZTCGpdkyR6", optName, true)
+                    effectWithActorNextTurn(message, first.actor, "Compendium.pf2e.feat-effects.2XEYQNZTCGpdkyR6", optName, true)
                 }
             } else {
                 ui.notifications.info(`${first.actor.name} has Battle Medicine Immunity`);
@@ -318,7 +318,7 @@ function tamper(message) {
 function catfolkDance(message) {
     if (hasOption(message, "action:catfolk-dance")) {
         if (anySuccessMessageOutcome(message)) {
-            setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.5bEnBqVOgdp4gROP")
+            setEffectToTarget(message, "Compendium.pf2e.feat-effects.5bEnBqVOgdp4gROP")
         }
         if (criticalSuccessMessageOutcome(message)) {
             setEffectToTarget(message, effect_off_guard_start_turn);
@@ -348,11 +348,11 @@ function battleSkillCheck(message) {
 function battlePerceptionCheck(message) {
     if (hasOption(message, "action:sense-motive") && actorFeat(message?.actor, "predictable")) {
         if (criticalSuccessMessageOutcome(message)) {
-            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.I4Ozf6mTnd3X0Oax")
+            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.I4Ozf6mTnd3X0Oax")
         } else if (successMessageOutcome(message)) {
-            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.5v0ndPPMfZwhiVZF")
+            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.5v0ndPPMfZwhiVZF")
         } else if (criticalFailureMessageOutcome(message)) {
-            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.KgR1myc4OLzVxfxn")
+            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.KgR1myc4OLzVxfxn")
         }
     }
 }
@@ -400,16 +400,16 @@ function tangleFootBagLesser(message) {
     const isCrit = criticalSuccessMessageOutcome(message);
     let effectWasSet = false;
     if (hasOption(message, "item:tanglefoot-bag-lesser")) {
-        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.fYZIanbYu0Vc4JEL")
+        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.fYZIanbYu0Vc4JEL")
         effectWasSet = true;
     } else if (hasOption(message, "item:tanglefoot-bag-moderate")) {
-        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.MEreOgnjoRiXPEuq")
+        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.MEreOgnjoRiXPEuq")
         effectWasSet = true;
     } else if (hasOption(message, "item:tanglefoot-bag-greater")) {
-        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.csA4UAD2tQq7RjT8")
+        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.csA4UAD2tQq7RjT8")
         effectWasSet = true;
     } else if (hasOption(message, "item:tanglefoot-bag-major")) {
-        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.ITAFsW3dQPupJ3DW")
+        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.ITAFsW3dQPupJ3DW")
         effectWasSet = true;
     }
     if (isCrit && effectWasSet) {
@@ -445,7 +445,7 @@ function boulderSeed(message) {
 function runes(message) {
     if (message.item) {
         if (message.item.system?.runes?.property?.includes("crushing")) {
-            setEffectToActor(message.target?.actor, "Compendium.pf2e.equipment-effects.Item.zNHvhwHsC8ckhKVp")
+            setEffectToActor(message.target?.actor, "Compendium.pf2e.equipment-effects.zNHvhwHsC8ckhKVp")
         } else if (message.item.system?.runes?.property?.includes("bloodthirsty")) {
             increaseConditionForTarget(message, "drained", 1);
         } else if (message.item.system?.runes?.property?.includes("disrupting") && message?.target?.actor?.traits?.has("undead")) {
@@ -523,13 +523,13 @@ function bottledLightning(message) {
 
 function frostVial(message) {
     if (hasOption(message, "item:frost-vial-lesser")) {
-        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.RLsdvhmTh64Mmty9")
+        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.RLsdvhmTh64Mmty9")
     } else if (hasOption(message, "item:frost-vial-moderate")) {
-        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.dv0IKm5syOdP759w")
+        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.dv0IKm5syOdP759w")
     } else if (hasOption(message, "item:frost-vial-greater")) {
-        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.nJRoiSyd67eQ1dYj")
+        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.nJRoiSyd67eQ1dYj")
     } else if (hasOption(message, "item:frost-vial-major")) {
-        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.Item.4G9qnI0oRyL6eKFQ")
+        setEffectToActor(message.target.actor, "Compendium.pf2e.equipment-effects.4G9qnI0oRyL6eKFQ")
     }
 }
 
@@ -546,8 +546,8 @@ function layOnHands(message) {
         setEffectToActorOrTarget(
             message,
             actorFeat(message.actor, "accelerating-touch")
-                ? "Compendium.pf2e.spell-effects.Item.alyNtkHLNnt98Ewz"
-                : "Compendium.pf2e.spell-effects.Item.lyLMiauxIVUM3oF1",
+                ? "Compendium.pf2e.spell-effects.alyNtkHLNnt98Ewz"
+                : "Compendium.pf2e.spell-effects.lyLMiauxIVUM3oF1",
             "Lay on hands",
             getSpellRange(message.actor, message.item),
              true
@@ -557,7 +557,7 @@ function layOnHands(message) {
 
 function seedpod(message) {
     if (hasDomain(message, "seedpod-damage") && hasOption(message, "check:outcome:critical-success")) {
-        setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.wQDHpOKY3GZqvS2v")
+        setEffectToTarget(message, "Compendium.pf2e.feat-effects.wQDHpOKY3GZqvS2v")
     }
 }
 
@@ -617,7 +617,7 @@ function deleteShieldEffect(message) {
                 } else {
                     socketlibSocket._sendRequest("deleteEffect", [shieldEff.uuid], 0)
                 }
-                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.QF6RDlCoTvkVHRo4")
+                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.QF6RDlCoTvkVHRo4")
             }
         }
     }
@@ -637,14 +637,14 @@ function handleBattleActions(message, _obj) {
     } else if (_obj?.sourceId ===  "Item.PUAigKSydzY9Ii10") {
         setEffectToActor(message.actor, "Compendium.botanical-bestiary.effects.DwxpHXwlTPuXq2wT")
     } else if (_obj?.slug ===  "retributive-strike") {
-        setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.DawVHfoPKbPJsz4k")
+        setEffectToTarget(message, "Compendium.pf2e.feat-effects.DawVHfoPKbPJsz4k")
     } else if (_obj?.slug ===  "spin-tale") {
-        setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.UzIamWcEJTOjwfoA")
+        setEffectToTarget(message, "Compendium.pf2e.feat-effects.UzIamWcEJTOjwfoA")
     } else if (_obj?.slug ===  "screaming-skull") {
         setEffectToActor(message.actor, effect_blinded1_round)
     } else if (_obj?.slug ===  "liberating-step") {
         if (game.user.targets.size === 1) {
-            setEffectToTarget(message, "Compendium.pf2e.feat-effects.Item.DawVHfoPKbPJsz4k")
+            setEffectToTarget(message, "Compendium.pf2e.feat-effects.DawVHfoPKbPJsz4k")
         } else {
             ui.notifications.info(`${message.actor.name} chose incorrect count of targets for effect`);
         }
@@ -661,7 +661,7 @@ function handleBattleFeats(message, _obj) {
     } else if (_obj.slug === "known-weaknesses") {
         game.user.targets.forEach(tt => {
             if (!hasEffect(tt.actor, 'effect-known-weakness')) {
-                effectWithActorNextTurn(message, tt.actor, "Compendium.pf2e.feat-effects.Item.DvyyA11a63FBwV7x")
+                effectWithActorNextTurn(message, tt.actor, "Compendium.pf2e.feat-effects.DvyyA11a63FBwV7x")
             }
         });
     } else if (_obj.slug === "wolf-drag") {
@@ -673,38 +673,38 @@ function handleBattleFeats(message, _obj) {
 
 async function handleBattleSpells(message, _obj) {
     if (_obj.slug === "inspire-courage") {
-        if (await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")) {
-            setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")
+        if (await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.MRmGlGAFd3tSJioo")) {
+            setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.MRmGlGAFd3tSJioo")
         } else {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, 'spell-effect-inspire-courage')) {
-                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.beReeFroAx24hj83")
+                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.beReeFroAx24hj83")
                 }
             });
         }
     } else if (_obj.slug === "inspire-defense") {
-        if (await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")) {
-            setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")
+        if (await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.89T07EBAgn78RBbJ")) {
+            setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.89T07EBAgn78RBbJ")
         } else {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, 'spell-effect-inspire-courage')) {
-                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.DLwTvjjnqs2sNGuG")
+                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.DLwTvjjnqs2sNGuG")
                 }
             });
         }
     } else if (_obj.slug === "allegro") {
         setEffectToActorOrTarget(message, effect_allegro, "Allegro", getSpellRange(message.actor, _obj))
     } else if (_obj.slug === "ki-strike") {
-        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.8olfnTmWh0GGPDqX")
+        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.8olfnTmWh0GGPDqX")
     } else if (_obj.slug === "boost-eidolon") {
         const ei = await fromUuid(message.actor.getFlag(moduleName, "eidolon"));
         if (ei) {
-            setEffectToActor(ei, "Compendium.pf2e.spell-effects.Item.h0CKGrgjGNSg21BW")
+            setEffectToActor(ei, "Compendium.pf2e.spell-effects.h0CKGrgjGNSg21BW")
         }
     } else if (_obj.slug === "reinforce-eidolon") {
         const ei = await fromUuid(message.actor.getFlag(moduleName, "eidolon"));
         if (ei) {
-            setEffectToActor(ei, "Compendium.pf2e.spell-effects.Item.UVrEe0nukiSmiwfF")
+            setEffectToActor(ei, "Compendium.pf2e.spell-effects.UVrEe0nukiSmiwfF")
         }
     }
 }
@@ -816,11 +816,11 @@ function ashCloud(message) {
 function aromaticLure(message) {
     if (hasOption(message, 'item:slug:aromatic-lure')) {
         if (successMessageOutcome(message)) {
-            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.KQ0TqKFPn64tkzkt")
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.KQ0TqKFPn64tkzkt")
         } else if (failureMessageOutcome(message)) {
-            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.gp7QMc2Nw9LoXu64")
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.gp7QMc2Nw9LoXu64")
         } else if (criticalFailureMessageOutcome(message)) {
-            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.ubBrL0lNSrpAHO6G")
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.ubBrL0lNSrpAHO6G")
         }
     }
 }

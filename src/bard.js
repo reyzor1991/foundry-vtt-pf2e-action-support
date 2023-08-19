@@ -37,23 +37,23 @@ async function inspireHeroics(actor) {
 
     const degreeOfSuccess = (await actor.skills.performance.roll({dc, skipDialog: true})).degreeOfSuccess;
 
-    const aura = (await fromUuid("Compendium.pf2e-action-support.action-support.Item.mGQMqBoTFRz3or4D")).toObject();
+    const aura = (await fromUuid("Compendium.pf2e-action-support.action-support.mGQMqBoTFRz3or4D")).toObject();
     let idOfEffect='';
     if (spell === 0) {
         if (degreeOfSuccess === 3) {
-            idOfEffect = "Compendium.pf2e.spell-effects.Item.VFereWC1agrwgzPL";
+            idOfEffect = "Compendium.pf2e.spell-effects.VFereWC1agrwgzPL";
         } else if (degreeOfSuccess === 2) {
-            idOfEffect = "Compendium.pf2e.spell-effects.Item.kZ39XWJA3RBDTnqG";
+            idOfEffect = "Compendium.pf2e.spell-effects.kZ39XWJA3RBDTnqG";
         } else {
-            idOfEffect = "Compendium.pf2e.spell-effects.Item.beReeFroAx24hj83";
+            idOfEffect = "Compendium.pf2e.spell-effects.beReeFroAx24hj83";
         }
     } else {
         if (degreeOfSuccess === 3) {
-            idOfEffect = "Compendium.pf2e.spell-effects.Item.BKam63zT98iWMJH7";
+            idOfEffect = "Compendium.pf2e.spell-effects.BKam63zT98iWMJH7";
         } else if (degreeOfSuccess === 2) {
-            idOfEffect = "Compendium.pf2e.spell-effects.Item.Chol7ExtoN2T36mP";
+            idOfEffect = "Compendium.pf2e.spell-effects.Chol7ExtoN2T36mP";
         } else {
-            idOfEffect = "Compendium.pf2e.spell-effects.Item.DLwTvjjnqs2sNGuG";
+            idOfEffect = "Compendium.pf2e.spell-effects.DLwTvjjnqs2sNGuG";
         }
     }
 

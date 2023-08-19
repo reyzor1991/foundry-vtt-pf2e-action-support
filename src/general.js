@@ -3,38 +3,38 @@ const selfEffectMap = {
     "daydream-trance": effect_daydream_trance,
     "entitys-resurgence": effect_entitys_resurgence,
     "follow-the-expert": effect_follow_the_expert,
-    "call-upon-the-brightness": "Compendium.pf2e.feat-effects.Item.xPg5wzzKNxJy18rU",
-    "clue-in": "Compendium.pf2e.feat-effects.Item.vhSYlQiAQMLuXqoc",
-    "bullet-dancer-stance": "Compendium.pf2e.feat-effects.Item.6ctQFQfSZ6o1uyyZ",
-    "change-shape-beastkin": "Compendium.pf2e.feat-effects.Item.qIOEe4kUN7FOBifb",
+    "call-upon-the-brightness": "Compendium.pf2e.feat-effects.xPg5wzzKNxJy18rU",
+    "clue-in": "Compendium.pf2e.feat-effects.vhSYlQiAQMLuXqoc",
+    "bullet-dancer-stance": "Compendium.pf2e.feat-effects.6ctQFQfSZ6o1uyyZ",
+    "change-shape-beastkin": "Compendium.pf2e.feat-effects.qIOEe4kUN7FOBifb",
     //feat
-    "impassable-wall-stance": "Compendium.pf2e.feat-effects.Item.zzC2qZwEKf4Ja3xD",
-    "ricochet-stance-fighter": "Compendium.pf2e.feat-effects.Item.Unfl4QQURWaX2zfd",
-    "mobile-shot-stance": "Compendium.pf2e.feat-effects.Item.NWOmJ6WJFheaGhho",
-    "disruptive-stance": "Compendium.pf2e.feat-effects.Item.qBR3kqGCeKp3T2Be",
-    "lunging-stance": "Compendium.pf2e.feat-effects.Item.W8CKuADdbODpBh6O",
-    "graceful-poise": "Compendium.pf2e.feat-effects.Item.mark4VEQoynfYNBF",
-    "twinned-defense-fighter": "Compendium.pf2e.feat-effects.Item.3eHMqVx30JGiJqtM",
-    "fanes-fourberie": "Compendium.pf2e.feat-effects.Item.GvqB4M8LrHpzYEvl",
-    "ricochet-stance-rogue": "Compendium.pf2e.feat-effects.Item.Unfl4QQURWaX2zfd",
-    "buckler-dance": "Compendium.pf2e.feat-effects.Item.PS17dsXkTdQmOv7w",
-    "twinned-defense-swashbuckler": "Compendium.pf2e.feat-effects.Item.3eHMqVx30JGiJqtM",
-    "bone-spikes": "Compendium.pf2e.feat-effects.Item.ZsO5juyylVoxUkXh",
-    "avenge-in-glory": "Compendium.pf2e.feat-effects.Item.JQUoBlZKT5N5zO5k",
-    "cat-nap": "Compendium.pf2e.feat-effects.Item.l3S9i2UWGhSO58YX",
-    "radiant-circuitry": "Compendium.pf2e.feat-effects.Item.263Cd5JMj8Lgc9yz",
-    "saoc-astrology": "Compendium.pf2e.feat-effects.Item.6ACbQIpmmemxmoBJ",
-    "elementalist-dedication": "Compendium.pf2e.feat-effects.Item.O8qithYQCv3e7DUQ",
-    "emblazon-armament": "Compendium.pf2e.feat-effects.Item.U1MpMtRnFqEDBJwd",
-    "eye-of-the-arclords": "Compendium.pf2e.feat-effects.Item.5IGz4iheaiUWm5KR",
-    "harrower-dedication": "Compendium.pf2e.feat-effects.Item.rp6hA52dWVwtuu5F",
-    "marshal-dedication": "Compendium.pf2e.feat-effects.Item.Ru4BNABCZ0hUbX7S",
-    "monster-warden": "Compendium.pf2e.feat-effects.Item.nlaxROgSSLVHZ1hx",
-    "ursine-avenger-form": "Compendium.pf2e.feat-effects.Item.m5xWMaDfV0PiTE6u",
-    "consolidated-overlay-panopticon": "Compendium.pf2e.feat-effects.Item.qSKVcw6brzrvfhUM",
+    "impassable-wall-stance": "Compendium.pf2e.feat-effects.zzC2qZwEKf4Ja3xD",
+    "ricochet-stance-fighter": "Compendium.pf2e.feat-effects.Unfl4QQURWaX2zfd",
+    "mobile-shot-stance": "Compendium.pf2e.feat-effects.NWOmJ6WJFheaGhho",
+    "disruptive-stance": "Compendium.pf2e.feat-effects.qBR3kqGCeKp3T2Be",
+    "lunging-stance": "Compendium.pf2e.feat-effects.W8CKuADdbODpBh6O",
+    "graceful-poise": "Compendium.pf2e.feat-effects.mark4VEQoynfYNBF",
+    "twinned-defense-fighter": "Compendium.pf2e.feat-effects.3eHMqVx30JGiJqtM",
+    "fanes-fourberie": "Compendium.pf2e.feat-effects.GvqB4M8LrHpzYEvl",
+    "ricochet-stance-rogue": "Compendium.pf2e.feat-effects.Unfl4QQURWaX2zfd",
+    "buckler-dance": "Compendium.pf2e.feat-effects.PS17dsXkTdQmOv7w",
+    "twinned-defense-swashbuckler": "Compendium.pf2e.feat-effects.3eHMqVx30JGiJqtM",
+    "bone-spikes": "Compendium.pf2e.feat-effects.ZsO5juyylVoxUkXh",
+    "avenge-in-glory": "Compendium.pf2e.feat-effects.JQUoBlZKT5N5zO5k",
+    "cat-nap": "Compendium.pf2e.feat-effects.l3S9i2UWGhSO58YX",
+    "radiant-circuitry": "Compendium.pf2e.feat-effects.263Cd5JMj8Lgc9yz",
+    "saoc-astrology": "Compendium.pf2e.feat-effects.6ACbQIpmmemxmoBJ",
+    "elementalist-dedication": "Compendium.pf2e.feat-effects.O8qithYQCv3e7DUQ",
+    "emblazon-armament": "Compendium.pf2e.feat-effects.U1MpMtRnFqEDBJwd",
+    "eye-of-the-arclords": "Compendium.pf2e.feat-effects.5IGz4iheaiUWm5KR",
+    "harrower-dedication": "Compendium.pf2e.feat-effects.rp6hA52dWVwtuu5F",
+    "marshal-dedication": "Compendium.pf2e.feat-effects.Ru4BNABCZ0hUbX7S",
+    "monster-warden": "Compendium.pf2e.feat-effects.nlaxROgSSLVHZ1hx",
+    "ursine-avenger-form": "Compendium.pf2e.feat-effects.m5xWMaDfV0PiTE6u",
+    "consolidated-overlay-panopticon": "Compendium.pf2e.feat-effects.qSKVcw6brzrvfhUM",
     //spell
-    "false-life": "Compendium.pf2e.spell-effects.Item.PANUWN5xXC20WBg2",
-    "unusual-anatomy": "Compendium.pf2e.spell-effects.Item.LMzFBnOEPzDGzHg4",
+    "false-life": "Compendium.pf2e.spell-effects.PANUWN5xXC20WBg2",
+    "unusual-anatomy": "Compendium.pf2e.spell-effects.LMzFBnOEPzDGzHg4",
 }
 
 function handleTreatWounds(message) {
@@ -57,11 +57,11 @@ function handleTreatDisease(message) {
     ) {
         const [first] = game.user.targets;
         if (criticalSuccessMessageOutcome(message)) {
-            setEffectToActor(first, "Compendium.pf2e.equipment-effects.Item.id20P4pj7zDKeLmy")
+            setEffectToActor(first, "Compendium.pf2e.equipment-effects.id20P4pj7zDKeLmy")
         } else if (successMessageOutcome(message)) {
-            setEffectToActor(first, "Compendium.pf2e.equipment-effects.Item.Ee2xfKX1yyqGIDZj")
+            setEffectToActor(first, "Compendium.pf2e.equipment-effects.Ee2xfKX1yyqGIDZj")
         } else if (criticalFailureMessageOutcome(message)) {
-            setEffectToActor(first, "Compendium.pf2e.equipment-effects.Item.5oYKYXAexr0vhx84")
+            setEffectToActor(first, "Compendium.pf2e.equipment-effects.5oYKYXAexr0vhx84")
         }
     }
 }
@@ -69,7 +69,7 @@ function handleTreatDisease(message) {
 function overdrive(message) {
     if (hasOption(message, "action:overdrive")) {
         if (anySuccessMessageOutcome(message)) {
-            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.1XlJ9xLzL19GHoOL")
+            setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.1XlJ9xLzL19GHoOL")
         } else if (criticalFailureMessageOutcome(message)) {
             applyDamage(message.actor, message.token, `${message.actor.level}[fire]`)
         }
@@ -132,7 +132,7 @@ function saveLayOnHands(message) {
         && hasOption(message, "self:trait:undead")
         && anyFailureMessageOutcome(message)
     ) {
-        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.JhihziXQuoteftdd")
+        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.JhihziXQuoteftdd")
     }
 }
 
@@ -148,7 +148,7 @@ function thunderStone(message) {
         || hasOption(message, "item:slug:thunderstone-major")
     ) {
         if (anyFailureMessageOutcome(message)) {
-            setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
+            setEffectToActor(message.actor, "Compendium.pf2e.other-effects.W2OF7VeLHqc7p3DO")
         }
     }
 }
@@ -205,7 +205,7 @@ function shatterStone(message) {
         || hasOption(message, "item:slug:shatterstone-greater")
     ) {
         if (anyFailureMessageOutcome(message)) {
-            setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
+            setEffectToActor(message.actor, "Compendium.pf2e.other-effects.W2OF7VeLHqc7p3DO")
         }
     }
 }
@@ -231,7 +231,7 @@ function saveBombs(message) {
             || eqMessageDCLabel(message, "Thunderstone (Major) DC")
         ) {
             if (anyFailureMessageOutcome(message)) {
-                setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
+                setEffectToActor(message.actor, "Compendium.pf2e.other-effects.W2OF7VeLHqc7p3DO")
             }
         } else if (eqMessageDCLabel(message, "Skunk Bomb (Lesser) DC")
             || eqMessageDCLabel(message, "Skunk Bomb (Moderate) DC")
@@ -250,7 +250,7 @@ function saveBombs(message) {
             || eqMessageDCLabel(message, "Shatterstone (Greater) DC")
         ) {
             if (anyFailureMessageOutcome(message)) {
-                setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.W2OF7VeLHqc7p3DO")
+                setEffectToActor(message.actor, "Compendium.pf2e.other-effects.W2OF7VeLHqc7p3DO")
             }
         } else if (eqMessageDCLabel(message, "Trueshape Bomb DC")
             || eqMessageDCLabel(message, "Trueshape Bomb (Greater) DC")
@@ -264,23 +264,23 @@ function saveBombs(message) {
 
 function saveAffliction(message) {
     if (eqMessageDCLabel(message, 'Addictive Exhaustion DC')) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.aODJbcFmhQcbllba")
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.aODJbcFmhQcbllba")
     } else if (eqMessageDCLabel(message, "Ghoul Fever DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.FwevQUDFd1uTU8cR")
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.FwevQUDFd1uTU8cR")
     } else if (eqMessageDCLabel(message, "Alcohol DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.N12lBsMmAKvO3mSh")
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.N12lBsMmAKvO3mSh")
     } else if (eqMessageDCLabel(message, "Dream Spider Venom DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.PxVQlg6YFmuV4INb")
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.PxVQlg6YFmuV4INb")
     } else if (eqMessageDCLabel(message, "Tendriculos DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.llqImM8DAHdb4Pax")
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.llqImM8DAHdb4Pax")
     } else if (eqMessageDCLabel(message, "Serpentfolk Venom DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.QueFYtT56FG0ZDN5")
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.QueFYtT56FG0ZDN5")
     }
 }
 
 function saveBane(message) {
     if (hasOption(message, 'item:slug:bane') && anySuccessMessageOutcome(message)) {
-        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.kLpCaiCZjenXCebV")
+        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.kLpCaiCZjenXCebV")
         deleteEffectFromActor(message.actor, "spell-effect-bane")
     }
 }
@@ -305,20 +305,20 @@ function scout(message, _obj) {
     if (_obj.slug === "scout") {
         const sc = actorFeat(message.actor, "incredible-scout");
         if (sc) {
-            setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.la8rWwUtReElgTS6")
+            setEffectToActor(message.actor, "Compendium.pf2e.other-effects.la8rWwUtReElgTS6")
         } else {
-            setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.EMqGwUi3VMhCjTlF")
+            setEffectToActor(message.actor, "Compendium.pf2e.other-effects.EMqGwUi3VMhCjTlF")
         }
 
         game.user.targets.forEach(tt => {
-            setEffectToActor(tt.actor, sc ? "Compendium.pf2e.other-effects.Item.la8rWwUtReElgTS6" : "Compendium.pf2e.other-effects.Item.EMqGwUi3VMhCjTlF")
+            setEffectToActor(tt.actor, sc ? "Compendium.pf2e.other-effects.la8rWwUtReElgTS6" : "Compendium.pf2e.other-effects.EMqGwUi3VMhCjTlF")
         })
     }
 }
 
 function acceptEcho(message, _obj) {
     if (_obj.slug === "accept-echo") {
-        setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.2ca1ZuqQ7VkunAh3")
+        setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.2ca1ZuqQ7VkunAh3")
     }
 }
 
@@ -343,7 +343,7 @@ function deviseStratagem(message, _obj) {
             } else {
                 game.user.targets.forEach(tt => {
                     if (!hasEffect(tt.actor, 'effect-didactic-strike')) {
-                        setEffectToActor(tt.actor, "Compendium.pf2e.feat-effects.Item.72THfaqak0F4XnON")
+                        setEffectToActor(tt.actor, "Compendium.pf2e.feat-effects.72THfaqak0F4XnON")
                     }
                 });
             }
@@ -356,7 +356,7 @@ function aid(message, _obj) {
         if (game.user.targets.size != 1) {
             ui.notifications.info(`${message.actor.name} forgot to choose 1 ally`);
         } else  if (!hasEffect(game.user.targets.first().actor, 'effect-aid')) {
-            setEffectToActor(game.user.targets.first().actor, "Compendium.pf2e.other-effects.Item.AHMUpMbaVkZ5A1KX")
+            setEffectToActor(game.user.targets.first().actor, "Compendium.pf2e.other-effects.AHMUpMbaVkZ5A1KX")
         }
     }
 }
@@ -371,7 +371,7 @@ function handleActions(message, _obj) {
 
 function rage(message, _obj) {
     if (_obj.slug === "rage" && !hasCondition(message.actor, "fatigued") && !hasEffect(message.actor, "effect-rage")) {
-        setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.Item.z3uyCMBddrPK5umr")
+        setEffectToActor(message.actor, "Compendium.pf2e.feat-effects.z3uyCMBddrPK5umr")
     }
 }
 
@@ -393,7 +393,7 @@ function pistolTwirl(message, _obj) {
 
         if (w) {
             if (w.ammo) {
-                setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.VQlbBXSi4o6xZ9XM")
+                setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.VQlbBXSi4o6xZ9XM")
             } else {
                 ui.notifications.info(`${message.actor.name} not wielding a loaded one-handed ranged weapon.`);
             }
@@ -407,7 +407,7 @@ function rootMagic(message, _obj) {
     if (_obj.slug === "root-magic") {
         setEffectToActorOrTarget(
             message,
-            "Compendium.pf2e.feat-effects.Item.jO7wMhnjT7yoAtQg",
+            "Compendium.pf2e.feat-effects.jO7wMhnjT7yoAtQg",
             "Root Magic",
             500,
             true
@@ -417,7 +417,7 @@ function rootMagic(message, _obj) {
 
 function anointAlly(message, _obj) {
     if  (_obj.slug === "anoint-ally") {
-        setEffectToActorOrTarget(message, "Compendium.pf2e.feat-effects.Item.nnF7RSVlC6swbSw8", "Anoint Ally", 5, true)
+        setEffectToActorOrTarget(message, "Compendium.pf2e.feat-effects.nnF7RSVlC6swbSw8", "Anoint Ally", 5, true)
     }
 }
 
@@ -425,7 +425,7 @@ function dragonslayerOathLiberator(message, _obj) {
     if (_obj.slug === "dragonslayer-oath-liberator") {
         setEffectToActorOrTarget(
             message,
-            "Compendium.pf2e.feat-effects.Item.iyONT1qgeRgoYHsZ",
+            "Compendium.pf2e.feat-effects.iyONT1qgeRgoYHsZ",
             "Dragonslayer Oath (Liberator)",
             500,
             true
@@ -437,7 +437,7 @@ function esotericOathLiberator(message, _obj) {
     if (_obj.slug === "esoteric-oath-liberator") {
         setEffectToActorOrTarget(
             message,
-            "Compendium.pf2e.feat-effects.Item.tAsFXMzNkpj964X4",
+            "Compendium.pf2e.feat-effects.tAsFXMzNkpj964X4",
             "Esoteric Oath (Liberator)",
             500,
             true
@@ -449,7 +449,7 @@ function fiendsbaneOathLiberator(message, _obj) {
     if (_obj.slug === "fiendsbane-oath-liberator") {
         setEffectToActorOrTarget(
             message,
-            "Compendium.pf2e.feat-effects.Item.9dCt0asv0kt7DR4q",
+            "Compendium.pf2e.feat-effects.9dCt0asv0kt7DR4q",
             "Fiendsbane Oath (Liberator)",
             500,
             true
@@ -461,7 +461,7 @@ function shiningOathLiberator(message, _obj) {
     if (_obj.slug === "shining-oath-liberator") {
         setEffectToActorOrTarget(
             message,
-            "Compendium.pf2e.feat-effects.Item.ZnKnOPPq3cG54PlG",
+            "Compendium.pf2e.feat-effects.ZnKnOPPq3cG54PlG",
             "Shining Oath (Liberator)",
             500,
             true
@@ -494,13 +494,13 @@ function guidance(message, _obj) {
 
 function vitalBeacon(message, _obj) {
     if  (_obj.slug === "vital-beacon" && !hasEffect(message.actor, "spell-effect-vital-beacon")) {
-        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.WWtSEJGwKY4bQpUn", message?.item?.level)
+        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.WWtSEJGwKY4bQpUn", message?.item?.level)
     }
 }
 
 function shieldSpell(message, _obj) {
     if  (_obj.slug === "shield" && !hasEffect(message.actor, "effect-shield-immunity")) {
-        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.Jemq5UknGdMO7b73", message?.item?.level)
+        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Jemq5UknGdMO7b73", message?.item?.level)
     }
 }
 
@@ -533,35 +533,35 @@ function blur(message, _obj) {
 
 function deathWard(message, _obj) {
     if  (_obj.slug === "death-ward") {
-        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.s6CwkSsMDGfUmotn", "Blur", getSpellRange(message.actor, _obj))
+        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.s6CwkSsMDGfUmotn", "Blur", getSpellRange(message.actor, _obj))
     }
 }
 
 function animalFeature(message, _obj) {
     if  (_obj.slug === "animal-feature") {
         if (message?.item?.level >= 4) {
-            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.A61YUZctL5D1e351", message?.item?.level)
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.A61YUZctL5D1e351", message?.item?.level)
         } else {
-            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.pzPqJbOvHdgtIzH1", message?.item?.level)
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.pzPqJbOvHdgtIzH1", message?.item?.level)
         }
     }
 }
 
 function dimensionDoor(message, _obj) {
     if  (_obj.slug === "dimension-door" && message?.item?.level >= 5) {
-        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.YUY4TqQQrxs6qLKT", message?.item?.level)
+        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.YUY4TqQQrxs6qLKT", message?.item?.level)
     }
 }
 
 function haste(message, _obj) {
     if  (_obj.slug === "haste") {
         if (game.user.targets.size === 0) {
-            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.U6JZ3NYNtxjXeVdE", message?.item?.level)
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.U6JZ3NYNtxjXeVdE", message?.item?.level)
         } else if (game.user.targets.size === 1 || (game.user.targets.size <= 6 && message?.item?.level >= 7) ) {
             const spellRange = getSpellRange(message.actor, _obj);
             game.user.targets.forEach(tt => {
                 if (distanceIsCorrect(message.token, tt, spellRange)) {
-                    setEffectToActor(tt.actor, "Compendium.pf2e-action-support.action-support.Item.U6JZ3NYNtxjXeVdE", message?.item?.level)
+                    setEffectToActor(tt.actor, "Compendium.pf2e-action-support.action-support.U6JZ3NYNtxjXeVdE", message?.item?.level)
                 } else {
                     ui.notifications.info(`${message.actor.name} chose target that not in range for Haste spell`);
                 }
@@ -575,12 +575,12 @@ function haste(message, _obj) {
 function resistEnergy(message, _obj) {
     if  (_obj.slug === "resist-energy") {
         if (game.user.targets.size === 0) {
-            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.con2Hzt47JjpuUej", message?.item?.level)
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.con2Hzt47JjpuUej", message?.item?.level)
         } else if (game.user.targets.size === 1 || (game.user.targets.size === 2 && message?.item?.level >= 4) || (game.user.targets.size <= 5 && message?.item?.level >= 7) ) {
             const spellRange = getSpellRange(message.actor, _obj);
             game.user.targets.forEach(tt => {
                 if (distanceIsCorrect(message.token, tt, spellRange)) {
-                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.con2Hzt47JjpuUej", message?.item?.level)
+                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.con2Hzt47JjpuUej", message?.item?.level)
                 } else {
                     ui.notifications.info(`${message.actor.name} chose target that not in range for Life Boost spell`);
                 }
@@ -595,7 +595,7 @@ function anticipatePeril(message, _obj) {
     if  (_obj.slug === "anticipate-peril") {
         game.user.targets.forEach(tt => {
             if (!hasEffect(tt.actor, 'spell-effect-anticipate-peril')) {
-                setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.4ag0OHKfjROmR4Pm", message?.item?.level)
+                setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.4ag0OHKfjROmR4Pm", message?.item?.level)
             }
         });
     }
@@ -605,7 +605,7 @@ function arcaneCountermeasure(message, _obj) {
     if  (_obj.slug === "arcane-countermeasure") {
         game.user.targets.forEach(tt => {
             if (!hasEffect(tt.actor, 'spell-effect-arcane-countermeasure')) {
-                setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.14m4s0FeRSqRlHwL")
+                setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.14m4s0FeRSqRlHwL")
             }
         });
     }
@@ -615,7 +615,7 @@ function augmentSummoning(message, _obj) {
     if  (_obj.slug === "augment-summoning") {
         game.user.targets.forEach(tt => {
             if (!hasEffect(tt.actor, 'spell-effect-augment-summoning')) {
-                setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.UtIOWubq7akdHMOh")
+                setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.UtIOWubq7akdHMOh")
             }
         });
     }
@@ -629,7 +629,7 @@ async function rollDCBane(combatants,dc,item, origin) {
 
 async function bane(message, _obj) {
     if (_obj.slug === "bane") {
-        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.FcUe8TT7bhqlURIf").then(()=> {
+        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.FcUe8TT7bhqlURIf").then(()=> {
             if (_obj.spellcasting.statistic.dc.value) {
                 const dc = _obj.spellcasting.statistic.dc.value;
                 const baneLevel = hasEffect(message.actor, "effect-aura-bane")?.system?.badge?.value ?? 1;
@@ -648,13 +648,13 @@ async function bane(message, _obj) {
 
 async function bless(message, _obj) {
     if (_obj.slug === "bless") {
-        const aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.BqkDxiAi0q6Uaar4")
+        const aura = await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.BqkDxiAi0q6Uaar4")
         if (aura) {
-            setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.BqkDxiAi0q6Uaar4")
+            setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.BqkDxiAi0q6Uaar4")
         } else {
             game.user.targets.forEach(tt => {
                 if (!hasEffect(tt.actor, 'spell-effect-bless')) {
-                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.Gqy7K6FnbLtwGpud")
+                    setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Gqy7K6FnbLtwGpud")
                 }
             });
         }
@@ -665,10 +665,10 @@ function darkvision(message, _obj) {
     if (_obj.slug === "darkvision") {
         if (message?.item?.level >= 5) {
             if (game.user.targets.size === 0) {
-                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.inNfTmtWpsxeGBI9", message?.item?.level)
+                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.inNfTmtWpsxeGBI9", message?.item?.level)
             } else if (game.user.targets.size === 1) {
                 if (distanceIsCorrect(message.token, game.user.targets.first(), getSpellRange(message.actor, _obj))) {
-                    setEffectToActor(game.user.targets.first().actor, "Compendium.pf2e.spell-effects.Item.inNfTmtWpsxeGBI9", message?.item?.level)
+                    setEffectToActor(game.user.targets.first().actor, "Compendium.pf2e.spell-effects.inNfTmtWpsxeGBI9", message?.item?.level)
                 } else {
                     ui.notifications.info(`${message.actor.name} chose target that not in touch range for Darkvision spell`);
                 }
@@ -677,10 +677,10 @@ function darkvision(message, _obj) {
             }
         } else if (message?.item?.level >= 3) {
             if (game.user.targets.size === 0) {
-                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.IXS15IQXYCZ8vsmX", message?.item?.level)
+                setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.IXS15IQXYCZ8vsmX", message?.item?.level)
             } else if (game.user.targets.size === 1) {
                 if (distanceIsCorrect(message.token, game.user.targets.first(), getSpellRange(message.actor, _obj))) {
-                    setEffectToActor(game.user.targets.first().actor, "Compendium.pf2e.spell-effects.Item.IXS15IQXYCZ8vsmX", message?.item?.level)
+                    setEffectToActor(game.user.targets.first().actor, "Compendium.pf2e.spell-effects.IXS15IQXYCZ8vsmX", message?.item?.level)
                 } else {
                     ui.notifications.info(`${message.actor.name} chose target that not in touch range for Darkvision spell`);
                 }
@@ -688,7 +688,7 @@ function darkvision(message, _obj) {
                 ui.notifications.info(`${message.actor.name} chose incorrect count of targets for Darkvision spell`);
             }
         } else {
-            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.IXS15IQXYCZ8vsmX", message?.item?.level)
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.IXS15IQXYCZ8vsmX", message?.item?.level)
         }
     }
 }
@@ -696,9 +696,9 @@ function darkvision(message, _obj) {
 function longstrider(message, _obj) {
     if (_obj.slug === "longstrider") {
         if (message?.item?.level >= 2) {
-            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.7vIUF5zbvHzVcJA0", message?.item?.level)
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.7vIUF5zbvHzVcJA0", message?.item?.level)
         } else {
-            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.PQHP7Oph3BQX1GhF", message?.item?.level)
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.PQHP7Oph3BQX1GhF", message?.item?.level)
         }
     }
 }
@@ -706,9 +706,9 @@ function longstrider(message, _obj) {
 function enlarge(message, _obj) {
     if (_obj.slug === "enlarge") {
         if (message?.item?.level < 4) {
-            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.sPCWrhUHqlbGhYSD", "Enlarge", getSpellRange(message.actor, _obj))
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.sPCWrhUHqlbGhYSD", "Enlarge", getSpellRange(message.actor, _obj))
         } else if (message?.item?.level < 6) {
-            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.41WThj17MZBXTO2X", "Enlarge", getSpellRange(message.actor, _obj))
+            setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.41WThj17MZBXTO2X", "Enlarge", getSpellRange(message.actor, _obj))
         }
     }
 }
@@ -734,54 +734,54 @@ function handleSpells(message, _obj) {
     enlarge(message, _obj);
 
     if  (_obj.slug === "fly") {
-        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.MuRBCiZn5IKeaoxi", "Fly", getSpellRange(message.actor, _obj))
+        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.MuRBCiZn5IKeaoxi", "Fly", getSpellRange(message.actor, _obj))
     } else if  (_obj.slug === "protection") {
-        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.RawLEPwyT5CtCZ4D", "Protection", getSpellRange(message.actor, _obj))
+        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.RawLEPwyT5CtCZ4D", "Protection", getSpellRange(message.actor, _obj))
     } else if  (_obj.slug === "stoneskin") {
-        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.JHpYudY14g0H4VWU", "Stoneskin", getSpellRange(message.actor, _obj))
+        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.JHpYudY14g0H4VWU", "Stoneskin", getSpellRange(message.actor, _obj))
     } else if  (_obj.slug === "energy-aegis") {
-        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.4Lo2qb5PmavSsLNk", "Energy Aegis", getSpellRange(message.actor, _obj))
+        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.4Lo2qb5PmavSsLNk", "Energy Aegis", getSpellRange(message.actor, _obj))
     } else if  (_obj.slug === "regenerate") {
-        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.dXq7z633ve4E0nlX", "Regenerate", getSpellRange(message.actor, _obj))
+        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.dXq7z633ve4E0nlX", "Regenerate", getSpellRange(message.actor, _obj))
     } else if  (_obj.slug === "ant-haul") {
-        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.5yCL7InrJDHpaQjz", "Ant Haul", getSpellRange(message.actor, _obj))
+        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.5yCL7InrJDHpaQjz", "Ant Haul", getSpellRange(message.actor, _obj))
     } else if  (_obj.slug === "heroism") {
-        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.l9HRQggofFGIxEse", "Heroism", getSpellRange(message.actor, _obj))
+        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.l9HRQggofFGIxEse", "Heroism", getSpellRange(message.actor, _obj))
     } else if  (_obj.slug === "soothe") {
-        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.nkk4O5fyzrC0057i", "Soothe", getSpellRange(message.actor, _obj))
+        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.nkk4O5fyzrC0057i", "Soothe", getSpellRange(message.actor, _obj))
     } else if  (_obj.slug === "life-boost") {
-        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.NQZ88IoKeMBsfjp7", "Life Boost", getSpellRange(message.actor, _obj))
+        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.NQZ88IoKeMBsfjp7", "Life Boost", getSpellRange(message.actor, _obj))
     } else if  (_obj.slug === "apex-companion") {
-        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.NXzo2kdgVixIZ2T1", "Apex Companion", getSpellRange(message.actor, _obj), true)
+        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.NXzo2kdgVixIZ2T1", "Apex Companion", getSpellRange(message.actor, _obj), true)
     } else if  (_obj.slug === "light") {
-        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.cVVZXNbV0nElVOPZ", "Light", getSpellRange(message.actor, _obj))
+        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.cVVZXNbV0nElVOPZ", "Light", getSpellRange(message.actor, _obj))
     }
 
     if (_obj.slug === "aberrant-form") {
-        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.iOBUgipEjgu7jA5k", message?.item?.level)
+        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.iOBUgipEjgu7jA5k", message?.item?.level)
     } else if  (_obj.slug === "adapt-self") {
-        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.39ZPxVV3WYb54951", message?.item?.level)
+        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.39ZPxVV3WYb54951", message?.item?.level)
     } else if  (_obj.slug === "aerial-form") {
-        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.bgOAblEI21XV8Pg3", message?.item?.level)
+        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.bgOAblEI21XV8Pg3", message?.item?.level)
     } else if  (_obj.slug === "angel-form") {
-        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.3Hd6ZtQYlel5fYIC", message?.item?.level)
+        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.3Hd6ZtQYlel5fYIC", message?.item?.level)
     } else if  (_obj.slug === "animal-form") {
-        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.h68Fr3fht1319txv", message?.item?.level)
+        setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.h68Fr3fht1319txv", message?.item?.level)
     } else if (_obj.slug === "protective-ward") {
-        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.5p3bKvWsJgo83FS1", message?.item?.level);
+        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.5p3bKvWsJgo83FS1", message?.item?.level);
     } else if (_obj.slug === "see-invisibility") {
-        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.T5bk6UH7yuYog1Fp", message?.item?.level)
+        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.T5bk6UH7yuYog1Fp", message?.item?.level)
     } else if (_obj.slug === "mage-armor") {
-        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.qkwb5DD3zmKwvbk0", message?.item?.level)
+        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.qkwb5DD3zmKwvbk0", message?.item?.level)
     } else if (_obj.slug === "mirror-image" && !hasEffect(message.actor, 'spell-effect-mirror-image')) {
-        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.0PO5mFRhh9HxGAtv", message?.item?.level)
+        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.0PO5mFRhh9HxGAtv", message?.item?.level)
     } else if (_obj.slug === "spectral-hand") {
         setEffectToActor(message.actor, effect_spectral_hand, message?.item?.level)
     } else if (_obj.slug === "see-the-unseen") {
         if (message?.item?.level >= 5) {
-            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.ToBOvG7N8cNxa8uX", message?.item?.level)
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.ToBOvG7N8cNxa8uX", message?.item?.level)
         } else {
-            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.T5bk6UH7yuYog1Fp", message?.item?.level)
+            setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.T5bk6UH7yuYog1Fp", message?.item?.level)
         }
     }
 }
