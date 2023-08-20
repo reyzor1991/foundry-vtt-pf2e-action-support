@@ -745,13 +745,13 @@ async function precisionTurn(actor) {
     }
 }
 
-async function combinedDamage(name, primary, secondary, options, map, map2, source=undefined) {
+async function combinedDamage(name, primary, secondary, options, map, map2, additionData={onlyOnePrecision:false}) {
     const damages = [];
     function PD(cm) {
-        if ( cm.user.id === game.userId && cm.isDamageRoll
-            && (hasOption(cm, "macro:first-damage") || hasOption(cm, "macro:second-damage"))
-        ) {
-            damages.push(cm);
+        if ( cm.user.id === game.userId && cm.isDamageRoll) {
+            if (hasOption(cm, "macro:first-damage") || hasOption(cm, "macro:second-damage")) {
+                damages.push(cm);
+            }
             return false;
         }
     }
@@ -800,7 +800,7 @@ async function combinedDamage(name, primary, secondary, options, map, map2, sour
         }
     }
 
-    if (source === "double-slice") {
+    if (additionData.onlyOnePrecision) {
         if (damages[0].rolls[0]._formula.includes('precision') && damages[1].rolls[0]._formula.includes('precision')) {
             //need to delete second precision
             Object.keys(data).forEach(k=>{

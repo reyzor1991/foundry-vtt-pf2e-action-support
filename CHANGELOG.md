@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.21
+
+### New feature
+- Add Paired Shots macro
+
 ## Version 0.2.20
 
 ### Bug Fixes

@@ -1,26 +1,28 @@
-function doubleSliceWeapons(actor) {
+function pairedShotsWeapons(actor) {
     return actor.system.actions
-        .filter( h => h.item?.isMelee && h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1 && !h.item?.system?.traits?.value?.includes("unarmed") );
+        .filter( h => h.item?.isRanged && h.item?.ammo)
+        .filter( h => h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1)
+        .filter( h => h.item?.group === "firearm" || h.item?.otherTags?.has("crossbow"));
 };
 
 
-async function doubleSlice(actor) {
+async function pairedShots(actor) {
     if ( !actor ) { ui.notifications.info("Please select 1 token"); return;}
     if (game.user.targets.size != 1) { ui.notifications.info(`Need to select 1 token as target`);return; }
 
-    if ( !actorFeat(actor, "double-slice" ) ) {
-        ui.notifications.warn(`${actor.name} does not have Double Slice!`);
+    if ( !actorFeat(actor, "paired-shots" ) ) {
+        ui.notifications.warn(`${actor.name} does not have Paired Shots!`);
         return;
     }
 
-    const weapons = doubleSliceWeapons(actor);
+    const weapons = pairedShotsWeapons(actor);
     if (weapons.length != 2) {
         ui.notifications.warn(`${actor.name} needs only 2 one-handed melee weapons can be equipped at a time.'`);
         return;
     }
 
     const { map } = await Dialog.wait({
-        title:"Double Slice",
+        title:"Paired Shots",
         content: `
             <h3>Multiple Attack Penalty</h3>
                 <select id="map">
@@ -55,17 +57,11 @@ async function doubleSlice(actor) {
         secondary = weapons[0];
     }
 
-    if (!secondary.item.system.traits.value.includes("agile")) {
-        if (!actor.rollOptions?.["all"]?.["double-slice-second"]) {
-            actor.toggleRollOption("all", "double-slice-second")
-        }
-    }
-
-    combinedDamage("Double Slice", primary, secondary, ["double-slice-second"], map, map, {onlyOnePrecision:true});
+    combinedDamage("Paired Shots", primary, secondary, ["paired-shots"], map, map, {onlyOnePrecision:true});
 }
 
 Hooks.once("init", () => {
     game.actionsupport = mergeObject(game.actionsupport ?? {}, {
-        "doubleSlice": doubleSlice,
+        "pairedShots": pairedShots,
     })
 });
