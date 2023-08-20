@@ -789,35 +789,9 @@ async function combinedDamage(name, primary, secondary, options, map, map2, addi
         return;
     }
 
-    const damageRolls = damages.map(a=>a.rolls).flat().map(a=>a.terms).flat().map(a=>a.rolls).flat();
-    const data = {};
-
-    for ( const dr of damageRolls ) {
-        if (dr.options.flavor in data) {
-            data[dr.options.flavor].push(dr.head.formula);
-        } else {
-            data[dr.options.flavor] = [dr.head.formula]
-        }
-    }
-
-    if (additionData.onlyOnePrecision) {
-        if (damages[0].rolls[0]._formula.includes('precision') && damages[1].rolls[0]._formula.includes('precision')) {
-            //need to delete second precision
-            Object.keys(data).forEach(k=>{
-                if (data[k][0].includes('precision')) {
-                    const fR = data[k][0].match(/\+ ([0-9]{1,})d(4|6|8|10|12)\[precision\]/);
-                    const sR = data[k][1].match(/\+ ([0-9]{1,})d(4|6|8|10|12)\[precision\]/);
-
-                    if (fR[1]*fR[2] > sR[1]*sR[2]) {
-                        //delete second prec
-                        data[k][1] = data[k][1].replace(sR[0], "");
-                    } else {
-                        data[k][0] = data[k][0].replace(fR[0], "");
-                    }
-                }
-            });
-        }
-    }
+    const data = !additionData.onlyOnePrecision
+        ? createDataDamage(damages.map(a=>a.rolls).flat().map(a=>a.terms).flat().map(a=>a.rolls).flat())
+        : createDataDamageOnlyOnePrecision(damages);
 
     const formulas = [];
     Object.keys(data).forEach(k=>{
@@ -844,3 +818,55 @@ async function combinedDamage(name, primary, secondary, options, map, map2, addi
         speaker: ChatMessage.getSpeaker(),
     });
 };
+
+function createDataDamageOnlyOnePrecision(damages) {
+    if (damages[0].rolls[0]._formula.includes('precision') && damages[1].rolls[0]._formula.includes('precision')) {
+        let fDamages = damages[0].rolls.flat().map(a=>a.terms).flat().map(a=>a.rolls).flat();
+        let sDamages = damages[1].rolls.flat().map(a=>a.terms).flat().map(a=>a.rolls).flat();
+
+        const fR = damages[0].rolls[0]._formula.match(/\+ ([0-9]{1,})d(4|6|8|10|12)\[precision\]/);
+        const sR = damages[1].rolls[0]._formula.match(/\+ ([0-9]{1,})d(4|6|8|10|12)\[precision\]/);
+
+        console.log(damages[0].rolls[0]._formula);
+        console.log(damages[1].rolls[0]._formula);
+
+        if (fR[1]*fR[2] > sR[1]*sR[2]) {
+            //delete from 2
+            sDamages = sDamages.map(obj => {
+                return {
+                    "head": {
+                        "formula": obj.head.formula.replace(sR[0], "")
+                    },
+                    "options": {
+                        "flavor": obj.options.flavor
+                    }
+                };
+            })
+        } else {
+            fDamages = fDamages.map(obj => {
+                return {
+                    "head": {
+                        "formula": obj.head.formula.replace(sR[0], "")
+                    },
+                    "options": {
+                        "flavor": obj.options.flavor
+                    }
+                };
+            })
+        }
+        return createDataDamage(fDamages.concat(sDamages))
+    }
+    return createDataDamage(damages.map(a=>a.rolls).flat().map(a=>a.terms).flat().map(a=>a.rolls).flat());
+}
+
+function createDataDamage(arr) {
+    const data = {}
+    for (const dr of arr) {
+        if (dr.options.flavor in data) {
+            data[dr.options.flavor].push(dr.head.formula);
+        } else {
+            data[dr.options.flavor] = [dr.head.formula]
+        }
+    }
+    return data;
+}
