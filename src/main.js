@@ -73,11 +73,19 @@ Hooks.once("init", () => {
         type: Boolean,
     });
     game.settings.register(moduleName, "useBloodline", {
-        name: "Handle Bloodlines ",
+        name: "Handle Bloodlines",
         hint: "Automates the bloodline effect of the Sorcerer, when Sorcerer cast a spell from their bloodline it let's you choose between using it on yourself or on the target",
         scope: "world",
         config: true,
         default: false,
+        type: Boolean,
+    });
+    game.settings.register(moduleName, "skipRollDialogMacro", {
+        name: "Skip RollDialog for macros",
+        hint: "Skipping RollDialog for macros which used for combined damage",
+        scope: "world",
+        config: true,
+        default: true,
         type: Boolean,
     });
 
@@ -501,7 +509,7 @@ async function applyDamage(actor, token, formula) {
     }
 }
 
-Hooks.on('createChatMessage', async (message, user, _options, userId)=>{
+Hooks.on('preCreateChatMessage', async (message, user, _options, userId)=>{
     if (game?.combats?.active || game.settings.get(moduleName, "ignoreEncounterCheck")) {
         handleEncounterMessage(message);
     }
@@ -764,7 +772,9 @@ async function combinedDamage(name, primary, secondary, options, map, map2, addi
     Hooks.on('preCreateChatMessage', PD);
 
     const altUsage = null;
-    const ev = new KeyboardEvent('keydown', {'shiftKey': true});
+    const ev = game.settings.get(moduleName, "skipRollDialogMacro")
+        ? new KeyboardEvent('keydown', {'shiftKey': game.user.flags.pf2e.settings.showRollDialogs})
+        : event;
     const primaryMessage = await primary.variants[map].roll({ event:ev, altUsage });
     const primaryDegreeOfSuccess = primaryMessage.degreeOfSuccess;
     deleteRollEffect(primaryMessage);

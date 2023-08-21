@@ -35,6 +35,7 @@ class HomebrewRequirement {
 class HomebrewTrigger {
   constructor() {
     this.slug = ""
+    this.type = ""
     this.battle = false
     this.trigger = Trigger.None
   }
@@ -67,7 +68,7 @@ class PF2eActionSupportHomebrewSettings extends FormApplication {
 
     constructor() {
         super();
-        const _e = game.settings.get("pf2e-action-support", "homebrew");
+        const _e = game.settings.get(moduleName, "homebrew");
         if (_e) {
             this.homebrews = _e.map(a=>Homebrew.fromObj(a));
         }
@@ -103,7 +104,7 @@ class PF2eActionSupportHomebrewSettings extends FormApplication {
                 effect: this.homebrews[i].effect,
                 target: this.homebrews[i].target,
                 triggers: this.homebrews[i].triggers.map(a=>{
-                    return {"trigger":a.trigger,"battle":a.battle,"slug":a.slug};
+                    return {"trigger":a.trigger,"battle":a.battle,"slug":a.slug,"type":a?.type?.trim()};
                 }),
                 requirements: this.homebrews[i].requirements.map(a=>{
                     return {"requirement":a.requirement};
@@ -205,11 +206,11 @@ class PF2eActionSupportHomebrewSettings extends FormApplication {
     }
 }
 
-Hooks.on('createChatMessage',async (message, user, _options, userId)=>{
-    if (game.settings.get("pf2e-action-support", "useHomebrew")) {
+Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
+    if (game.settings.get(moduleName, "useHomebrew")) {
         const _obj = message?.flags?.pf2e?.origin ? (await fromUuid(message?.flags?.pf2e?.origin?.uuid)) : undefined;
 
-        game.settings.get("pf2e-action-support", "homebrew")
+        game.settings.get(moduleName, "homebrew")
             .filter(a=>a.triggers.length > 0 && a.effect.length > 0 && a.target != "None")
             .forEach(hb => {
                 handleHomebrewMessages(hb, message, _obj);
@@ -225,6 +226,7 @@ async function handleHomebrewMessages(hb, message, _obj=undefined) {
             (t.trigger === "EqualsSlug" && _obj?.slug === t.slug)
             || (t.trigger === "HasOption" && hasOption(message, t.slug))
         ) {
+            if (t.type && !messageType(message, t.type)){return;}
             handleTarget(hb.target, hb.effect, message, _obj)
         }
     })

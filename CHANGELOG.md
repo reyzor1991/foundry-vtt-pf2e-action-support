@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.2.24
+
+### New feature
+- Add message type to homebrew trigger
+- Add setting option to always skip DialogRoll for macros 
+
 ## Version 0.2.23
 
 ### New feature

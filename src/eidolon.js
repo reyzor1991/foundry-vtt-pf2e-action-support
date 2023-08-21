@@ -38,6 +38,7 @@ async function setSummonerHP(actor) {
         "system.attributes.hp.value": actor.system.attributes.hp.value,
         "system.attributes.hp.temp": actor.system.attributes.hp.temp,
     }, { "noHook": true })
+    ui.notifications.info(`Summoner and Eidolon were linked`);
 };
 
 Hooks.on("preCreateItem", (item, data) => {
