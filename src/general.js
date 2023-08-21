@@ -35,7 +35,19 @@ const selfEffectMap = {
     //spell
     "false-life": "Compendium.pf2e.spell-effects.Item.PANUWN5xXC20WBg2",
     "unusual-anatomy": "Compendium.pf2e.spell-effects.Item.LMzFBnOEPzDGzHg4",
-}
+};
+const elixirEffectMap = {
+    "eagle-eye-elixir-lesser": "Compendium.pf2e.equipment-effects.Item.VCypzSu659eC6jNi",
+    "eagle-eye-elixir-major": "Compendium.pf2e.equipment-effects.Item.wyLEew86nhNUXASu",
+    "eagle-eye-elixir-moderate": "Compendium.pf2e.equipment-effects.Item.Wa4317cqU4lJ8vAQ",
+    "eagle-eye-elixir-moderate": "Compendium.pf2e.equipment-effects.Item.Wa4317cqU4lJ8vAQ",
+
+    "elixir-of-life-minor": "Compendium.pf2e.equipment-effects.Item.lPRuIRbu0rHBkoKY",
+    "elixir-of-life-lesser": "Compendium.pf2e.equipment-effects.Item.EpB7yJPEuG6ez4z3",
+    "elixir-of-life-moderate": "Compendium.pf2e.equipment-effects.Item.Yxssrnh9UZJAM0V7",
+    "elixir-of-life-greater": "Compendium.pf2e.equipment-effects.Item.Z9oPh462q82IYIZ6",
+    "elixir-of-life-major": "Compendium.pf2e.equipment-effects.Item.PpLxndUSgzgs6dd0",
+};
 
 function handleTreatWounds(message) {
     if (!game.combat && hasOption(message, "action:treat-wounds") && message?.flavor === message?.flags?.pf2e?.unsafe) {
@@ -789,11 +801,15 @@ function handleSpells(message, _obj) {
 async function handleSelfAssignedEffects(message) {
     if (message?.flags?.pf2e?.origin?.type) {
         if (!messageType(message, undefined) && !messageType(message, "spell-cast")) {return}
-        const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+        const _obj = message.item ?? (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
         if (!_obj) {return}
         const eff = selfEffectMap[_obj.slug]
         if (eff && !hasEffectBySourceId(message.actor, eff)) {
             setEffectToActor(message.actor, eff, message?.item?.level)
+        }
+        const elix = elixirEffectMap[_obj.slug]
+        if (elix) {
+            setEffectToActorOrTarget(message, elix, message?.item?.name, 5000)
         }
         handleActions(message, _obj);
         handleFeats(message, _obj);

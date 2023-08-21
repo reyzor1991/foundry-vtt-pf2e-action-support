@@ -57,7 +57,7 @@ async function doubleSlice(actor) {
 
     if (!secondary.item.system.traits.value.includes("agile")) {
         if (!actor.rollOptions?.["all"]?.["double-slice-second"]) {
-            actor.toggleRollOption("all", "double-slice-second")
+            await actor.toggleRollOption("all", "double-slice-second")
         }
     }
 

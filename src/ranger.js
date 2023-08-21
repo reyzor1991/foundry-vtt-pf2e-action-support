@@ -64,7 +64,7 @@ async function huntedShot(actor) {
     const primary = weapons.find( w => w.item.id === currentWeapon[0] );
     const secondary = weapons.find( w => w.item.id === currentWeapon[0] );
 
-    combinedDamage("Hunted Shot", primary, secondary, [], map, map2);
+    combinedDamage("Hunted Shot", primary, secondary, [], map, map2, {onlyOnePrecision: !!actor.rollOptions?.["all"]?.["first-attack"]});
 }
 
 async function twinTakedown(actor) {

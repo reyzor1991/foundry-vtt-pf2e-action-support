@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.2.23
+
+### New feature
+- Delete Aid Effect when use macro
+- Handling of Eagle Eye Elixir
+- Handling of Elixir of Life
+
 ## Version 0.2.22
 
 ### New feature

@@ -480,17 +480,17 @@ function firstAttack(message) {
         && actorFeat(message.actor, "precision")
     ) {
         const ranger = message.actor.getFlag(moduleName, "ranger");
-        if (ranger && hasEffect(message?.target?.actor, `effect-hunt-prey-${ranger}`)) {
+        if (ranger && hasEffect(message?.target?.actor, `effect-hunt-prey-${ranger}`) && message.actor.rollOptions?.["all"]?.["first-attack"]) {
             message.actor.toggleRollOption("all", "first-attack")
-        } else if (hasEffect(message?.target?.actor, `effect-hunt-prey-${message.actor.id}`)) {
+        } else if (hasEffect(message?.target?.actor, `effect-hunt-prey-${message.actor.id}`) && message.actor.rollOptions?.["all"]?.["first-attack"]) {
             message.actor.toggleRollOption("all", "first-attack")
         }
     }
 }
 
-function gravityWeapon(message) {
+async function gravityWeapon(message) {
     if (hasOption(message, "gravity-weapon") && !hasOption(message, "item:category:unarmed")) {
-        message.actor.toggleRollOption("damage-roll", "gravity-weapon")
+        await message.actor.toggleRollOption("damage-roll", "gravity-weapon")
     }
 }
 
@@ -651,7 +651,7 @@ function handleBattleActions(message, _obj) {
     }
 }
 
-function handleBattleFeats(message, _obj) {
+async function handleBattleFeats(message, _obj) {
     if (_obj.slug === "combat-grab") {
         if (hasFreeHand(message.actor)) {
             setEffectToTarget(message, effect_grabbed_end_attacker_next_turn)
@@ -666,7 +666,7 @@ function handleBattleFeats(message, _obj) {
         });
     } else if (_obj.slug === "wolf-drag") {
         if (hasEffect(message.actor, "stance-wolf-stance") && !message.actor.rollOptions?.["all"]?.["wolf-drag"]) {
-            message.actor.toggleRollOption("all", "wolf-drag")
+            await message.actor.toggleRollOption("all", "wolf-drag")
         }
     }
 };
@@ -717,7 +717,7 @@ async function handleBattleSpells(message, _obj) {
 async function handleBattleSelfAssignedEffects(message) {
     if (message?.flags?.pf2e?.origin?.type) {
         if (!messageType(message, undefined) && !messageType(message, "spell-cast")){return}
-        const _obj = (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+        const _obj = message.item ?? (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
         if (!_obj) {return}
         const eff = battleSelfEffectMap[_obj.slug]
         if (eff && !hasEffectBySourceId(message.actor, eff)) {

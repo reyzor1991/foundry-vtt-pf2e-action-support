@@ -219,3 +219,5 @@
 - Boulder Seed
 - Shatterstone
 - Trueshape Bomb (Delete Wild Morph and notification)
+- Eagle Eye Elixir
+- Elixir of Life

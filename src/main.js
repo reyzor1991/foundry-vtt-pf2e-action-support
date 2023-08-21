@@ -501,7 +501,7 @@ async function applyDamage(actor, token, formula) {
     }
 }
 
-Hooks.on('preCreateChatMessage', async (message, user, _options, userId)=>{
+Hooks.on('createChatMessage', async (message, user, _options, userId)=>{
     if (game?.combats?.active || game.settings.get(moduleName, "ignoreEncounterCheck")) {
         handleEncounterMessage(message);
     }
@@ -520,6 +520,10 @@ Hooks.on('preCreateChatMessage', async (message, user, _options, userId)=>{
         }
     }
 
+    deleteRollEffect(message);
+});
+
+function deleteRollEffect(message) {
     if (message?.flags?.pf2e?.modifiers?.find(a=>a.slug === "guidance" && a.enabled)) {
         deleteEffectFromActor(message.actor, "spell-effect-guidance")
     }
@@ -527,7 +531,7 @@ Hooks.on('preCreateChatMessage', async (message, user, _options, userId)=>{
     if (message?.flags?.pf2e?.modifiers?.find(a=>a.slug === "aid" && a.enabled)) {
         deleteEffectFromActor(message.actor, "effect-aid")
     }
-});
+}
 
 async function deleteFeintEffects(message) {
     const aef = hasEffect(message.actor, `effect-feint-success-${message.actor.id}-${message?.target?.actor.id}`)
@@ -716,11 +720,11 @@ Hooks.on('pf2e.endTurn', (combatant, encounter, id) => {
     })
 });
 
-function gravityWeaponTurn(actor) {
+async function gravityWeaponTurn(actor) {
     if (!actor) {return}
     if (hasEffect(actor, "spell-effect-gravity-weapon")) {
         if (!actor.rollOptions?.["damage-roll"]?.["gravity-weapon"]) {
-            actor.toggleRollOption("damage-roll", "gravity-weapon")
+            await actor.toggleRollOption("damage-roll", "gravity-weapon")
         }
     }
 }
@@ -733,13 +737,13 @@ async function precisionTurn(actor) {
     if (!actor) {return}
     if (actorFeat(actor, "precision")) {
         if (!actor.rollOptions?.["all"]?.["first-attack"]) {
-            actor.toggleRollOption("all", "first-attack")
+            await actor.toggleRollOption("all", "first-attack")
         }
 
         if (actor.getFlag(moduleName, "animalCompanion")) {
             const aComp = await fromUuid(actor.getFlag(moduleName, "animalCompanion"));
             if (!aComp.rollOptions?.["all"]?.["first-attack"]) {
-                aComp.toggleRollOption("all", "first-attack")
+                await aComp.toggleRollOption("all", "first-attack")
             }
         }
     }
@@ -750,6 +754,7 @@ async function combinedDamage(name, primary, secondary, options, map, map2, addi
     function PD(cm) {
         if ( cm.user.id === game.userId && cm.isDamageRoll) {
             if (hasOption(cm, "macro:first-damage") || hasOption(cm, "macro:second-damage")) {
+                firstAttack(cm);
                 damages.push(cm);
             }
             return false;
@@ -762,6 +767,7 @@ async function combinedDamage(name, primary, secondary, options, map, map2, addi
     const ev = new KeyboardEvent('keydown', {'shiftKey': true});
     const primaryMessage = await primary.variants[map].roll({ event:ev, altUsage });
     const primaryDegreeOfSuccess = primaryMessage.degreeOfSuccess;
+    deleteRollEffect(primaryMessage);
     const secondaryMessage = await secondary.variants[map2].roll({ event:ev, altUsage });
     const secondaryDegreeOfSuccess = secondaryMessage.degreeOfSuccess;
 
@@ -800,18 +806,27 @@ async function combinedDamage(name, primary, secondary, options, map, map2, addi
 
     const rolls = [await new DamageRoll(formulas.join(',')).evaluate( {async: true} )];
     const opts = damages[0].flags.pf2e.context.options.concat(damages[1].flags.pf2e.context.options);
+    const doms = damages[0].flags.pf2e.context.domains.concat(damages[1].flags.pf2e.context.domains);
+    const mods = damages[0].flags.pf2e.modifiers.concat(damages[1].flags.pf2e.modifiers);
     const flavor = `<strong>${name} Total Damage</strong>`
         + (damages[0].flavor === damages[1].flavor
             ? `<p>Both Attack<hr>${damages[0].flavor}</p><hr>`
             : `<hr>${damages[0].flavor}<hr>${damages[1].flavor}`)
+    const target = damages[0].target;
     await ChatMessage.create({
         flags: {
             pf2e: {
+                target: damages[0].target,
                 context: {
-                    options: [...new Set(opts)]
-                }
+                    options: [...new Set(opts)],
+                    domains: [...new Set(doms)],
+                    type: "damage-roll",
+                    target: damages[0].target,
+                },
+                modifiers: [...new Set(mods)]
             }
         },
+        target: damages[0].target,
         rolls,
         type: CONST.CHAT_MESSAGE_TYPES.ROLL,
         flavor,
@@ -826,9 +841,6 @@ function createDataDamageOnlyOnePrecision(damages) {
 
         const fR = damages[0].rolls[0]._formula.match(/\+ ([0-9]{1,})d(4|6|8|10|12)\[precision\]/);
         const sR = damages[1].rolls[0]._formula.match(/\+ ([0-9]{1,})d(4|6|8|10|12)\[precision\]/);
-
-        console.log(damages[0].rolls[0]._formula);
-        console.log(damages[1].rolls[0]._formula);
 
         if (fR[1]*fR[2] > sR[1]*sR[2]) {
             //delete from 2
@@ -854,7 +866,7 @@ function createDataDamageOnlyOnePrecision(damages) {
                 };
             })
         }
-        return createDataDamage(fDamages.concat(sDamages))
+        return createDataDamage(fDamages.concat(sDamages));
     }
     return createDataDamage(damages.map(a=>a.rolls).flat().map(a=>a.terms).flat().map(a=>a.rolls).flat());
 }
