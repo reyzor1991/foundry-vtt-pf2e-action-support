@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.27
+
+### Bug Fixes
+- Avoid double messages
+
 ## Version 0.2.26
 
 ### New feature
