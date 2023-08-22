@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.2.26
+
+### New feature
+- Check crit mod for macro damages
+- Auto roll Critical Specialization saves (setting option)
+
 ## Version 0.2.25
 
 ### Bug Fixes
