@@ -850,9 +850,11 @@ function createDataDamageOnlyOnePrecision(damages) {
         let sDamages = damages[1].rolls.flat().map(a=>a.terms).flat().map(a=>a.rolls).flat();
 
         const fR = damages[0].rolls[0]._formula.match(/\+ ([0-9]{1,})d(4|6|8|10|12)\[precision\]/);
+        const fRMod = damages[0].rolls[0].options.degreeOfSuccess === 3 ? 2 : 1;
         const sR = damages[1].rolls[0]._formula.match(/\+ ([0-9]{1,})d(4|6|8|10|12)\[precision\]/);
+        const sRMod = damages[1].rolls[0].options.degreeOfSuccess === 3 ? 2 : 1;
 
-        if (fR[1]*fR[2] > sR[1]*sR[2]) {
+        if (fR[1]*fR[2]*fRMod > sR[1]*sR[2]*sRMod) {
             //delete from 2
             sDamages = sDamages.map(obj => {
                 return {
