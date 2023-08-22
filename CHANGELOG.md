@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.25
+
+### Bug Fixes
+- Fix issue with using elixirs
+
 ## Version 0.2.24
 
 ### New feature

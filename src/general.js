@@ -807,13 +807,20 @@ async function handleSelfAssignedEffects(message) {
         if (eff && !hasEffectBySourceId(message.actor, eff)) {
             setEffectToActor(message.actor, eff, message?.item?.level)
         }
-        const elix = elixirEffectMap[_obj.slug]
-        if (elix) {
-            setEffectToActorOrTarget(message, elix, message?.item?.name, 5000)
-        }
         handleActions(message, _obj);
         handleFeats(message, _obj);
         handleSpells(message, _obj);
+    }
+}
+
+async function handleElixirEffects(message) {
+    if (message?.flags?.pf2e?.origin?.type != "consumable") { return;}
+    if (!message?.flags?.pf2e?.origin?.sourceId) {return}
+    const _obj = message.item ?? (await fromUuid(message?.flags?.pf2e?.origin?.uuid));
+    if (!_obj) {return}
+    const elix = elixirEffectMap[_obj.slug]
+    if (elix) {
+        setEffectToActorOrTarget(message, elix, message?.item?.name, 5000)
     }
 }
 
@@ -829,4 +836,5 @@ function handleGeneralMessage(message) {
     }
 
     handleSelfAssignedEffects(message);
+    handleElixirEffects(message);
 }
