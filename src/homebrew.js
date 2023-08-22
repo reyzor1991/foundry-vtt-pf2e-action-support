@@ -206,7 +206,8 @@ class PF2eActionSupportHomebrewSettings extends FormApplication {
     }
 }
 
-Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
+Hooks.on('createChatMessage',async (message, user, _options, userId)=>{
+    if (!game.user.isGM) {return;}
     if (game.settings.get(moduleName, "useHomebrew")) {
         const _obj = message?.flags?.pf2e?.origin ? (await fromUuid(message?.flags?.pf2e?.origin?.uuid)) : undefined;
 
