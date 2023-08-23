@@ -50,6 +50,28 @@ Hooks.on("preCreateItem", (item, data) => {
     }
 });
 
+Hooks.on("preCreateItem", async (item, data) => {
+    if ("character" === item.actor?.type && "eidolon" === item.actor?.class?.slug) {
+        if ("condition" === data.type && item.actor?.system?.attributes?.hp?.value === 0) {
+            if ("dying" === item.slug) {
+                const f = actorFeat(item.actor, "summoner-hp")
+                if (f && f?.flags?.summoner) {
+                    const as = await fromUuid(f.flags.summoner);
+                    as.increaseCondition('dying')
+                }
+            }
+        }
+    }
+});
+
+Hooks.on("preCreateItem", (item, data) => {
+    if ("character" === item.actor?.type && "eidolon" === item.actor?.class?.slug) {
+        if ("condition" === data.type && item.actor?.system?.attributes?.hp?.value === 0) {
+            return false;
+        }
+    }
+});
+
 async function addDrainedToSummoner(eidolon, feat, data) {
     if (!feat) {return;}
     const summoner = await fromUuid(feat.flags.summoner);
@@ -256,13 +278,15 @@ Hooks.on('pf2e.restForTheNight', async (actor) => {
     }
 });
 
-
 Hooks.on('preUpdateActor', async (actor, data, diff, id) => {
     if (!game.settings.get(moduleName, "sharedHP")) {
         return
     }
     if (data?.system?.attributes?.hp) {
         if ("character" === actor?.type && "eidolon" === actor?.class?.slug) {
+            if (data?.system?.attributes?.hp?.value === 0) {
+                dismissEidolon(actor.id);
+            }
             const f = actorFeat(actor, "summoner-hp")
             if (f && f?.flags?.summoner) {
                 const as = await fromUuid(f.flags.summoner);
@@ -287,7 +311,18 @@ Hooks.on('preUpdateActor', async (actor, data, diff, id) => {
                 as.update({
                     "system.attributes.hp": hp
                 }, { "noHook": true });
+                if (hp.value === 0) {
+                    dismissEidolon(as.id);
+                }
             }
         }
     }
 });
+
+async function dismissEidolon(actorId) {
+    game.scenes.current.tokens.filter(a=>a?.actor.id === actorId)
+        .forEach(t=>{
+            t.actor.itemTypes.effect.forEach(e=>e.delete());
+            window?.warpgate?.dismiss(t.id)
+        });
+}

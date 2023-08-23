@@ -95,6 +95,14 @@ Hooks.once("init", () => {
         default: true,
         type: Boolean,
     });
+    game.settings.register(moduleName, "addDeathCondition", {
+        name: "Add dying condition at zero hp",
+        hint: "Be careful with it, could conflict with other modules",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
 
     PF2eActionSupportHomebrewSettings.init()
 
@@ -902,3 +910,10 @@ function createDataDamage(arr) {
     }
     return data;
 }
+
+Hooks.on('preUpdateActor', async (actor, data, diff, id) => {
+    if (!game.settings.get(moduleName, "addDeathCondition")) {return;}
+    if (data?.system?.attributes?.hp?.value === 0 && "character" === actor?.type && !hasCondition(actor, "dying")) {
+        actor.increaseCondition('dying',{'value': (actor.getCondition("wounded")?.value ?? 0) + 1})
+    }
+});

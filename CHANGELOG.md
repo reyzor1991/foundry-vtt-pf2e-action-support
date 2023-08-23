@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.2.28
+
+### New feature
+- Add dying condition to summoner when eidolon down to 0 hp
+- Dismiss eidolon when 0 hp(need warpgate)
+
 ## Version 0.2.27
 
 ### Bug Fixes
