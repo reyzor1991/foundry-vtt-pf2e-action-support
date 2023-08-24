@@ -474,22 +474,22 @@ function battleAttackRoll(message) {
     }
 }
 
-function firstAttack(message) {
+async function firstAttack(message) {
     if (hasOption(message, "first-attack")
         && hasDomain(message, "strike-damage")
         && actorFeat(message.actor, "precision")
     ) {
         const ranger = message.actor.getFlag(moduleName, "ranger");
         if (ranger && hasEffect(message?.target?.actor, `effect-hunt-prey-${ranger}`) && message.actor.rollOptions?.["all"]?.["first-attack"]) {
-            message.actor.toggleRollOption("all", "first-attack")
+            await message.actor.toggleRollOption("all", "first-attack")
         } else if (hasEffect(message?.target?.actor, `effect-hunt-prey-${message.actor.id}`) && message.actor.rollOptions?.["all"]?.["first-attack"]) {
-            message.actor.toggleRollOption("all", "first-attack")
+            await message.actor.toggleRollOption("all", "first-attack")
         }
     }
 }
 
 async function gravityWeapon(message) {
-    if (hasOption(message, "gravity-weapon") && !hasOption(message, "item:category:unarmed")) {
+    if (message.actor.rollOptions?.["damage-roll"]?.["gravity-weapon"] && !hasOption(message, "item:category:unarmed")) {
         await message.actor.toggleRollOption("damage-roll", "gravity-weapon")
     }
 }
@@ -592,9 +592,9 @@ function criticalSpecialization(message) {
     }
 }
 
-function battleDamageRoll(message) {
-    firstAttack(message);
-    gravityWeapon(message);
+async function battleDamageRoll(message) {
+    await firstAttack(message);
+    await gravityWeapon(message);
     deleteEffectsAfterDamage(message);
     bottledLightning(message);
     frostVial(message);

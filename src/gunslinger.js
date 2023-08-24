@@ -57,7 +57,7 @@ async function pairedShots(actor) {
         secondary = weapons[0];
     }
 
-    combinedDamage("Paired Shots", primary, secondary, ["paired-shots"], map, map, {onlyOnePrecision:true});
+    combinedDamage("Paired Shots", primary, secondary, ["paired-shots"], map, map);
 }
 
 Hooks.once("init", () => {

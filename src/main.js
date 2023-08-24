@@ -95,14 +95,6 @@ Hooks.once("init", () => {
         default: true,
         type: Boolean,
     });
-    game.settings.register(moduleName, "addDeathCondition", {
-        name: "Add dying condition at zero hp",
-        hint: "Be careful with it, could conflict with other modules",
-        scope: "world",
-        config: true,
-        default: false,
-        type: Boolean,
-    });
 
     PF2eActionSupportHomebrewSettings.init()
 
@@ -773,12 +765,12 @@ async function precisionTurn(actor) {
     }
 }
 
-async function combinedDamage(name, primary, secondary, options, map, map2, additionData={onlyOnePrecision:false}) {
+async function combinedDamage(name, primary, secondary, options, map, map2) {
+    let onlyOnePrecision = false;
     const damages = [];
     function PD(cm) {
         if ( cm.user.id === game.userId && cm.isDamageRoll) {
-            if (hasOption(cm, "macro:first-damage") || hasOption(cm, "macro:second-damage")) {
-                firstAttack(cm);
+            if (hasOption(cm, "macro:damage")) {
                 damages.push(cm);
             }
             return false;
@@ -797,12 +789,24 @@ async function combinedDamage(name, primary, secondary, options, map, map2, addi
     const secondaryMessage = await secondary.variants[map2].roll({ event:ev, altUsage });
     const secondaryDegreeOfSuccess = secondaryMessage.degreeOfSuccess;
 
-    const fOpt = [...options, "macro:first-damage"];
-    const sOpt = [...options, "macro:second-damage"];
+    const fOpt = [...options, "macro:damage"];
+    const sOpt = [...options, "macro:damage"];
 
     let pd,sd;
     if ( primaryDegreeOfSuccess === 2 ) { pd = await primary.damage({event, options: fOpt}); }
     if ( primaryDegreeOfSuccess === 3 ) { pd = await primary.critical({event, options: fOpt}); }
+
+    if (damages.length > 0) {
+        if (damages[0].flags.pf2e.modifiers.find(a=>["precision", "sneak-attack"].includes(a.slug) && a.enabled)) {
+            onlyOnePrecision = true;
+        }
+
+        await Promise.all([
+            firstAttack(damages[0]),
+            gravityWeapon(damages[0])
+        ])
+    }
+
     if ( secondaryDegreeOfSuccess === 2 ) { sd = await secondary.damage({event, options: sOpt}); }
     if ( secondaryDegreeOfSuccess === 3 ) { sd = await secondary.critical({event, options: sOpt}); }
 
@@ -821,7 +825,7 @@ async function combinedDamage(name, primary, secondary, options, map, map2, addi
         return;
     }
 
-    const data = !additionData.onlyOnePrecision
+    const data = !onlyOnePrecision
         ? createDataDamage(damages.map(a=>a.rolls).flat().map(a=>a.terms).flat().map(a=>a.rolls).flat())
         : createDataDamageOnlyOnePrecision(damages);
 
@@ -910,10 +914,3 @@ function createDataDamage(arr) {
     }
     return data;
 }
-
-Hooks.on('preUpdateActor', async (actor, data, diff, id) => {
-    if (!game.settings.get(moduleName, "addDeathCondition")) {return;}
-    if (data?.system?.attributes?.hp?.value === 0 && "character" === actor?.type && !hasCondition(actor, "dying")) {
-        actor.increaseCondition('dying',{'value': (actor.getCondition("wounded")?.value ?? 0) + 1})
-    }
-});
