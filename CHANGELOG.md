@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.29
+
+### New feature
+- Check eidolon name when link
+
 ## Version 0.2.28
 
 ### New feature

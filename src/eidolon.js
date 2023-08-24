@@ -16,7 +16,7 @@ async function setSummonerHP(actor) {
         return
     }
     const target = game.user.targets.first().actor;
-    if ("eidolon" != target?.class?.slug) {
+    if ("eidolon" != target?.class?.slug && "Eidolon" != target?.class?.name) {
         ui.notifications.info(`Need to select 1 token of eidolon as target to set HP of summoner`);
         return
     }
