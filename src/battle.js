@@ -233,7 +233,7 @@ function trip(message) {
 
 function battleMedicine(message) {
     if (game.combat && hasOption(message, "action:treat-wounds")
-        && message.isRoll && message.roll instanceof DamageRoll) {
+        && message.isRoll && message.rolls[0] instanceof CheckRoll) {
         if (!hasOption(message, "feat:battle-medicine")) {
             ui.notifications.info(`${message.actor.name} hasn't Battle Medicine Feat`);
             return;

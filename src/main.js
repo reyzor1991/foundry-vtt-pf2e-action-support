@@ -1,8 +1,10 @@
 let socketlibSocket = undefined;
 let DamageRoll = undefined;
+let CheckRoll = undefined;
 
 Hooks.once("init", () => {
     DamageRoll = CONFIG.Dice.rolls.find( r => r.name === "DamageRoll" );
+    CheckRoll = CONFIG.Dice.rolls.find( r => r.name === "CheckRoll" );
     game.settings.register(moduleName, "useHomebrew", {
         name: "Use Homebrew",
         scope: "world",
@@ -513,7 +515,6 @@ function immunities(actor) {
 
 async function applyDamage(actor, token, formula) {
     if (hasPermissions(actor)) {
-        const DamageRoll = CONFIG.Dice.rolls.find((r) => r.name === "DamageRoll")
         const roll = new DamageRoll(formula);
         await roll.evaluate({async: true});
         actor.applyDamage({damage:roll, token:token})
@@ -812,6 +813,10 @@ async function combinedDamage(name, primary, secondary, options, map, map2) {
             firstAttack(damages[0]),
             gravityWeapon(damages[0])
         ])
+    } else {
+        if (primary.item.actor.rollOptions?.["damage-roll"]?.["gravity-weapon"]) {
+            await primary.item.actor.toggleRollOption("damage-roll", "gravity-weapon")
+        }
     }
 
     if ( secondaryDegreeOfSuccess === 2 ) { sd = await secondary.damage({event, options: sOpt}); }

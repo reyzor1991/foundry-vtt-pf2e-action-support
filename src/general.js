@@ -50,7 +50,7 @@ const elixirEffectMap = {
 };
 
 function handleTreatWounds(message) {
-    if (!game.combat && hasOption(message, "action:treat-wounds") && message.isRoll && message.roll instanceof DamageRoll) {
+    if (!game.combat && hasOption(message, "action:treat-wounds") && message.isRoll && message.rolls[0] instanceof CheckRoll) {
         if (game.user.targets.size === 1) {
             const [first] = game.user.targets;
             treatWounds(message, first.actor);
