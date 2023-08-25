@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.31
+
+### Bug Fixes
+- Fix issue with Treat Wounds
+
 ## Version 0.2.30
 
 ### New feature

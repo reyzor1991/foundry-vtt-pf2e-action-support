@@ -95,6 +95,13 @@ Hooks.once("init", () => {
         default: true,
         type: Boolean,
     });
+    game.settings.register(moduleName, "barbariansPlus", {
+        name: "Barbarians+",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
 
     PF2eActionSupportHomebrewSettings.init()
 

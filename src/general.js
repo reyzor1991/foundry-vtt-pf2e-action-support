@@ -50,7 +50,7 @@ const elixirEffectMap = {
 };
 
 function handleTreatWounds(message) {
-    if (!game.combat && hasOption(message, "action:treat-wounds") && message?.flavor === message?.flags?.pf2e?.unsafe) {
+    if (!game.combat && hasOption(message, "action:treat-wounds") && message.isRoll && message.roll instanceof DamageRoll) {
         if (game.user.targets.size === 1) {
             const [first] = game.user.targets;
             treatWounds(message, first.actor);
@@ -58,6 +58,8 @@ function handleTreatWounds(message) {
             game.user.targets.forEach(a => {
                 treatWounds(message, a.actor);
             });
+        } else {
+            ui.notifications.info(`Need to select 1 token as target`);
         }
     }
 }
