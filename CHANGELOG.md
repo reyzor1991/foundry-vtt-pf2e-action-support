@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.32
+
+### New feature
+- Handling of Furious Anatomy
+
 ## Version 0.2.31
 
 ### Bug Fixes

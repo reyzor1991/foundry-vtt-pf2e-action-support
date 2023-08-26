@@ -124,6 +124,11 @@
 
 - Lichen's Tenacity 
 - Rose's Tranquility
+- Furious Anatomy
+- Gory Finish
+- Destined Kill
+- Die Another Day
+- Forever Furious
 
 ### Feats
 

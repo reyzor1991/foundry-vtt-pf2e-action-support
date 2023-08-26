@@ -30,5 +30,24 @@ Hooks.on('createChatMessage', async (message, user, _options, userId)=>{
         } else if (criticalFailureMessageOutcome(message)) {
             increaseConditionForActor(message, "sickened", 3);
         }
+    } else if (eqMessageDCLabel(message, "Furious Anatomy DC") && anyFailureMessageOutcome(message)) {
+        let ff = message.flags.pf2e.origin.type === "feat" ? await fromUuid(message.flags.pf2e.origin.uuid) : null;
+        if (!ff) {return}
+        ff = actorFeat(ff?.actor, "flesh-instinct");
+        if (!ff) {return}
+
+        if (ff.name.includes('Billowing Orifice')) {
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.DqspZqJJu4v3k4Zv");//Stupefied
+        } else if (ff.name.includes('Gibbering Mouths')) {
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.7roTkQ4QHWDWZkJM");//Deafened
+        } else if (ff.name.includes('Tongue Proboscis')) {
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.NKue7w68dX1yH4bA");//Enfeebled
+        } else if (ff.name.includes('Tentacle Strands')) {
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.qzjX5A17McTdDHFx");//Clumsy
+        } else if (ff.name.includes('Unblinking Eyes')) {
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.1u4ZAmfeWKyN3uKK");//Dazzled
+        } else if (ff.name.includes('Warp Spasm')) {
+            setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.HrHzFVcdcBdG2nv8");//Fascinated
+        }
     }
 });
