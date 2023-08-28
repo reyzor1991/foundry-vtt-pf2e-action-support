@@ -97,6 +97,14 @@ Hooks.once("init", () => {
         default: true,
         type: Boolean,
     });
+    game.settings.register(moduleName, "handleMeasuredTemplate", {
+        name: "Handle MeasuredTemplate to apply effects",
+        hint: "It's prototype, be careful with it",
+        scope: "world",
+        config: true,
+        default: false,
+        type: Boolean,
+    });
     game.settings.register(moduleName, "barbariansPlus", {
         name: "Barbarians+",
         scope: "world",

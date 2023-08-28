@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.2.33
+
+### New feature
+- Measure Template (under dev). Now only apply effect
+- Handling of Rejuvenating Flames
+
 ## Version 0.2.32
 
 ### New feature

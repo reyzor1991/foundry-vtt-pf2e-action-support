@@ -564,8 +564,7 @@ function allyCombatant() {
     return game.combat ? game.combat.turns.filter(a=>isActorCharacter(a.actor)) : [];
 }
 
-Hooks.on('createChatMessage', async (message)=>{
-    if (!game.user.isGM) {return;}
+Hooks.on('preCreateChatMessage', async (message)=>{
     if (!game.settings.get(moduleName, "useBloodline")) {return}
     if (!messageType(message, undefined) && !messageType(message, "spell-cast")){return}
     if (!game?.combats?.active && !game.settings.get(moduleName, "ignoreEncounterCheck")) {return}
@@ -591,8 +590,7 @@ Hooks.on('createChatMessage', async (message)=>{
 
 });
 
-Hooks.on('createChatMessage', async (message)=>{
-    if (!game.user.isGM) {return;}
+Hooks.on('preCreateChatMessage', async (message)=>{
     if (!game.settings.get(moduleName, "useBloodline")) {return}
     if ("appliedDamage" in message?.flags?.pf2e && !message?.flags?.pf2e?.appliedDamage?.isHealing) {
         const eff = hasEffect(message.actor, "effect-hag-blood-magic");
