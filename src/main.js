@@ -533,6 +533,7 @@ async function applyDamage(actor, token, formula) {
 }
 
 Hooks.on('preCreateChatMessage', async (message, user, _options, userId)=>{
+    if (hasOption(message, 'skip-handling-message')) return;
     if (game?.combats?.active || game.settings.get(moduleName, "ignoreEncounterCheck")) {
         handleEncounterMessage(message);
     }
@@ -807,6 +808,10 @@ async function combinedDamage(name, primary, secondary, options, map, map2) {
 
     const fOpt = [...options, "macro:damage"];
     const sOpt = [...options, "macro:damage"];
+    if (game.settings.get('xdy-pf2e-workbench', 'autoRollDamageForStrike')) {
+        fOpt.push("skip-handling-message");
+        sOpt.push("skip-handling-message");
+    }
 
     let pd,sd;
     if ( primaryDegreeOfSuccess === 2 ) { pd = await primary.damage({event, options: fOpt}); }

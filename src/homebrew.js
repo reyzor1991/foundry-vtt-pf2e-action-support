@@ -207,6 +207,7 @@ class PF2eActionSupportHomebrewSettings extends FormApplication {
 }
 
 Hooks.on('preCreateChatMessage',async (message, user, _options, userId)=>{
+    if (hasOption(message, 'skip-handling-message')) return;
     if (game.settings.get(moduleName, "useHomebrew")) {
         const _obj = message?.flags?.pf2e?.origin ? (await fromUuid(message?.flags?.pf2e?.origin?.uuid)) : undefined;
 

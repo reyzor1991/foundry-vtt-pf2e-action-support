@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.38
+
+### Bug Fixes
+- Fix applying effects when call macro
+
 ## Version 0.2.34-37
 
 ### Bug Fixes
