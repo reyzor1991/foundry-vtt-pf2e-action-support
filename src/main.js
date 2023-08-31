@@ -584,6 +584,7 @@ async function deleteFeintEffects(message) {
 }
 
 async function handleAffection(message, eff_uuid) {
+    if (!game.settings.get(moduleName, "affliction")) {return}
     const affectionObj = hasAfflictionBySourceId(message.actor, eff_uuid);
     if (affectionObj) {
         if (criticalSuccessMessageOutcome(message)) {
