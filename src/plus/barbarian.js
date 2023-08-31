@@ -1,7 +1,5 @@
-Hooks.on('createChatMessage', async (message, user, _options, userId)=>{
-    if (!game.user.isGM) {return;}
+Hooks.on('preCreateChatMessage', async (message, user, _options, userId)=>{
     if (!game.settings.get(moduleName, "barbariansPlus")) {return}
-
 
     if (message?.flags?.pf2e?.origin?.type) {
         if (!messageType(message, undefined) && !messageType(message, "spell-cast")) {return}
@@ -16,8 +14,7 @@ Hooks.on('createChatMessage', async (message, user, _options, userId)=>{
     }
 });
 
-Hooks.on('createChatMessage', async (message, user, _options, userId)=>{
-    if (!game.user.isGM) {return;}
+Hooks.on('preCreateChatMessage', async (message, user, _options, userId)=>{
     if (!game.settings.get(moduleName, "barbariansPlus")) {return}
     const mType = message?.flags?.pf2e?.context?.type;
     if (mType != "saving-throw") {return};

@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.2.34-37
+
+### Bug Fixes
+- Fix with effect applying
+- Fix with affliction check
+
 ## Version 0.2.33
 
 ### New feature
