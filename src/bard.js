@@ -35,7 +35,7 @@ async function inspireHeroics(actor) {
         default: "ok"
     });
 
-    const degreeOfSuccess = (await actor.skills.performance.roll({dc, skipDialog: true})).degreeOfSuccess;
+    const degreeOfSuccess = (await actor.skills.performance.roll({dc:{value: dc}, skipDialog: true})).degreeOfSuccess;
 
     const aura = (await fromUuid("Compendium.pf2e-action-support.action-support.Item.mGQMqBoTFRz3or4D")).toObject();
     let idOfEffect='';

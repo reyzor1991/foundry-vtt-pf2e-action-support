@@ -118,6 +118,7 @@
 - Boost Eidolon
 - Reinforce Eidolon
 - Lingering Composition
+- Extend Boost
 
 
 ### 3rd party

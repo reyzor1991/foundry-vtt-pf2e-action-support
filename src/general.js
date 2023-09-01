@@ -637,7 +637,7 @@ function augmentSummoning(message, _obj) {
 
 async function rollDCBane(combatants,dc,item, origin) {
     combatants.forEach(c=>{
-        c.actor.saves.will.roll({skipDialog:true, dc, item, origin})
+        c.actor.saves.will.roll({skipDialog:true, dc:{value: dc}, item, origin})
     })
 }
 

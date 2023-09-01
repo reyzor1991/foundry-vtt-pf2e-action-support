@@ -210,6 +210,7 @@ Hooks.once("init", () => {
 
     game.actionsupport = mergeObject(game.actionsupport ?? {}, {
         "setSummonerHP": setSummonerHP,
+        "extendBoost": extendBoost,
     })
 });
 
@@ -325,4 +326,87 @@ async function dismissEidolon(actorId) {
             t.actor.itemTypes.effect.forEach(e=>e.delete());
             window?.warpgate?.dismiss(t.id)
         });
+}
+
+const eidolonTraditionSkill = {
+    'angel-eidolon': 'religion',
+    'anger-phantom-eidolon': 'occultism',
+    'beast-eidolon': 'nature',
+    'construct-eidolon': 'arcana',
+    'demon-eidolon': 'religion',
+    'devotion-phantom-eidolon': 'occultism',
+    'dragon-eidolon': 'arcana',
+    'elemental-eidolon': 'nature',
+    'fey-eidolon': 'nature',
+    'plant-eidolon': 'nature',
+    'psychopomp-eidolon': 'religion',
+    'undead-eidolon': 'religion',
+}
+
+async function extendBoost(actor) {
+    if (!actor) {
+        ui.notifications.info(`Need to select Actor`);
+        return
+    }
+    if ("summoner" != actor?.class?.slug) {
+        ui.notifications.info(`Actor should be Summoner`);
+        return
+    }
+    if (game.user.targets.size != 1) {
+        ui.notifications.info(`Need to select 1 token of eidolon as target`);
+        return
+    }
+    const target = game.user.targets.first().actor;
+    if ("eidolon" != target?.class?.slug && "Eidolon" != target?.class?.name) {
+        ui.notifications.info(`Need to select 1 token of eidolon as target`);
+        return
+    }
+
+    const defDC = (dcByLevel.get(actor.level) ?? 50) + 5;
+
+    const { dc, spell } = await Dialog.wait({
+        title:"Use spell",
+        content: `
+            <h3>DC of check</h3>
+            <input id="spell-dc" type="number" min="0" value=${defDC} />
+            <hr><h3>Spell</h3><select id="spells">
+                <option value=0>Boost Eidolon</option>
+                <option value=1>Reinforce Eidolon</option>
+            </select><hr>
+        `,
+        buttons: {
+                ok: {
+                    label: "Cast",
+                    icon: "<i class='fa-solid fa-magic'></i>",
+                    callback: (html) => { return { dc: parseInt(html[0].querySelector("#spell-dc").value), spell: parseInt(html[0].querySelector("#spells").value)} }
+                },
+                cancel: {
+                    label: "Cancel",
+                    icon: "<i class='fa-solid fa-ban'></i>",
+                }
+        },
+        render: (html) => {
+            html.parent().parent()[0].style.cssText += 'box-shadow: 0 0 10px purple;';
+        },
+        default: "ok"
+    });
+
+    const degreeOfSuccess = (await actor.skills[eidolonTraditionSkill[target.ancestry.slug]??'arcana'].roll({dc:{value: dc}, skipDialog: true})).degreeOfSuccess;
+
+    const spellUuid = spell === 0 ? 'Compendium.pf2e.spell-effects.Item.h0CKGrgjGNSg21BW' : 'Compendium.pf2e.spell-effects.Item.UVrEe0nukiSmiwfF';
+
+    let spellObj = (await fromUuid(spellUuid)).toObject();
+    spellObj.system.duration.unit = "rounds";
+
+    if (degreeOfSuccess === 3) {
+        spellObj.system.duration.value = 4;
+    } else if (degreeOfSuccess === 2) {
+        spellObj.system.duration.value = 3;
+    }
+
+    if (hasPermissions(spellObj)) {
+        await target.createEmbeddedDocuments("Item", [spellObj]);
+    } else {
+        socketlibSocket._sendRequest("createFeintEffectOnTarget", [spellObj, target.uuid], 0)
+    }
 }

@@ -808,7 +808,7 @@ async function combinedDamage(name, primary, secondary, options, map, map2) {
 
     const fOpt = [...options, "macro:damage"];
     const sOpt = [...options, "macro:damage"];
-    if (game.settings.settings.has('xdy-pf2e-workbench') && game.settings.get('xdy-pf2e-workbench', 'autoRollDamageForStrike')) {
+    if (game.settings.settings.has('xdy-pf2e-workbench.autoRollDamageForStrike') && game.settings.get('xdy-pf2e-workbench', 'autoRollDamageForStrike')) {
         fOpt.push("skip-handling-message");
         sOpt.push("skip-handling-message");
     }

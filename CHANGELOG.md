@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.39
+
+### New feature
+- Add Extend Boost macro
+
 ## Version 0.2.38
 
 ### Bug Fixes
