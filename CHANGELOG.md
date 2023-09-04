@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.2.41
+
+### New feature
+- Handling of Scout dedication Feat
+- Add measure template exploration time
+
 ## Version 0.2.40
 
 ### New feature

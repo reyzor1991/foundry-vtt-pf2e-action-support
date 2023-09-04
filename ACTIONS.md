@@ -211,6 +211,7 @@
 - Flurry Of Blows
 - Hunted Shot
 - Wolf Drag
+- Scout dedication
 
 ### Items
 

@@ -318,14 +318,12 @@ function savingThrow(message) {
 function scout(message, _obj) {
     if (_obj.slug === "scout") {
         const sc = actorFeat(message.actor, "incredible-scout");
-        if (sc) {
-            setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.la8rWwUtReElgTS6")
-        } else {
-            setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.EMqGwUi3VMhCjTlF")
-        }
+        const ded = actorFeat(actor, "scout-dedication");
+
+        setEffectToActor(message.actor, "Compendium.pf2e.other-effects.Item.EMqGwUi3VMhCjTlF")
 
         game.user.targets.forEach(tt => {
-            setEffectToActor(tt.actor, sc ? "Compendium.pf2e.other-effects.Item.la8rWwUtReElgTS6" : "Compendium.pf2e.other-effects.Item.EMqGwUi3VMhCjTlF")
+            setEffectToActor(tt.actor, ded ? 'Compendium.pf2e-action-support.action-support.Item.U7tuKcRePhSu2C2P' : sc ? "Compendium.pf2e.other-effects.Item.la8rWwUtReElgTS6" : "Compendium.pf2e.other-effects.Item.EMqGwUi3VMhCjTlF")
         })
     }
 }

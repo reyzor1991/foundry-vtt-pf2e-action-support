@@ -92,3 +92,10 @@ const dcByLevel = new Map([
     [24, 48],
     [25, 50],
 ]);
+
+const DURATION_UNITS = {
+    rounds: 6,
+    minutes: 60,
+    hours: 3600,
+    days: 86400,
+};
