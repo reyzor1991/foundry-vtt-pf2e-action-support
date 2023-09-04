@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.40
+
+### New feature
+- Handle Scout/Follow the Expert Actions from Exploration tab
+
 ## Version 0.2.39
 
 ### New feature
