@@ -4,6 +4,7 @@
 
 ### New feature
 - Migrate eidolon feature to separate module. Preparation to engine release. https://github.com/reyzor1991/pf2e-eidolon-helper/releases/latest/download/module.json
+- Triple Time
 
 ## Version 0.2.41
 

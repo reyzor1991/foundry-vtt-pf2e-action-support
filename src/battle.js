@@ -15,6 +15,7 @@ const battleSelfEffectMap = {
     "tenacious-stance": "Compendium.pf2e.feat-effects.Item.Ms6WPXRWfXb2KpG2",
     //spell
     'adaptive-ablation': 'Compendium.pf2e.spell-effects.Item.6GAztnHuQSwAp1k1',//?maybe general
+    'triple-time': 'Compendium.pf2e-action-support.action-support.Item.8VMC9QwRBGlDcDwQ',//?maybe general
     'agile-feet': 'Compendium.pf2e.spell-effects.Item.y9PJdDYFemhk6Z5o',
     'ancestral-form': 'Compendium.pf2e.spell-effects.Item.l8HkOKfiUqd3BUwT',//?maybe general
     'angelic-wings': 'Compendium.pf2e.spell-effects.Item.iZYjxY0qYvg5yPP3',

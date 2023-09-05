@@ -90,10 +90,6 @@ Hooks.once("init", () => {
     });
 
     PF2eActionSupportHomebrewSettings.init()
-
-    game.actionsupport = mergeObject(game.actionsupport ?? {}, {
-        "setSummonerHP": setSummonerHP,
-    })
 });
 
 Hooks.on('deleteItem', async (effect, data, id) => {
