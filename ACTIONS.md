@@ -115,10 +115,7 @@
 - Ash Cloud
 - Aromatic Lure
 - See the Unseen
-- Boost Eidolon
-- Reinforce Eidolon
 - Lingering Composition
-- Extend Boost
 
 
 ### 3rd party

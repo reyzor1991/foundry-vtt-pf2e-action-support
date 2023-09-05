@@ -697,16 +697,6 @@ async function handleBattleSpells(message, _obj) {
         setEffectToActorOrTarget(message, effect_allegro, "Allegro", getSpellRange(message.actor, _obj))
     } else if (_obj.slug === "ki-strike") {
         setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.8olfnTmWh0GGPDqX")
-    } else if (_obj.slug === "boost-eidolon") {
-        const ei = await fromUuid(message.actor.getFlag(moduleName, "eidolon"));
-        if (ei) {
-            setEffectToActor(ei, "Compendium.pf2e.spell-effects.Item.h0CKGrgjGNSg21BW")
-        }
-    } else if (_obj.slug === "reinforce-eidolon") {
-        const ei = await fromUuid(message.actor.getFlag(moduleName, "eidolon"));
-        if (ei) {
-            setEffectToActor(ei, "Compendium.pf2e.spell-effects.Item.UVrEe0nukiSmiwfF")
-        }
     } else if (_obj.slug === "lingering-composition") {
         const macLC = await fromUuid('Compendium.xdy-pf2e-workbench.asymonous-benefactor-macros-internal.Macro.5CLSiG3QPj5xbhBk');
         if (macLC) {

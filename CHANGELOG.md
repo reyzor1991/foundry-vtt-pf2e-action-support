@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.42
+
+### New feature
+- Migrate eidolon feature to separate module. Preparation to engine release
+
 ## Version 0.2.41
 
 ### New feature
