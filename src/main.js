@@ -768,14 +768,13 @@ async function combinedDamage(name, primary, secondary, options, map, map2) {
 
     Hooks.on('preCreateChatMessage', PD);
 
-    const altUsage = null;
     const ev = game.settings.get(moduleName, "skipRollDialogMacro")
         ? new KeyboardEvent('keydown', {'shiftKey': game.user.flags.pf2e.settings.showRollDialogs})
         : event;
-    const primaryMessage = await primary.variants[map].roll({ event:ev, altUsage });
+    const primaryMessage = await primary.variants[map].roll({ event:ev });
     const primaryDegreeOfSuccess = primaryMessage.degreeOfSuccess;
     deleteRollEffect(primaryMessage);
-    const secondaryMessage = await secondary.variants[map2].roll({ event:ev, altUsage });
+    const secondaryMessage = await secondary.variants[map2].roll({ event:ev });
     const secondaryDegreeOfSuccess = secondaryMessage.degreeOfSuccess;
 
     const fOpt = [...options, "macro:damage"];
