@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.2.43
+
+### New feature
+- Monk combined weapon - Flurry Of Blows
+- add Exploration Effects when activity is active
+
 ## Version 0.2.42
 
 ### New feature
