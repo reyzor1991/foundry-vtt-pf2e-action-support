@@ -30,7 +30,7 @@ async function flurryOfBlows(actor) {
 
     const weapons = flurryOfBlowsWeapons(actor)
     if (weapons.length === 0) {
-        ui.notifications.warn(`${actor.name} doesn't have correct weapon'`);
+        ui.notifications.warn(`${actor.name} not have correct weapon`);
         return;
     }
 
