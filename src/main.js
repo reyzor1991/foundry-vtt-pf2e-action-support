@@ -789,7 +789,7 @@ async function combinedDamage(name, primary, secondary, options, map, map2) {
     if ( primaryDegreeOfSuccess === 3 ) { pd = await primary.critical({event, options: fOpt}); }
 
     if (damages.length > 0) {
-        if (damages[0].flags.pf2e.modifiers.find(a=>["precision", "sneak-attack"].includes(a.slug) && a.enabled)) {
+        if (damages[0].flags.pf2e.modifiers.find(a=>["precision"].includes(a.slug) && a.enabled)) {
             onlyOnePrecision = true;
         }
 

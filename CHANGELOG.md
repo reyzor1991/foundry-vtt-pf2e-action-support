@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.44
+
+### Bug Fixes
+- Fix Flurry Of Blows sneak attack
+
 ## Version 0.2.43
 
 ### New feature
