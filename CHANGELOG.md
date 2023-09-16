@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.45
+
+### Bug Fixes
+- Fix Swashbuckler's Parry
+
 ## Version 0.2.44
 
 ### Bug Fixes
