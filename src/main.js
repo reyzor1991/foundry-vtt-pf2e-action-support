@@ -802,6 +802,8 @@ async function combinedDamage(name, primary, secondary, options, map, map2) {
     if (damages.length > 0) {
         if (damages[0].flags.pf2e.modifiers.find(a=>["precision"].includes(a.slug) && a.enabled)) {
             onlyOnePrecision = true;
+        } else if (damages[0].flags.pf2e.modifiers.find(a=>["sneak-attack"].includes(a.slug) && a.enabled) && options.includes("double-slice-second")) {
+            onlyOnePrecision = true;
         }
 
         await Promise.all([
