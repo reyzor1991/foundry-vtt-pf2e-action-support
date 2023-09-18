@@ -771,9 +771,20 @@ async function combinedDamage(name, primary, secondary, options, map, map2) {
     const ev = game.settings.get(moduleName, "skipRollDialogMacro")
         ? new KeyboardEvent('keydown', {'shiftKey': game.user.flags.pf2e.settings.showRollDialogs})
         : event;
+
+    if (options.includes("double-slice-second") && primary.item.actor.rollOptions?.["all"]?.["double-slice-second"]) {
+        await primary.item.actor.toggleRollOption("all", "double-slice-second")
+    }
+
     const primaryMessage = await primary.variants[map].roll({ event:ev });
     const primaryDegreeOfSuccess = primaryMessage.degreeOfSuccess;
+
     deleteRollEffect(primaryMessage);
+
+    if (options.includes("double-slice-second") && !primary.item.actor.rollOptions?.["all"]?.["double-slice-second"]) {
+        await primary.item.actor.toggleRollOption("all", "double-slice-second")
+    }
+
     const secondaryMessage = await secondary.variants[map2].roll({ event:ev });
     const secondaryDegreeOfSuccess = secondaryMessage.degreeOfSuccess;
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.2.46
+
+### Bug Fixes
+- Fix Double Slice
+
 ## Version 0.2.45
 
 ### Bug Fixes

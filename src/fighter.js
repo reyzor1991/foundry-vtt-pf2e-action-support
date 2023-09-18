@@ -55,12 +55,6 @@ async function doubleSlice(actor) {
         secondary = weapons[0];
     }
 
-    if (!secondary.item.system.traits.value.includes("agile")) {
-        if (!actor.rollOptions?.["all"]?.["double-slice-second"]) {
-            await actor.toggleRollOption("all", "double-slice-second")
-        }
-    }
-
     combinedDamage("Double Slice", primary, secondary, ["double-slice-second"], map, map);
 }
 
