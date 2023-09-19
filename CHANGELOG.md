@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.2.48
+
+- Fix Accidental Shot
+
 ## Version 0.2.47
 
 - Add Accidental Shot

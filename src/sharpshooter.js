@@ -14,7 +14,7 @@ async function accidentalShot(actor) {
 
     const weapons = accidentalShotWeapons(actor);
     if (weapons.length === 0) {
-        ui.notifications.warn(`${actor.name} doesn't have correct weapon'`);
+        ui.notifications.warn(`${actor.name} doesn't have correct weapon`);
         return;
     }
 
