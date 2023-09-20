@@ -61,8 +61,8 @@ async function huntedShot(actor) {
     if ( currentWeapon === undefined || map === undefined ) { return; }
     const map2 = map === 2 ? map : map + 1;
 
-    const primary = weapons.find( w => w.item.id === currentWeapon[0] );
-    const secondary = weapons.find( w => w.item.id === currentWeapon[0] );
+    let primary =  actor.system.actions.find( w => w.item.id === currentWeapon[0] );
+    let secondary =  actor.system.actions.find( w => w.item.id === currentWeapon[0] );
 
     combinedDamage("Hunted Shot", primary, secondary, [], map, map2);
 }
@@ -112,11 +112,11 @@ async function twinTakedown(actor) {
     if ( map === undefined ) { return; }
     const map2 = map === 2 ? map : map + 1;
 
-    let primary = weapons[0];
-    let secondary = weapons[1];
+    let primary =  actor.system.actions.find( w => w.item.id === weapons[0].item.id );
+    let secondary =  actor.system.actions.find( w => w.item.id === weapons[1].item.id );
     if (primary.item.system.traits.value.includes("agile")) {
-        primary = weapons[1];
-        secondary = weapons[0];
+        primary =  actor.system.actions.find( w => w.item.id === weapons[1].item.id );
+        secondary =  actor.system.actions.find( w => w.item.id === weapons[0].item.id );
     }
 
     combinedDamage("Twin Takedown", primary, secondary, [], map, map2);

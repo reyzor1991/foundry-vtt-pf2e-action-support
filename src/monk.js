@@ -77,8 +77,8 @@ async function flurryOfBlows(actor) {
     if ( currentWeapon === undefined || map === undefined ) { return; }
     const map2 = map === 2 ? map : map + 1;
 
-    const primary = weapons.find( w => w.item.id === currentWeapon[0] );
-    const secondary = weapons.find( w => w.item.id === currentWeapon[1] );
+    let primary =  actor.system.actions.find( w => w.item.id === currentWeapon[0] );
+    let secondary =  actor.system.actions.find( w => w.item.id === currentWeapon[1] );
 
     const options = actorFeat(actor, "stunning-fist") ? ["stunning-fist"] : [];
 

@@ -48,11 +48,11 @@ async function doubleSlice(actor) {
 
     if ( map === undefined ) { return; }
 
-    let primary = weapons[0];
-    let secondary = weapons[1];
+    let primary =  actor.system.actions.find( w => w.item.id === weapons[0].item.id );
+    let secondary =  actor.system.actions.find( w => w.item.id === weapons[1].item.id );
     if (primary.item.system.traits.value.includes("agile")) {
-        primary = weapons[1];
-        secondary = weapons[0];
+        primary =  actor.system.actions.find( w => w.item.id === weapons[1].item.id );
+        secondary =  actor.system.actions.find( w => w.item.id === weapons[0].item.id );
     }
 
     combinedDamage("Double Slice", primary, secondary, ["double-slice-second"], map, map);
