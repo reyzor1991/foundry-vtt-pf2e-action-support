@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.2.50
+
+- Fix issues with Marked for Death
+
 ## Version 0.2.49
 
 - Fix Accidental Shot

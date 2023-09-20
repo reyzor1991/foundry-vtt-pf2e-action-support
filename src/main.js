@@ -800,9 +800,7 @@ async function combinedDamage(name, primary, secondary, options, map, map2) {
     if ( primaryDegreeOfSuccess === 3 ) { pd = await primary.critical({event, options: fOpt}); }
 
     if (damages.length > 0) {
-        if (damages[0].flags.pf2e.modifiers.find(a=>["precision"].includes(a.slug) && a.enabled)) {
-            onlyOnePrecision = true;
-        } else if (damages[0].flags.pf2e.modifiers.find(a=>["sneak-attack"].includes(a.slug) && a.enabled) && options.includes("double-slice-second")) {
+        if (damages[0].flags.pf2e.modifiers.find(a=>["precision"].includes(a.slug) && a.enabled) || options.includes("double-slice-second")) {
             onlyOnePrecision = true;
         }
 
@@ -878,12 +876,12 @@ function createDataDamageOnlyOnePrecision(damages) {
         let fDamages = damages[0].rolls.flat().map(a=>a.terms).flat().map(a=>a.rolls).flat();
         let sDamages = damages[1].rolls.flat().map(a=>a.terms).flat().map(a=>a.rolls).flat();
 
-        const fR = damages[0].rolls[0]._formula.match(/\+ ([0-9]{1,})d(4|6|8|10|12)\[precision\]/);
+        const fR = damages[0].rolls[0]._formula.match(/\+ (([0-9]{1,})d(4|6|8|10|12)|(\(([0-9]{1,})d(4|6|8|10|12)( \+ ([0-9]{1,}))?\)))\[precision\]/);
         const fRMod = damages[0].rolls[0].options.degreeOfSuccess === 3 ? 2 : 1;
-        const sR = damages[1].rolls[0]._formula.match(/\+ ([0-9]{1,})d(4|6|8|10|12)\[precision\]/);
+        const sR = damages[1].rolls[0]._formula.match(/\+ (([0-9]{1,})d(4|6|8|10|12)|(\(([0-9]{1,})d(4|6|8|10|12)( \+ ([0-9]{1,}))?\)))\[precision\]/);
         const sRMod = damages[1].rolls[0].options.degreeOfSuccess === 3 ? 2 : 1;
 
-        if (fR[1]*fR[2]*fRMod > sR[1]*sR[2]*sRMod) {
+        if (getSumDamage(fR, fRMod) > getSumDamage(sR, sRMod)) {
             //delete from 2
             sDamages = sDamages.map(obj => {
                 return {
@@ -899,7 +897,7 @@ function createDataDamageOnlyOnePrecision(damages) {
             fDamages = fDamages.map(obj => {
                 return {
                     "head": {
-                        "formula": obj.head.formula.replace(sR[0], "")
+                        "formula": obj.head.formula.replace(fR[0], "")
                     },
                     "options": {
                         "flavor": obj.options.flavor
@@ -910,6 +908,14 @@ function createDataDamageOnlyOnePrecision(damages) {
         return createDataDamage(fDamages.concat(sDamages));
     }
     return createDataDamage(damages.map(a=>a.rolls).flat().map(a=>a.terms).flat().map(a=>a.rolls).flat());
+}
+
+function getSumDamage(damage, mod) {
+    if (damage[2]&&damage[3]) {
+        return damage[2] * damage[3] * mod;
+    } else if (damage[5] && damage[6]) {
+        return ((damage[5] * damage[6]) + (damage[8] ?? 0)) * mod;
+    }
 }
 
 function createDataDamage(arr) {
