@@ -53,6 +53,7 @@
 ### Spells
 
 - Stabilize
+- Ki Rush
 - Aberrant Whispers
 - Adaptive Ablation
 - Agile Feet

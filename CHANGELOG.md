@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.2.51
+
+- Add Ki Rush
+
 ## Version 0.2.50
 
 - Fix issues with Marked for Death
