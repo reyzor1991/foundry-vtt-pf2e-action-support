@@ -520,7 +520,11 @@ function stabilize(message, _obj) {
     if  (_obj.slug === "stabilize") {
         game.user.targets.forEach(tt => {
             if (hasCondition(tt.actor, "dying")) {
-                tt.actor.toggleCondition("dying")
+                if (hasPermissions(tt.actor)) {
+                    tt.actor.toggleCondition("dying")
+                } else {
+                    socketlibSocket._sendRequest("toggleConditions", [tt.actor.uuid, "dying"], 0)
+                }
             }
         });
     }

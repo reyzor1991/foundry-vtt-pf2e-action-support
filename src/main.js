@@ -174,6 +174,7 @@ const setupSocket = () => {
       socketlibSocket.register("createFeintEffectOnTarget", _socketCreateFeintEffectOnTarget);
       socketlibSocket.register("deleteEffect", _socketDeleteEffect);
       socketlibSocket.register("sendGMNotification", sendGMNotification);
+      socketlibSocket.register("toggleConditions", toggleConditions);
   }
   return !!globalThis.socketlib
 }
@@ -184,6 +185,10 @@ Hooks.once('setup', function () {
 
 async function _socketDeleteEffect(targetId) {
     (await fromUuid(targetId)).delete()
+}
+
+async function toggleConditions(targetId, slug) {
+    (await fromUuid(targetId)).toggleCondition(slug)
 }
 
 async function _socketCreateFeintEffectOnTarget(effect, targetId) {

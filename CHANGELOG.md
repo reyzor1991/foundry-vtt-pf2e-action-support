@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.2.52
+
+- Fix Stabilize
+
 ## Version 0.2.51
 
 - Add Ki Rush
