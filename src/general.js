@@ -278,17 +278,17 @@ function saveBombs(message) {
 
 function saveAffliction(message) {
     if (eqMessageDCLabel(message, 'Addictive Exhaustion DC')) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.aODJbcFmhQcbllba")
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.ecHne25ZfJhUlu3m")
     } else if (eqMessageDCLabel(message, "Ghoul Fever DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.FwevQUDFd1uTU8cR")
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.cA3HX5HisHuBFyuX")
     } else if (eqMessageDCLabel(message, "Alcohol DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.N12lBsMmAKvO3mSh")
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.xDCrZs790Liytu3S")
     } else if (eqMessageDCLabel(message, "Dream Spider Venom DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.PxVQlg6YFmuV4INb")
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.I4CmarwZc88I0kzz")
     } else if (eqMessageDCLabel(message, "Tendriculos DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.llqImM8DAHdb4Pax")
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.iUQnJwayQ85D9Npi")
     } else if (eqMessageDCLabel(message, "Serpentfolk Venom DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.QueFYtT56FG0ZDN5")
+        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.CX8koZy7avXyAWfN")
     }
 }
 

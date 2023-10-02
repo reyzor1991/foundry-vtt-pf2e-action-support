@@ -51,7 +51,7 @@ Hooks.once("init", () => {
     });
     game.settings.register(moduleName, "affliction", {
         name: "Handle afflictions",
-        hint: "Automates things like Ghoul Fever. Under dev feature, need to update pf2e core manually (unstable feature)",
+        hint: "Automates things like Ghoul Fever. Under dev feature, need to update pf2e core manually (tested feature, need reload)",
         scope: "world",
         config: true,
         default: false,
@@ -564,15 +564,7 @@ async function handleAffection(message, eff_uuid) {
     if (!game.settings.get(moduleName, "affliction")) {return}
     const affectionObj = hasAfflictionBySourceId(message.actor, eff_uuid);
     if (affectionObj) {
-        if (criticalSuccessMessageOutcome(message)) {
-            await affectionObj.decrease(true);
-        } else if (successMessageOutcome(message)) {
-            await affectionObj.decrease();
-        } else if (criticalFailureMessageOutcome(message)) {
-            await affectionObj.increase(true);
-        } else {
-            await affectionObj.increase();
-        }
+        return
     } else if (failureMessageOutcome(message)) {
         afflictionEffect(message, eff_uuid)
     } else if (criticalFailureMessageOutcome(message)) {
