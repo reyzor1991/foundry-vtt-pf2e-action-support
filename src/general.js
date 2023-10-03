@@ -277,18 +277,34 @@ function saveBombs(message) {
 }
 
 function saveAffliction(message) {
-    if (eqMessageDCLabel(message, 'Addictive Exhaustion DC')) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.ecHne25ZfJhUlu3m")
-    } else if (eqMessageDCLabel(message, "Ghoul Fever DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.cA3HX5HisHuBFyuX")
-    } else if (eqMessageDCLabel(message, "Alcohol DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.xDCrZs790Liytu3S")
-    } else if (eqMessageDCLabel(message, "Dream Spider Venom DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.I4CmarwZc88I0kzz")
-    } else if (eqMessageDCLabel(message, "Tendriculos DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.iUQnJwayQ85D9Npi")
-    } else if (eqMessageDCLabel(message, "Serpentfolk Venom DC")) {
-        handleAffection(message, "Compendium.pf2e-action-support.action-support-afflictions.Item.CX8koZy7avXyAWfN")
+    if (!game.settings.get(moduleName, "affliction")) {return}
+    if (anySuccessMessageOutcome(message)) {return}
+
+    for (const label in afflictionMap) {
+        if (eqMessageDCLabel(message, label)) {
+            const uuid = afflictionMap[label];
+            if (!hasAfflictionBySourceId(message.actor, uuid)) {
+                if (criticalFailureMessageOutcome(message)) {
+                    afflictionEffect(message, uuid, true);
+                } else {
+                    afflictionEffect(message, uuid);
+                }
+            }
+        }
+    }
+}
+
+async function afflictionEffect(message, eff, crit=false) {
+    const aEffect = (await fromUuid(eff)).toObject();
+    aEffect.flags = mergeObject(aEffect.flags ?? {}, { core: { sourceId: eff } });
+    if (crit) {
+        aEffect.system.stage = 2
+    }
+
+    if (hasPermissions(message.actor)) {
+        message.actor.createEmbeddedDocuments("Item", [aEffect]);
+    } else {
+        socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, message.actor.uuid], 0)
     }
 }
 

@@ -1,6 +1,10 @@
 # Changelog
 
-## Version 0.2.52
+## Version 0.2.54
+
+- Handle Afflictions
+
+## Version 0.2.53
 
 - Update Afflictions
 

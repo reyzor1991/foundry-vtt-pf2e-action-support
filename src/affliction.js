@@ -1179,3 +1179,31 @@ Hooks.on('pf2e.startTurn', async (combatant, encounter, id) => {
         await affliction.onEndTurn();
     }
 });
+
+Hooks.once("init", () => {
+    const origin_advance = game.time.advance;
+    game.time.advance = async function(seconds, options) {
+        const r =  await origin_advance.call(this, seconds, options);
+
+        game.canvas.scene.tokens.forEach(token=>{
+            if (token?.actor?.itemTypes?.affliction) {
+                checkAffectionsStage(token, token.actor.itemTypes.affliction)
+            }
+        });
+
+        return r;
+    }
+})
+
+async function checkAffectionsStage(token, afflictions) {
+    afflictions.forEach(aff=>checkAffectionStage(token, aff))
+}
+
+async function checkAffectionStage(token, aff) {
+    aff.prepareBaseData()
+    if (aff.isExpired) {
+        await aff.delete()
+    } else  {
+        aff.onEndTurn();
+    }
+};

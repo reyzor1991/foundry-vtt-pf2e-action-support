@@ -560,32 +560,6 @@ async function deleteFeintEffects(message) {
     }
 }
 
-async function handleAffection(message, eff_uuid) {
-    if (!game.settings.get(moduleName, "affliction")) {return}
-    const affectionObj = hasAfflictionBySourceId(message.actor, eff_uuid);
-    if (affectionObj) {
-        return
-    } else if (failureMessageOutcome(message)) {
-        afflictionEffect(message, eff_uuid)
-    } else if (criticalFailureMessageOutcome(message)) {
-        afflictionEffect(message, eff_uuid, true)
-    }
-}
-
-async function afflictionEffect(message, eff, crit=false) {
-    const aEffect = (await fromUuid(eff)).toObject();
-    aEffect.flags = mergeObject(aEffect.flags ?? {}, { core: { sourceId: eff } });
-    if (crit) {
-        aEffect.system.stage = 2
-    }
-
-    if (hasPermissions(message.actor)) {
-        message.actor.createEmbeddedDocuments("Item", [aEffect]);
-    } else {
-        socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, message.actor.uuid], 0)
-    }
-}
-
 async function guidanceEffect(message, target) {
     const aEffect = (await fromUuid("Compendium.pf2e.spell-effects.Item.3qHKBDF7lrHw8jFK")).toObject();
 
