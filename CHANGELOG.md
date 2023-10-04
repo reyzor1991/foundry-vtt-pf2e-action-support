@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.2.55
+
+- Add Scare To Death
+
 ## Version 0.2.54
 
 - Handle Afflictions
