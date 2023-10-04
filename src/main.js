@@ -756,7 +756,12 @@ async function combinedDamage(name, primary, secondary, options, map, map2) {
         await primary.item.actor.toggleRollOption("all", "double-slice-second")
     }
 
-    const secondaryMessage = await secondary.variants[map2].roll({ event:ev });
+    let secondOpts = [];
+    if (primary.item.id === secondary.item.id && secondary.item.system.traits.value.includes("backswing") && (primaryDegreeOfSuccess === 0 || primaryDegreeOfSuccess === 1)) {
+        secondOpts.push("backswing-bonus")
+    }
+
+    const secondaryMessage = await secondary.variants[map2].roll({ event:ev, options: secondOpts });
     const secondaryDegreeOfSuccess = secondaryMessage.degreeOfSuccess;
 
     const fOpt = [...options, "macro:damage"];

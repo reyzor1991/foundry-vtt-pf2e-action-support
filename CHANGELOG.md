@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.2.56
+
+- Add Backswing
+
 ## Version 0.2.55
 
 - Add Scare To Death
