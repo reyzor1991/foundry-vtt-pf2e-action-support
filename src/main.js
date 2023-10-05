@@ -49,14 +49,6 @@ Hooks.once("init", () => {
         default: false,
         type: Boolean,
     });
-    game.settings.register(moduleName, "affliction", {
-        name: "Handle afflictions",
-        hint: "Automates things like Ghoul Fever. Under dev feature, need to update pf2e core manually (tested feature, need reload)",
-        scope: "world",
-        config: true,
-        default: false,
-        type: Boolean,
-    });
     game.settings.register(moduleName, "useBloodline", {
         name: "Handle Bloodlines",
         hint: "Automates the bloodline effect of the Sorcerer, when Sorcerer cast a spell from their bloodline it let's you choose between using it on yourself or on the target",
@@ -245,10 +237,6 @@ function hasEffectStart(actor, eff) {
 
 function hasEffect(actor, eff) {
     return actor?.itemTypes?.effect?.find((c => eff === c.slug))
-}
-
-function hasAfflictionBySourceId(actor, uuid) {
-    return actor?.itemTypes?.affliction?.find((c => uuid === c.sourceId))
 }
 
 function hasEffectBySourceId(actor, eff) {

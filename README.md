@@ -23,5 +23,3 @@
 See [ACTIONS.md](./ACTIONS.md)
 
 ### To get more info/examples visit [WIKI](https://github.com/reyzor1991/foundry-vtt-pf2e-action-support/wiki)
-
-### Afflictions(under dev feature)

@@ -276,38 +276,6 @@ function saveBombs(message) {
     }
 }
 
-function saveAffliction(message) {
-    if (!game.settings.get(moduleName, "affliction")) {return}
-    if (anySuccessMessageOutcome(message)) {return}
-
-    for (const label in afflictionMap) {
-        if (eqMessageDCLabel(message, label)) {
-            const uuid = afflictionMap[label];
-            if (!hasAfflictionBySourceId(message.actor, uuid)) {
-                if (criticalFailureMessageOutcome(message)) {
-                    afflictionEffect(message, uuid, true);
-                } else {
-                    afflictionEffect(message, uuid);
-                }
-            }
-        }
-    }
-}
-
-async function afflictionEffect(message, eff, crit=false) {
-    const aEffect = (await fromUuid(eff)).toObject();
-    aEffect.flags = mergeObject(aEffect.flags ?? {}, { core: { sourceId: eff } });
-    if (crit) {
-        aEffect.system.stage = 2
-    }
-
-    if (hasPermissions(message.actor)) {
-        message.actor.createEmbeddedDocuments("Item", [aEffect]);
-    } else {
-        socketlibSocket._sendRequest("createFeintEffectOnTarget", [aEffect, message.actor.uuid], 0)
-    }
-}
-
 function saveBane(message) {
     if (hasOption(message, 'item:slug:bane') && anySuccessMessageOutcome(message)) {
         setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.kLpCaiCZjenXCebV")
@@ -327,7 +295,6 @@ function savingThrow(message) {
     shatterStone(message)
     trueShapeBomb(message)
     saveBombs(message)
-    saveAffliction(message)
     saveBane(message)
 }
 

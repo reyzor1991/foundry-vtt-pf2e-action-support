@@ -27,7 +27,6 @@
       },
       "packs": [
         "action-support",
-        "action-support-afflictions",
         "action-support-macros"
       ]
     }
@@ -40,19 +39,6 @@
       "system": "pf2e",
       "private": false,
       "type": "Item",
-      "flags": {}
-    },
-    {
-      "label": "Action Support Afflictions",
-      "name": "action-support-afflictions",
-      "path": "packs/action-support-afflictions.db",
-      "system": "pf2e",
-      "private": false,
-      "type": "Item",
-      "ownership": {
-        "PLAYER": "OBSERVER",
-        "ASSISTANT": "OWNER"
-      },
       "flags": {}
     },
     {

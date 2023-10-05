@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.2.57
+
+- Delete Afflictions
+
 ## Version 0.2.56
 
 - Add Backswing
