@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.2.58
+
+- Fix Bow Staff - Flurry of Blows
+
 ## Version 0.2.57
 
 - Delete Afflictions

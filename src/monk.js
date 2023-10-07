@@ -35,11 +35,13 @@ async function flurryOfBlows(actor) {
     }
 
     let weaponOptions = '';
+    const hasRangedDesc = weapons.some(w=>w?.options?.includes("ranged") );
     for ( const w of weapons ) {
-        weaponOptions += `<option value=${w.item.id}>${w.item.name}</option>`
+        const isRanged = !hasRangedDesc ? '' :w?.options?.includes("ranged") ? " (Ranged Usage)" : ' (Melee Usage)';
+        weaponOptions += `<option value=${w.item.id} data-ranged="${!!w?.options?.includes("ranged")}">${w.item.name}${isRanged}</option>`
     }
 
-    const { currentWeapon, map } = await Dialog.wait({
+    const { weapon1, weapon2, map } = await Dialog.wait({
         title:"Flurry of Blows",
         content: `
             <div class="row-flurry"><div class="column-flurry first-flurry"><h3>First Attack</h3><select id="fob1" autofocus>
@@ -58,7 +60,12 @@ async function flurryOfBlows(actor) {
                 ok: {
                     label: "Attack",
                     icon: "<i class='fa-solid fa-hand-fist'></i>",
-                    callback: (html) => { return { currentWeapon: [html[0].querySelector("#fob1").value,html[0].querySelector("#fob2").value], map: parseInt(html[0].querySelector("#map").value)} }
+                    callback: (html) => { return {
+                            weapon1: [$(html[0]).find("#fob1").val(), $(html[0]).find("#fob1").find(':selected').attr('data-ranged')  === 'true'],
+                            weapon2: [$(html[0]).find("#fob2").val(), $(html[0]).find("#fob2").find(':selected').attr('data-ranged')  === 'true'],
+                            map: parseInt(html[0].querySelector("#map").value)
+                        }
+                    }
                 },
                 cancel: {
                     label: "Cancel",
@@ -72,17 +79,34 @@ async function flurryOfBlows(actor) {
             }
         },
         default: "ok"
-    });
+    },{},{width: 500});
 
-    if ( currentWeapon === undefined || map === undefined ) { return; }
+    if ( weapon1 === undefined || weapon2 === undefined || map === undefined ) { return; }
+
     const map2 = map === 2 ? map : map + 1;
 
-    let primary =  actor.system.actions.find( w => w.item.id === currentWeapon[0] );
-    let secondary =  actor.system.actions.find( w => w.item.id === currentWeapon[1] );
+    let primary =  getWeapon(actor, weapon1[0], weapon1[1]);
+    let secondary =  getWeapon(actor, weapon2[0], weapon2[1]);
+    if ( !primary || !secondary ) { ui.notifications.error("Can't map to correct weapon");return; }
 
     const options = actorFeat(actor, "stunning-fist") ? ["stunning-fist"] : [];
 
     combinedDamage("Flurry Of Blows", primary, secondary, options, map, map2);
+}
+
+function getWeapon(actor, id, isRanged) {
+    const _w = actor.system.actions.filter( w => w.item.id === id );
+    if (_w.length === 1) {
+        if (isRanged && _w[0].options?.includes("ranged")) {
+            return _w[0];
+        } else if (!isRanged && !_w[0].options?.includes("ranged")) {
+            return _w[0];
+        } else if (!isRanged && _w[0].options?.includes("ranged") && _w[0].altUsages.length > 0) {
+            return _w[0].altUsages.find(aa => !aa.options?.includes("ranged") ) ?? null
+        }
+        return null;
+    }
+    return null;
 }
 
 async function scareToDeath(actor) {
