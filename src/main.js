@@ -845,6 +845,13 @@ function createDataDamageOnlyOnePrecision(damages) {
         const sR = damages[1].rolls[0]._formula.match(/\+ (([0-9]{1,})d(4|6|8|10|12)|(\(([0-9]{1,})d(4|6|8|10|12)( \+ ([0-9]{1,}))?\)))\[precision\]/);
         const sRMod = damages[1].rolls[0].options.degreeOfSuccess === 3 ? 2 : 1;
 
+        if (!fR || !sR) {
+            ui.notifications.info(`Macro Error: handling combined damage`);
+            console.log(damages[0].rolls[0]._formula)
+            console.log(damages[1].rolls[0]._formula)
+            return
+        }
+
         if (getSumDamage(fR, fRMod) > getSumDamage(sR, sRMod)) {
             //delete from 2
             sDamages = sDamages.map(obj => {
@@ -875,7 +882,10 @@ function createDataDamageOnlyOnePrecision(damages) {
 }
 
 function getSumDamage(damage, mod) {
-    if (damage[2]&&damage[3]) {
+    if (!damage) {
+        ui.notifications.info(`Macro Error: calculate combined damage`);
+        return 0;
+    } else if (damage[2] && damage[3]) {
         return damage[2] * damage[3] * mod;
     } else if (damage[5] && damage[6]) {
         return ((damage[5] * damage[6]) + (damage[8] ?? 0)) * mod;
