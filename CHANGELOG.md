@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.2.60
+
+- Fix handling damage issue 
+
 ## Version 0.2.59
 
 - Fix Double Slice

@@ -840,9 +840,9 @@ function createDataDamageOnlyOnePrecision(damages) {
         let fDamages = damages[0].rolls.flat().map(a=>a.terms).flat().map(a=>a.rolls).flat();
         let sDamages = damages[1].rolls.flat().map(a=>a.terms).flat().map(a=>a.rolls).flat();
 
-        const fR = damages[0].rolls[0]._formula.match(/\+ (([0-9]{1,})d(4|6|8|10|12)|(\(([0-9]{1,})d(4|6|8|10|12)( \+ ([0-9]{1,}))?\)))\[precision\]/);
+        const fR = damages[0].rolls[0]._formula.match(/\+ (([0-9]{1,})d(4|6|8|10|12)|(\(([0-9]{1,})d(4|6|8|10|12)(\[doubled\])?( \+ ([0-9]{1,}))?\)))\[precision\]/);
         const fRMod = damages[0].rolls[0].options.degreeOfSuccess === 3 ? 2 : 1;
-        const sR = damages[1].rolls[0]._formula.match(/\+ (([0-9]{1,})d(4|6|8|10|12)|(\(([0-9]{1,})d(4|6|8|10|12)( \+ ([0-9]{1,}))?\)))\[precision\]/);
+        const sR = damages[1].rolls[0]._formula.match(/\+ (([0-9]{1,})d(4|6|8|10|12)|(\(([0-9]{1,})d(4|6|8|10|12)(\[doubled\])?( \+ ([0-9]{1,}))?\)))\[precision\]/);
         const sRMod = damages[1].rolls[0].options.degreeOfSuccess === 3 ? 2 : 1;
 
         if (!fR || !sR) {
