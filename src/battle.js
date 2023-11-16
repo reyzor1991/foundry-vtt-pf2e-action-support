@@ -23,6 +23,7 @@ const battleSelfEffectMap = {
     'armor-of-bones': 'Compendium.pf2e.spell-effects.Item.6BjslHgY01cNbKp5',//?maybe general
     'athletic-rush': 'Compendium.pf2e.spell-effects.Item.57lnrCzGUcNUBP2O',
     'true-strike': 'Compendium.pf2e.spell-effects.Item.fpGDAz2v5PG0zUSl',
+    'sure-strike': 'Compendium.pf2e.spell-effects.Item.fpGDAz2v5PG0zUSl',
     'gravity-weapon': 'Compendium.pf2e.spell-effects.Item.tNjimcyUwn8afeH6',//?maybe general
     //feat
     "smite-evil":"Compendium.pf2e.feat-effects.Item.AlnxieIRjqNqsdVu",
@@ -675,22 +676,22 @@ async function handleBattleFeats(message, _obj) {
 };
 
 async function handleBattleSpells(message, _obj) {
-    if (_obj.slug === "inspire-courage") {
+    if (_obj.slug === "inspire-courage" || _obj.slug === "courageous-anthem") {
         if (await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")) {
             setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")
         } else {
             game.user.targets.forEach(tt => {
-                if (!hasEffect(tt.actor, 'spell-effect-inspire-courage')) {
+                if (!hasEffect(tt.actor, 'spell-effect-inspire-courage') && !hasEffect(tt.actor, 'spell-effect-courageous-anthem')) {
                     setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.beReeFroAx24hj83")
                 }
             });
         }
-    } else if (_obj.slug === "inspire-defense") {
+    } else if (_obj.slug === "inspire-defense" || _obj.slug === "rallying-anthem") {
         if (await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")) {
             setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")
         } else {
             game.user.targets.forEach(tt => {
-                if (!hasEffect(tt.actor, 'spell-effect-inspire-courage')) {
+                if (!hasEffect(tt.actor, 'spell-effect-inspire-courage') && !hasEffect(tt.actor, 'spell-effect-rallying-anthem')) {
                     setEffectToActor(tt.actor, "Compendium.pf2e.spell-effects.Item.DLwTvjjnqs2sNGuG")
                 }
             });

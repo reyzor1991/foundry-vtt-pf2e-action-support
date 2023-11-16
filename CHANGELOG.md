@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.2.61
+- Fix remaster changes
+
 ## Version 0.2.60
 
 - Fix handling damage issue 

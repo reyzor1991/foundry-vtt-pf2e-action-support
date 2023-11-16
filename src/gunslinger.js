@@ -1,6 +1,6 @@
 function pairedShotsWeapons(actor) {
     return actor.system.actions
-        .filter( h => h.item?.isRanged && h.item?.ammo)
+        .filter( h => h.ready && h.item?.isRanged && h.item?.ammo)
         .filter( h => h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1)
         .filter( h => h.item?.group === "firearm" || h.item?.otherTags?.has("crossbow"));
 };

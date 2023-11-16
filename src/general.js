@@ -34,6 +34,7 @@ const selfEffectMap = {
     "consolidated-overlay-panopticon": "Compendium.pf2e.feat-effects.Item.qSKVcw6brzrvfhUM",
     //spell
     "false-life": "Compendium.pf2e.spell-effects.Item.PANUWN5xXC20WBg2",
+    "false-vitality": "Compendium.pf2e.spell-effects.Item.PANUWN5xXC20WBg2",
     "unusual-anatomy": "Compendium.pf2e.spell-effects.Item.LMzFBnOEPzDGzHg4",
 };
 const elixirEffectMap = {
@@ -738,6 +739,8 @@ function handleSpells(message, _obj) {
         setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.RawLEPwyT5CtCZ4D", "Protection", getSpellRange(message.actor, _obj))
     } else if  (_obj.slug === "stoneskin") {
         setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.JHpYudY14g0H4VWU", "Stoneskin", getSpellRange(message.actor, _obj))
+    } else if  (_obj.slug === "mountain-resilience") {
+        setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.JHpYudY14g0H4VWU", "Mountain Resilience", getSpellRange(message.actor, _obj))
     } else if  (_obj.slug === "energy-aegis") {
         setEffectToActorOrTarget(message, "Compendium.pf2e.spell-effects.Item.4Lo2qb5PmavSsLNk", "Energy Aegis", getSpellRange(message.actor, _obj))
     } else if  (_obj.slug === "regenerate") {
@@ -772,9 +775,13 @@ function handleSpells(message, _obj) {
         setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.T5bk6UH7yuYog1Fp", message?.item?.level)
     } else if (_obj.slug === "mage-armor") {
         setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.qkwb5DD3zmKwvbk0", message?.item?.level)
+    } else if (_obj.slug === "mystic-armor") {
+        setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.qkwb5DD3zmKwvbk0", message?.item?.level)
     } else if (_obj.slug === "mirror-image" && !hasEffect(message.actor, 'spell-effect-mirror-image')) {
         setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.0PO5mFRhh9HxGAtv", message?.item?.level)
     } else if (_obj.slug === "spectral-hand") {
+        setEffectToActor(message.actor, effect_spectral_hand, message?.item?.level)
+    } else if (_obj.slug === "ghostly-carrier") {
         setEffectToActor(message.actor, effect_spectral_hand, message?.item?.level)
     } else if (_obj.slug === "see-the-unseen") {
         if (message?.item?.level >= 5) {

@@ -1,8 +1,8 @@
 async function inspireHeroics(actor) {
     if ( !actor ) { ui.notifications.info("Please select 1 token"); return;}
 
-    if (!actor.itemTypes.spell.find(a=>a.slug === "inspire-courage")) {
-        ui.notifications.warn(`${actor.name} does not have Inspire Courage spell!`);
+    if (!actor.itemTypes.spell.find(a=>a.slug === "inspire-heroics") && !actor.itemTypes.spell.find(a=>a.slug === "fortissimo-composition")) {
+        ui.notifications.warn(`${actor.name} does not have Inspire Heroics/Fortissimo Composition spell!`);
         return;
     }
 
@@ -14,8 +14,8 @@ async function inspireHeroics(actor) {
             <h3>DC of performance check</h3>
             <input id="spell-dc" type="number" min="0" value=${defDC} />
             <hr><h3>Spell effect for aura</h3><select id="spells">
-                <option value=0>Inspire Courage</option>
-                <option value=1>Inspire Defense</option>
+                <option value=0>Inspire Courage/Courageous Anthem</option>
+                <option value=1>Inspire Defense/Rallying Anthem</option>
             </select><hr>
         `,
         buttons: {

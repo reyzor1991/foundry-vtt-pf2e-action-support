@@ -1,19 +1,19 @@
 function flurryOfBlowsWeapons(actor) {
-    let weapons = actor.system.actions.filter( h => h.visible && h.item?.isMelee && h.item?.system?.traits?.value?.includes("unarmed") );
+    let weapons = actor.system.actions.filter( h => h.ready && h.visible && h.item?.isMelee && h.item?.system?.traits?.value?.includes("unarmed") );
 
     if ( actor.system.actions.some( e => e.visible && e.origin?.type === "effect" && e.origin?.slug.includes("stance") ) ) {
-        weapons = actor.system.actions.filter( e => e.visible && e.origin?.type === "effect" && e.origin?.slug.includes("stance") ).concat(actor.system.actions.filter( h => h.visible && h.item?.isMelee && h.item?.system?.traits?.value?.includes("unarmed") && h.origin?.type !== "effect" ));
+        weapons = actor.system.actions.filter( e => h.ready && e.visible && e.origin?.type === "effect" && e.origin?.slug.includes("stance") ).concat(actor.system.actions.filter( h => h.visible && h.item?.isMelee && h.item?.system?.traits?.value?.includes("unarmed") && h.origin?.type !== "effect" ));
     }
 
     if ( actor.itemTypes.feat.some( s => s.slug === "monastic-weaponry" ) && actor.system.actions.some( h => h.item?.isHeld && h.item?.system?.traits?.value.includes("monk") ) ) {
-        let baseWeapons = actor.system.actions.filter( h => h.item?.isHeld && h.ready && h.item?.system?.traits?.value.includes("monk") );
+        let baseWeapons = actor.system.actions.filter( h => h.ready && h.item?.isHeld && h.ready && h.item?.system?.traits?.value.includes("monk") );
         baseWeapons = baseWeapons.filter(a=>!a.item.isRanged).concat(baseWeapons.filter(a=>a.item.isRanged && a.altUsages.length > 0).map(a=>a.altUsages[0]))
 
         weapons = baseWeapons.concat(weapons)
     }
 
     if ( actor.itemTypes.effect.some( s => s.slug === "stance-monastic-archer-stance" ) && actor.system.actions.some( h => h.item?.isHeld && h.item?.group === "bow" && h.item?.reload === "0" ) ) {
-        weapons.unshift( actor.system.actions.find( h => h.item?.isHeld && h.item?.group === "bow" && h.item?.reload === "0" ) )
+        weapons.unshift( actor.system.actions.find( h => h.ready && h.item?.isHeld && h.item?.group === "bow" && h.item?.reload === "0" ) )
     }
 
     return weapons;

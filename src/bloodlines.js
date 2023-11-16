@@ -2,11 +2,13 @@ const bloodlineAberrantSpells = [
     "daze",
     "spider-sting",
     "touch-of-idiocy",
+    "stupefy",
     "vampiric-touch",
-    "vampiric-touch",
+    "vampiric-feast",
     "confusion",
     "black-tentacles",
     "feeblemind",
+    "never-mind",
     "warp-mind",
     "uncontrollable-dance",
     "spirit-song",
@@ -20,6 +22,7 @@ const bloodlineAngelicSpells = [
     "heal",
     "spiritual-weapon",
     "searing-light",
+    "holy-light",
     "divine-wrath",
     "flame-strike",
     "blade-barrier",
@@ -54,7 +57,9 @@ const bloodlineDiabolicSpells = [
     "enthrall",
     "suggestion",
     "crushing-despair",
+    "wave-of-despair",
     "true-seeing",
+    "truesight",
     "divine-decree",
     "divine-aura",
     "falling-stars",
@@ -66,6 +71,7 @@ const bloodlineDiabolicSpells = [
 const bloodlineDraconicSpells = [
     "shield",
     "true-strike",
+    "sure-strike",
     "resist-energy",
     "haste",
     "spell-immunity",
@@ -85,6 +91,7 @@ const bloodlineElementalSpells = [
     "resist-energy",
     "fireball",
     "freedom-of-movement",
+    "unfettered-movement",
     "elemental-form",
     "repulsion",
     "energy-aegis",
@@ -110,6 +117,7 @@ const bloodlineFeySpells = [
     "ghost-sound",
     "charm",
     "hideous-laughter",
+    "laughing-fit",
     "enthrall",
     "suggestion",
     "cloak-of-colors",
@@ -125,13 +133,26 @@ const bloodlineFeySpells = [
 const bloodlineGenieSpells = [
     "detect-magic",
     "illusory-disguise",
-    "variable",
+    "create-food",
+    "invisibility",
+    "enlarge",
+    "banishment",
+    "illusory-scene",
+    "punishing-winds",
+    "scintillating-pattern",
     "enthrall",
+    "elemental-form",
     "creation",
-    "variable",
+    "earthquake",
+    "quandary",
+    "desiccate",
+    "wall-of-stone",
+    "revealing-light",
+    "water-walk",
+    "control-water",
     "true-seeing",
+    "truesight",
     "energy-aegis",
-    "variable",
     "resplendent-mansion",
     "genies-veil",
     "hearts-desire",
@@ -142,10 +163,12 @@ const bloodlineHagSpells = [
     "daze",
     "illusory-disguise",
     "touch-of-idiocy",
+    "stupefy",
     "blindness",
     "outcasts-curse",
     "mariners-curse",
     "baleful-polymorph",
+    "cursed-metamorphosis",
     "warp-mind",
     "spiritual-epidemic",
     "natures-enmity",
@@ -162,6 +185,7 @@ const bloodlineHarrowSpells = [
     "suggestion",
     "shadow-siphon",
     "true-seeing",
+    "truesight",
     "retrocognition",
     "unrelenting-observation",
     "weird",
@@ -173,6 +197,7 @@ const bloodlineHarrowSpells = [
 const bloodlineImperialSpells = [
     "detect-magic",
     "magic-missile",
+    "force-barrage",
     "dispel-magic",
     "haste",
     "translocate",
@@ -180,6 +205,7 @@ const bloodlineImperialSpells = [
     "disintegrate",
     "prismatic-spray",
     "maze",
+    "quandary",
     "prismatic-sphere",
     "ancestral-memories",
     "extend-spell",
@@ -193,6 +219,7 @@ const bloodlineNymphSpells = [
     "animal-vision",
     "vital-beacon",
     "crushing-despair",
+    "wave-of-despair",
     "repulsion",
     "unfettered-pack",
     "moment-of-renewal",
@@ -208,6 +235,7 @@ const bloodlinePhoenixSpells = [
     "see-the-unseen",
     "fireball",
     "remove-curse",
+    "cleanse-affliction",
     "breath-of-life",
     "disintegrate",
     "contingency",
@@ -220,13 +248,17 @@ const bloodlinePhoenixSpells = [
 
 const bloodlinePsychopompSpells = [
     "disrupt-undead",
+    "vitality-lash",
     "heal",
     "calm",
     "searing-light",
+    "holy-light",
     "dimensional-anchor",
+    "planar-tether",
     "death-ward",
     "spirit-blast",
     "finger-of-death",
+    "execute",
     "spirit-song",
     "massacre",
     "sepulchral-mask",
@@ -236,6 +268,7 @@ const bloodlinePsychopompSpells = [
 
 const bloodlineShadowSpells = [
     "chill-touch",
+    "void-warp",
     "grim-tendrils",
     "darkness",
     "chilling-darkness",
@@ -252,15 +285,21 @@ const bloodlineShadowSpells = [
 
 const bloodlineUndeadSpells = [
     "chill-touch",
+    "void-warp",
     "harm",
     "false-life",
+    "false-vitality",
     "bind-undead",
     "talking-corpse",
     "cloudkill",
+    "toxic-cloud",
     "vampiric-exsanguination",
     "finger-of-death",
+    "execute",
     "horrid-wilting",
+    "desiccate",
     "wail-of-the-banshee",
+    "wails-of-the-damned",
     "undeaths-blessing",
     "drain-life",
     "grasping-grave",
@@ -420,7 +459,7 @@ async function bloodlineDiabolic(message, spell) {
         message,
         spell,
         damageEff,
-        ["true-seeing", "divine-aura", "embrace-the-pit"],//self
+        ["true-seeing", "truesight", "divine-aura", "embrace-the-pit"],//self
         [],//ally
         [],//combo
         (await fromUuid("Compendium.pf2e.feat-effects.Item.n1vhmOd7aNiuR3nk")).toObject()
@@ -441,7 +480,7 @@ async function bloodlineElemental(message, spell, isElem=false) {
         ee = bludDamageEff;
     }
 
-    const selfE = ["resist-energy", "freedom-of-movement", "elemental-form", "repulsion", "energy-aegis", "elemental-motion"];
+    const selfE = ["resist-energy", "freedom-of-movement", "unfettered-movement", "elemental-form", "repulsion", "energy-aegis", "elemental-motion"];
     if (isElem) {
         selfE.push("rising-surf")
     }
@@ -491,7 +530,7 @@ async function bloodlinePhoenix(message, spell) {
         spell,
         damageEff,
         ["detect-magic", "see-the-unseen", "contingency", "shroud-of-flame"],
-        ["remove-curse","breath-of-life","moment-of-renewal"],
+        ["remove-curse","cleanse-affliction", "breath-of-life","moment-of-renewal"],
         ["rejuvenating-flames"]
     )
 }
