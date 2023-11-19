@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.2.62
+- Fix bane aura
+
 ## Version 0.2.61
 - Fix remaster changes
 

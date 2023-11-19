@@ -636,7 +636,7 @@ async function bane(message, _obj) {
                 const all = (isActorCharacter(message.actor) ? enemyCombatant() :allyCombatant())
                     .filter(a=>!hasEffect(a.actor, "spell-effect-bane"))
                     .filter(a=>!hasEffect(a.actor, "effect-bane-immunity"))
-                    .filter(a=>distanceIsCorrect(message.token, a.token, 5 * baneLevel))
+                    .filter(a=>distanceIsCorrect(message.token, a.token, 10 * baneLevel))
 
                 setTimeout(function() {
                     rollDCBane(all, dc, _obj, _obj?.actor ?? message.actor);
