@@ -1,5 +1,4 @@
 const bloodlineAberrantSpells = [
-    "daze",
     "spider-sting",
     "touch-of-idiocy",
     "stupefy",
@@ -18,7 +17,6 @@ const bloodlineAberrantSpells = [
 ];
 
 const bloodlineAngelicSpells = [
-    "light",
     "heal",
     "spiritual-weapon",
     "searing-light",
@@ -35,7 +33,6 @@ const bloodlineAngelicSpells = [
 ];
 
 const bloodlineDemonicSpells = [
-    "acid-splash",
     "fear",
     "enlarge",
     "slow",
@@ -51,7 +48,6 @@ const bloodlineDemonicSpells = [
 ];
 
 const bloodlineDiabolicSpells = [
-    "produce-flame",
     "charm",
     "flaming-sphere",
     "enthrall",
@@ -69,7 +65,6 @@ const bloodlineDiabolicSpells = [
 ];
 
 const bloodlineDraconicSpells = [
-    "shield",
     "true-strike",
     "sure-strike",
     "resist-energy",
@@ -86,7 +81,6 @@ const bloodlineDraconicSpells = [
 ];
 
 const bloodlineElementalSpells = [
-    "produce-flame",
     "breathe-fire",
     "resist-energy",
     "fireball",
@@ -114,7 +108,6 @@ const elementalistSpells = [
 ];
 
 const bloodlineFeySpells = [
-    "ghost-sound",
     "charm",
     "hideous-laughter",
     "laughing-fit",
@@ -131,7 +124,6 @@ const bloodlineFeySpells = [
 ];
 
 const bloodlineGenieSpells = [
-    "detect-magic",
     "illusory-disguise",
     "create-food",
     "invisibility",
@@ -160,7 +152,6 @@ const bloodlineGenieSpells = [
 ];
 
 const bloodlineHagSpells = [
-    "daze",
     "illusory-disguise",
     "touch-of-idiocy",
     "stupefy",
@@ -178,7 +169,6 @@ const bloodlineHagSpells = [
 ];
 
 const bloodlineHarrowSpells = [
-    "detect-magic",
     "ill-omen",
     "augury",
     "wanderers-guide",
@@ -195,7 +185,6 @@ const bloodlineHarrowSpells = [
 ];
 
 const bloodlineImperialSpells = [
-    "detect-magic",
     "magic-missile",
     "force-barrage",
     "dispel-magic",
@@ -213,7 +202,6 @@ const bloodlineImperialSpells = [
 ];
 
 const bloodlineNymphSpells = [
-    "tangle-vine",
     "charm",
     "calm",
     "animal-vision",
@@ -230,7 +218,6 @@ const bloodlineNymphSpells = [
 ];
 
 const bloodlinePhoenixSpells = [
-    "detect-magic",
     "breathe-fire",
     "see-the-unseen",
     "fireball",
@@ -247,8 +234,6 @@ const bloodlinePhoenixSpells = [
 ];
 
 const bloodlinePsychopompSpells = [
-    "disrupt-undead",
-    "vitality-lash",
     "heal",
     "calm",
     "searing-light",
@@ -267,8 +252,6 @@ const bloodlinePsychopompSpells = [
 ];
 
 const bloodlineShadowSpells = [
-    "chill-touch",
-    "void-warp",
     "grim-tendrils",
     "darkness",
     "chilling-darkness",
@@ -284,8 +267,6 @@ const bloodlineShadowSpells = [
 ];
 
 const bloodlineUndeadSpells = [
-    "chill-touch",
-    "void-warp",
     "harm",
     "false-life",
     "false-vitality",
@@ -306,7 +287,6 @@ const bloodlineUndeadSpells = [
 ];
 
 const bloodlineWyrmblessedSpells = [
-    "read-aura",
     "mystic-armor",
     "resist-energy",
     "haste",
@@ -387,11 +367,11 @@ async function createDialogDamageOrSelfEffect(message, spell, damageEff, selfSpe
 
     let options = []
     if (allySpells.includes(spell.slug)) {
-        options = targetCharacters(message.actor.uuid).map(a => {
+        options = targetCharacters(message.actor).map(a => {
             return `<option value="${a.uuid}" data-effect="${eff}">${a.name}</option>`
         })
     } else if (comboSpells.includes(spell.slug)) {
-        options = targetCharacters(message.actor.uuid).map(a => {
+        options = targetCharacters(message.actor).map(a => {
             return `<option value="${a.uuid}" data-effect="${eff}">${a.name}</option>`
         })
         options.push(`<option value="${message.actor.uuid}" data-effect="${damageEff}">Add damage to target</option>`)
@@ -442,15 +422,15 @@ async function createDialogDamageOrSelfEffect(message, spell, damageEff, selfSpe
 
 
 async function bloodlineAberrant(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.UQ7vZgmfK0VSFS8A", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.Item.UQ7vZgmfK0VSFS8A");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.UQ7vZgmfK0VSFS8A", targetCharacters(message.actor), "Compendium.pf2e.feat-effects.Item.UQ7vZgmfK0VSFS8A");
 }
 
 async function bloodlineAngelic(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.s1tulrmW6teTFjVd", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.Item.s1tulrmW6teTFjVd");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.s1tulrmW6teTFjVd", targetCharacters(message.actor), "Compendium.pf2e.feat-effects.Item.s1tulrmW6teTFjVd");
 }
 
 async function bloodlineDemonic(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.aKRo5TIhUtu0kyEr", targetNpcs(), "Compendium.pf2e.feat-effects.Item.yfbP64r4a9e5oyli");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.aKRo5TIhUtu0kyEr", targetNpcs(message.actor), "Compendium.pf2e.feat-effects.Item.yfbP64r4a9e5oyli");
 }
 
 async function bloodlineDiabolic(message, spell) {
@@ -467,10 +447,10 @@ async function bloodlineDiabolic(message, spell) {
 }
 
 async function bloodlineDraconic(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.FNTTeJHiK6iOjrSq", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.Item.FNTTeJHiK6iOjrSq");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.FNTTeJHiK6iOjrSq", targetCharacters(message.actor), "Compendium.pf2e.feat-effects.Item.FNTTeJHiK6iOjrSq");
 }
 
-async function bloodlineElemental(message, spell, isElem=false) {
+async function bloodlineElemental(message, spell, isElem = false) {
     const damageEff = "Compendium.pf2e-action-support.action-support.Item.2yWSBNLWWYXXSfKZ";
     const bludDamageEff = "Compendium.pf2e-action-support.action-support.Item.KFoh6XzV382S9DDr";
 
@@ -497,16 +477,16 @@ async function bloodlineElemental(message, spell, isElem=false) {
 }
 
 async function bloodlineFey(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.rJpkKaPRGaH0pLse", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.Item.rJpkKaPRGaH0pLse");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.rJpkKaPRGaH0pLse", targetCharacters(message.actor), "Compendium.pf2e.feat-effects.Item.rJpkKaPRGaH0pLse");
 }
 
 async function bloodlineGenie(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.9AUcoY48H5LrVZiF", targetNpcs(), "Compendium.pf2e.feat-effects.Item.KVbS7AbhQdeuA0J6");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.9AUcoY48H5LrVZiF", targetNpcs(message.actor), "Compendium.pf2e.feat-effects.Item.KVbS7AbhQdeuA0J6");
 }
 
 async function bloodlineHag(message) {
     const effect = (await fromUuid("Compendium.pf2e.feat-effects.Item.6fb15XuSV4TNuVAT")).toObject();
-    effect.system.level = {value: message?.item?.level ?? 1};
+    effect.system.level = { value: message?.item?.level ?? 1 };
 
     message.actor.createEmbeddedDocuments("Item", [effect]);
 }
@@ -516,11 +496,11 @@ async function bloodlineHarrow(message) {
 }
 
 async function bloodlineImperial(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.vguxP8ukwVTWWWaA", targetCharacters(message.actor.uuid), "Compendium.pf2e.feat-effects.Item.vguxP8ukwVTWWWaA");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.vguxP8ukwVTWWWaA", targetCharacters(message.actor), "Compendium.pf2e.feat-effects.Item.vguxP8ukwVTWWWaA");
 }
 
 async function bloodlineNymph(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.SVGW8CLKwixFlnTv", targetNpcs(), "Compendium.pf2e.feat-effects.Item.ruRAfGJnik7lRavk");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.SVGW8CLKwixFlnTv", targetNpcs(message.actor), "Compendium.pf2e.feat-effects.Item.ruRAfGJnik7lRavk");
 }
 
 async function bloodlinePhoenix(message, spell) {
@@ -549,7 +529,7 @@ async function bloodlinePsychopomp(message, spell) {
 }
 
 async function bloodlineShadow(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.OqH6IaeOwRWkGPrk", targetNpcs(), "Compendium.pf2e.feat-effects.Item.Nv70aqcQgCBpDYp8");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.OqH6IaeOwRWkGPrk", targetNpcs(message.actor), "Compendium.pf2e.feat-effects.Item.Nv70aqcQgCBpDYp8");
 }
 
 async function bloodlineUndead(message, spell) {
@@ -565,42 +545,38 @@ async function bloodlineUndead(message, spell) {
 }
 
 async function bloodlineWyrmblessed(message) {
-    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.fILVhS5NuCtGXfri", targetNpcs(), "Compendium.pf2e.feat-effects.Item.aqnx6IDcB7ARLxS5");
+    createDialog(message.actor.uuid, "Compendium.pf2e.feat-effects.Item.fILVhS5NuCtGXfri", targetNpcs(message.actor), "Compendium.pf2e.feat-effects.Item.aqnx6IDcB7ARLxS5");
 }
 
 const bloodlineFeatMap = {
-    "bloodline-aberrant": {spells: bloodlineAberrantSpells, handler: bloodlineAberrant},
-    "bloodline-angelic": {spells: bloodlineAngelicSpells, handler: bloodlineAngelic},
-    "bloodline-demonic": {spells: bloodlineDemonicSpells, handler: bloodlineDemonic},
-    "bloodline-diabolic": {spells: bloodlineDiabolicSpells, handler: bloodlineDiabolic},
-    "bloodline-draconic": {spells: bloodlineDraconicSpells, handler: bloodlineDraconic},
-    "bloodline-elemental": {spells: bloodlineElementalSpells, handler: bloodlineElemental},
-    "bloodline-fey": {spells: bloodlineFeySpells, handler: bloodlineFey},
-    "bloodline-genie": {spells: bloodlineGenieSpells, handler: bloodlineGenie},
-    "bloodline-hag": {spells: bloodlineHagSpells, handler: bloodlineHag},
-    "bloodline-imperial": {spells: bloodlineImperialSpells, handler: bloodlineImperial},
-    "bloodline-nymph": {spells: bloodlineNymphSpells, handler: bloodlineNymph},
-    "bloodline-phoenix": {spells: bloodlinePhoenixSpells, handler: bloodlinePhoenix},
-    "bloodline-psychopomp": {spells: bloodlinePsychopompSpells, handler: bloodlinePsychopomp},
-    "bloodline-shadow": {spells: bloodlineShadowSpells, handler: bloodlineShadow},
-    "bloodline-undead": {spells: bloodlineUndeadSpells, handler: bloodlineUndead},
-    "bloodline-wyrmblessed": {spells: bloodlineWyrmblessedSpells, handler: bloodlineWyrmblessed},
+    "bloodline-aberrant": { spells: bloodlineAberrantSpells, handler: bloodlineAberrant },
+    "bloodline-angelic": { spells: bloodlineAngelicSpells, handler: bloodlineAngelic },
+    "bloodline-demonic": { spells: bloodlineDemonicSpells, handler: bloodlineDemonic },
+    "bloodline-diabolic": { spells: bloodlineDiabolicSpells, handler: bloodlineDiabolic },
+    "bloodline-draconic": { spells: bloodlineDraconicSpells, handler: bloodlineDraconic },
+    "bloodline-elemental": { spells: bloodlineElementalSpells, handler: bloodlineElemental },
+    "bloodline-fey": { spells: bloodlineFeySpells, handler: bloodlineFey },
+    "bloodline-genie": { spells: bloodlineGenieSpells, handler: bloodlineGenie },
+    "bloodline-hag": { spells: bloodlineHagSpells, handler: bloodlineHag },
+    "bloodline-imperial": { spells: bloodlineImperialSpells, handler: bloodlineImperial },
+    "bloodline-nymph": { spells: bloodlineNymphSpells, handler: bloodlineNymph },
+    "bloodline-phoenix": { spells: bloodlinePhoenixSpells, handler: bloodlinePhoenix },
+    "bloodline-psychopomp": { spells: bloodlinePsychopompSpells, handler: bloodlinePsychopomp },
+    "bloodline-shadow": { spells: bloodlineShadowSpells, handler: bloodlineShadow },
+    "bloodline-undead": { spells: bloodlineUndeadSpells, handler: bloodlineUndead },
+    "bloodline-wyrmblessed": { spells: bloodlineWyrmblessedSpells, handler: bloodlineWyrmblessed },
 }
 
-function targetNpcs() {
-    return game.combat ? game.combat.turns.filter(a=>!isActorCharacter(a.actor)).map(a=>a.actor) : [];
+function targetNpcs(self) {
+    return game.combat ? game.combat.turns.filter(a => a.actor.isEnemyOf(self)).map(a => a.actor) : [];
 }
 
 function targetCharacters(self) {
-    return game.combat ? game.combat.turns.filter(a=>isActorCharacter(a.actor) && a.actor.uuid != self).map(a=>a.actor) : [];
+    return game.combat ? game.combat.turns.filter(a => a.actor.isAllyOf(self)).map(a => a.actor) : [];
 }
 
-function enemyCombatant() {
-    return game.combat ? game.combat.turns.filter(a=>!isActorCharacter(a.actor)) : [];
-}
-
-function allyCombatant() {
-    return game.combat ? game.combat.turns.filter(a=>isActorCharacter(a.actor)) : [];
+function hasFeat(actor, feat) {
+    return actor?.itemTypes?.feat?.find((c => feat === c.slug))
 }
 
 Hooks.on('preCreateChatMessage', async (message)=>{
@@ -644,8 +620,4 @@ Hooks.on('preCreateChatMessage', async (message)=>{
             socketlibSocket._sendRequest("deleteEffect", [eff.uuid], 0)
         }
     }
-})
-
-function isActorCharacter(actor) {
-    return ["character", "npc"].includes(actor?.type) && actor?.alliance === "party";
-}
+});
