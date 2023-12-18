@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.2.65
+- Fix critical specialization
+
+## Version 0.2.64
+- Fix bloodline
+
+## Version 0.2.63
+- Add knockdown
+
 ## Version 0.2.62
 - Fix bane aura
 
