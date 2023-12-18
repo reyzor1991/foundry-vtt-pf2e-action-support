@@ -568,7 +568,7 @@ function criticalSpecialization(message) {
     if (!game.settings.get(moduleName, "criticalSpecialization")){return;}
     if (!criticalSuccessMessageOutcome(message)) {return;}
     if (!message.actor || !message.item?.group || !message.target?.actor) {return;}
-    if (["dart","knife","pick"].includes(message.item.group)) {return;}
+    if (["dart","knife","pick", "crossbow"].includes(message.item.group)) {return;}
     if (
         !message.actor.synthetics.criticalSpecalizations.standard.some(b=>b(message.item, message.flags.pf2e?.context?.options))
         && !message.actor.synthetics.criticalSpecalizations.alternate.some(b=>b(message.item, message.flags.pf2e?.context?.options))
@@ -578,16 +578,20 @@ function criticalSpecialization(message) {
 
     if (message.item.group === "sword") {
        effectWithActorNextTurn(message, message.target.actor, effect_off_guard_start_turn)
-    } else if (message.item.group === "hammer" || message.item.group === "flail") {
-        increaseConditionForTarget(message, "prone");
     } else if (message.item.group === "spear") {
        effectWithActorNextTurn(message, message.target.actor, effect_clumsy_start_turn)
     } else if (message.item.group === "bow") {
         if (message.target.token.elevation === 0) {
             increaseConditionForTarget(message, "immobilized");
         }
-    } else if (["brawling", "firearm", "sling"].includes(message.item.group) && game.settings.get(moduleName, "criticalSpecializationRoll")) {
+    } else if (["brawling", "firearm", "sling", "hammer"].includes(message.item.group) && game.settings.get(moduleName, "criticalSpecializationRoll")) {
         message.target.actor.saves.fortitude.roll({
+            skipDialog:true,
+            dc: { label: `${message.item.group.capitalize()} Critical Specialization DC`, value: message.actor.attributes.classDC.value },
+            origin:message.actor
+        })
+    } else if (["flail"].includes(message.item.group) && game.settings.get(moduleName, "criticalSpecializationRoll")) {
+        message.target.actor.saves.reflex.roll({
             skipDialog:true,
             dc: { label: `${message.item.group.capitalize()} Critical Specialization DC`, value: message.actor.attributes.classDC.value },
             origin:message.actor
@@ -834,6 +838,8 @@ function saveCriticalSpecialization(message) {
         increaseConditionForActor(message, "stunned", 1);
     } else if (eqMessageDCLabel(message, "Brawling Critical Specialization DC")) {
         increaseConditionForActor(message, "slowed", 1);
+    } else if (eqMessageDCLabel(message, "Hammer Critical Specialization DC") || eqMessageDCLabel(message, "Flail Critical Specialization DC")) {
+        increaseConditionForActor(message, "prone");
     }
 }
 
