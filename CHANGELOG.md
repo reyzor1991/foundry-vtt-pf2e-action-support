@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.2.66
+- Fix Lay on hands
+
 ## Version 0.2.65
 - Fix critical specialization
 

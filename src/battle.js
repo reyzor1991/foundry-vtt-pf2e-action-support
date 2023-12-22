@@ -546,15 +546,12 @@ function ghostCharge(message) {
 
 function layOnHands(message) {
     if (hasOption(message, "item:slug:lay-on-hands") && game.user.targets.first()?.actor?.type === "character") {
-        setEffectToActorOrTarget(
-            message,
-            actorFeat(message.actor, "accelerating-touch")
+        let target = game.user.targets.first()?.actor;
+        if (target) {
+            effectWithActorNextTurn(message, target, actorFeat(message.actor, "accelerating-touch")
                 ? "Compendium.pf2e.spell-effects.Item.alyNtkHLNnt98Ewz"
-                : "Compendium.pf2e.spell-effects.Item.lyLMiauxIVUM3oF1",
-            "Lay on hands",
-            getSpellRange(message.actor, message.item),
-             true
-        )
+                : "Compendium.pf2e.spell-effects.Item.lyLMiauxIVUM3oF1")
+        }
     }
 }
 
@@ -704,6 +701,10 @@ async function handleBattleSpells(message, _obj) {
         setEffectToActorOrTarget(message, effect_allegro, "Allegro", getSpellRange(message.actor, _obj))
     } else if (_obj.slug === "ki-strike") {
         setEffectToActor(message.actor, "Compendium.pf2e.spell-effects.Item.8olfnTmWh0GGPDqX")
+    } else if (_obj.slug === "dirge-of-doom") {
+        if (await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.wOcAf3pf04cTM4Uk")) {
+            setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.wOcAf3pf04cTM4Uk")
+        }
     } else if (_obj.slug === "lingering-composition") {
         const macLC = await fromUuid('Compendium.xdy-pf2e-workbench.asymonous-benefactor-macros-internal.Macro.5CLSiG3QPj5xbhBk');
         if (macLC) {

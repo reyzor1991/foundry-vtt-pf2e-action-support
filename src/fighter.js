@@ -129,13 +129,13 @@ async function knockdown(actor) {
 
     if (pd) {
         if (actor?.itemTypes?.feat?.find(c => "improved-knockdown" === c.slug) || actor?.itemTypes?.feat?.find(c => "crashing-slam" === c.slug) ) {
-            await game.actionsupportengine.increaseConditionForActor(game.user.targets.first().actor, "prone");
+            increaseConditionForActor(game.user.targets.first().actor, "prone");
 
             let formula = "1d6[bludgeoning]";
             if (primary.item.hands === '2') {
                 formula = `${primary.item.system.damage.die}[bludgeoning]`
             }
-            await game.actionsupportengine.applyDamage(game.user.targets.first().actor, game.user.targets.first(), formula);
+            applyDamage(game.user.targets.first().actor, game.user.targets.first(), formula);
         } else {
             let modifiers = [new game.pf2e.Modifier({ label: "PF2E.MultipleAttackPenalty", modifier: map > 0 ? Math.min(2, map) * -5 : map })]
             game.pf2e.actions.trip({modifiers, event: ev });
