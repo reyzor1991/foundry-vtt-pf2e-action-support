@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.2.67
+- Fix Flurry of Blows
+
 ## Version 0.2.66
 - Fix Lay on hands
 
