@@ -6,7 +6,7 @@ function huntedShotWeapons(actor) {
 
 function twinTakedownWeapons(actor) {
     return actor.system.actions
-        .filter( h => h.ready && h.item?.isMelee && h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1 && !h.item?.system?.traits?.value?.includes("unarmed") );
+        .filter( h => h.ready && (h.item?.isMelee || (h?.item?.isRanged && h.altUsages[0]?.options?.includes('melee') )) && h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1 && !h.item?.system?.traits?.value?.includes("unarmed") );
 };
 
 async function huntedShot(actor) {
@@ -112,11 +112,11 @@ async function twinTakedown(actor) {
     if ( map === undefined ) { return; }
     const map2 = map === 2 ? map : map + 1;
 
-    let primary =  actor.system.actions.find( w => w.item.id === weapons[0].item.id );
-    let secondary =  actor.system.actions.find( w => w.item.id === weapons[1].item.id );
+    let primary = weapons[0].item.isMelee ? weapons[0] : weapons[0].altUsages[0] ;
+    let secondary = weapons[1].item.isMelee ? weapons[1] : weapons[1].altUsages[0] ;
     if (primary.item.system.traits.value.includes("agile")) {
-        primary =  actor.system.actions.find( w => w.item.id === weapons[1].item.id );
-        secondary =  actor.system.actions.find( w => w.item.id === weapons[0].item.id );
+        primary = weapons[1].item.isMelee ? weapons[1] : weapons[1].altUsages[0] ;
+        secondary = weapons[0].item.isMelee ? weapons[0] : weapons[0].altUsages[0] ;
     }
 
     combinedDamage("Twin Takedown", primary, secondary, [], map, map2);

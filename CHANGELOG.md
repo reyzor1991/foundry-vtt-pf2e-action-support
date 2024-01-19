@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.2.68
+- Fix Twin Takedown - combination weapons
+
 ## Version 0.2.67
 - Fix Flurry of Blows
 
