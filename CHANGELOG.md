@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.2.69
+- Fix Flurry of Blow, critical specialization
+
 ## Version 0.2.68
 - Fix Twin Takedown - combination weapons
 

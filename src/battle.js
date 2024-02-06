@@ -567,8 +567,8 @@ function criticalSpecialization(message) {
     if (!message.actor || !message.item?.group || !message.target?.actor) {return;}
     if (["dart","knife","pick", "crossbow"].includes(message.item.group)) {return;}
     if (
-        !message.actor.synthetics.criticalSpecalizations.standard.some(b=>b(message.item, message.flags.pf2e?.context?.options))
-        && !message.actor.synthetics.criticalSpecalizations.alternate.some(b=>b(message.item, message.flags.pf2e?.context?.options))
+        !message.actor.synthetics.criticalSpecializations.standard.some(b=>b(message.item, message.flags.pf2e?.context?.options))
+        && !message.actor.synthetics.criticalSpecializations.alternate.some(b=>b(message.item, message.flags.pf2e?.context?.options))
     ) {
         return;
     }
