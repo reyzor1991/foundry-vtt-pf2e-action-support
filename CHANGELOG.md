@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.2.70
+- Apply effect to target when is used until Actor next turn
+
 ## Version 0.2.69
 - Fix Flurry of Blow, critical specialization
 

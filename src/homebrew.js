@@ -4,6 +4,7 @@ const Target = {
   TargetEffect: "Apply effect to target when use action",
   SelfOrTargetEffect: "Apply effect to actor or 1 target when use action",
   TargetsEffect: "Apply effect to all targets when use action",
+  TargetEffectActorNextTurn: "Apply effect to target when is used until Actor next turn",
 }
 
 const Requirement = {
@@ -263,5 +264,7 @@ async function handleTarget(targetType, effect, message, _obj=undefined) {
         game.user.targets.forEach(tt => {
             setEffectToActor(tt.actor, effect, message?.item?.level)
         });
+    } else if (targetType === "TargetEffectActorNextTurn") {
+        setEffectToTarget(message, effect, true)
     }
 };

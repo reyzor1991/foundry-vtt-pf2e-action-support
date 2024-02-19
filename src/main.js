@@ -386,25 +386,42 @@ async function setFeintEffect(message, isCrit=false, isCritFail=false) {
     }
 }
 
-async function setEffectToActor(actor, eff, level=undefined) {
-    if (hasPermissions(actor)) {
-        let source = await fromUuid(eff)
-        let withBa = hasEffectBySourceId(actor, eff);
-        if (withBa && withBa.system.badge) {
-            withBa.update({
-                "system.badge.value": withBa.system.badge.value += 1
-            })
-        } else {
-            source = source.toObject();
-            source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: eff } });
-            if (level) {
-                source.system.level = {'value': level};
-            }
-            await actor.createEmbeddedDocuments("Item", [source]);
-        }
-    } else {
-        socketlibSocket._sendRequest("createEffects", [{'actorUuid': actor.uuid, 'eff': eff, "level": level}], 0)
+async function setEffectToActor(
+  actor,
+  effUuid,
+  level = undefined,
+  optionalData = { name: undefined, icon: undefined, origin: undefined, duplication: false }
+) {
+  if (!hasPermissions(actor)) {
+    socketlibSocket._sendRequest("createEffects", [{'actorUuid': actor.uuid, 'eff': eff, "level": level}], 0)
+    return;
+  }
+
+  let source = await fromUuid(effUuid);
+  let withBa = hasEffectBySourceId(actor, effUuid);
+  if (withBa && withBa.system.badge) {
+    withBa.update({
+      "system.badge.value": (withBa.system.badge.value += 1),
+    });
+  } else if (!withBa || optionalData?.duplication) {
+    source = source.toObject();
+    if (optionalData?.name) {
+      source.name = optionalData.name;
     }
+    if (optionalData?.icon) {
+      source.img = optionalData.icon;
+    }
+    source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: effUuid } });
+    if (level) {
+      source.system.level = { value: level };
+    }
+    if (optionalData?.origin) {
+      source.system.context = mergeObject(source.system.context ?? {}, {
+        origin: optionalData?.origin,
+      });
+    }
+    await actor.createEmbeddedDocuments("Item", [source]);
+  }
 }
 
 async function increaseConditionForActor(message, condition, value=undefined) {
@@ -447,9 +464,11 @@ async function setEffectToActorOrTarget(message, effectUUID, spellName, spellRan
     }
 }
 
-async function setEffectToTarget(message, effectUUID) {
+async function setEffectToTarget(message, effectUUID, nextTurn=false) {
     if (game.user.targets.size === 1) {
-        setEffectToActor(game.user.targets.first().actor, effectUUID)
+        setEffectToActor(game.user.targets.first().actor, effectUUID, message?.item?.level, (
+            nextTurn? {origin: { actor: message?.actor?.uuid, item: message?.item?.uuid, token: message?.token?.uuid },} :undefined
+        ))
     } else {
         ui.notifications.info(`${message.actor.name} chose incorrect count of targets for effect`);
     }
