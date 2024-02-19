@@ -885,3 +885,24 @@ function handleEncounterMessage(message) {
 
     handleBattleSelfAssignedEffects(message);
 }
+
+Hooks.on("createItem", async (item, data, id) => {
+  if (!game.user.isGM) {
+    return;
+  }
+
+  removeStances(item, data, id)
+});
+
+async function removeStances(item, data, id) {
+    if (item.sourceId != "Compendium.pf2e.conditionitems.Item.fBnFDH2MTzgFijKf") {return}//Unconscious
+
+    item.actor.itemTypes.effect
+        .filter(a=>a.slug.startsWith('stance-'))
+        .forEach(eff => {
+            eff.delete()
+        });
+
+        hasEffectBySourceId(item.actor, "Compendium.pf2e.feat-effects.Item.z3uyCMBddrPK5umr")?.delete();
+        hasEffectBySourceId(item.actor, "Compendium.pf2e.feat-effects.Item.RoGEt7lrCdfaueB9")?.delete();
+}
