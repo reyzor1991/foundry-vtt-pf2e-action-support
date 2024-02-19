@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.2.71
+- Delete rage when unconscious
+
 ## Version 0.2.70
 - Apply effect to target when is used until Actor next turn
 
