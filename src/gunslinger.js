@@ -2,7 +2,7 @@ function pairedShotsWeapons(actor) {
     return actor.system.actions
         .filter( h => h.ready && h.item?.isRanged && h.item?.ammo)
         .filter( h => h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1)
-        .filter( h => h.item?.group === "firearm" || h.item?.otherTags?.has("crossbow"));
+        .filter( h => ["firearm", "crossbow"].includes(h.item?.group));
 };
 
 
@@ -17,7 +17,7 @@ async function pairedShots(actor) {
 
     const weapons = pairedShotsWeapons(actor);
     if (weapons.length != 2) {
-        ui.notifications.warn(`${actor.name} needs only 2 one-handed melee weapons can be equipped at a time.'`);
+        ui.notifications.warn(`${actor.name} needs only 2 one-handed weapons,  firearm or crossbow.'`);
         return;
     }
 

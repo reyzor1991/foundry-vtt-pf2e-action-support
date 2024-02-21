@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.2.72
+- Fix paired shot
+
 ## Version 0.2.71
 - Delete rage when unconscious
 
