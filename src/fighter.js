@@ -1,6 +1,6 @@
 function doubleSliceWeapons(actor) {
     return actor.system.actions
-        .filter( h => h.ready && (h.item?.isMelee || (h.item?.isThrown && actorFeat(actor, "double-slice"))) && h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1 && !h.item?.system?.traits?.value?.includes("unarmed") );
+        .filter( h => h.ready && (h.item?.isMelee || ((h.item?.isThrown || h.item?.isRanged) && actorFeat(actor, "double-slice"))) && h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1 && !h.item?.system?.traits?.value?.includes("unarmed") );
 };
 
 
