@@ -1,8 +1,22 @@
 function doubleSliceWeapons(actor) {
-    return actor.system.actions
-        .filter( h => h.ready && h.item?.isMelee && h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1 && !h.item?.system?.traits?.value?.includes("unarmed") );
-};
+    let weapons =  actor.system.actions
+        .filter( h => h.ready && h.item?.isMelee && h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1 && !h.item?.system?.traits?.value?.includes("unarmed") )
+        .map(a=>[a, a.item.name]);
 
+    //Dual Thrower
+    if (actorFeat(actor, "dual-thrower" )) {
+        let comboThrows = actor.system.actions.filter( h => h.ready && h.altUsages?.[0]?.item.isThrown)
+            .map(a=>[a.altUsages?.[0], `${a.altUsages?.[0].item.name} Throw`])
+
+        let throws = actor.system.actions.filter( h => h.ready && (h.item.isThrown || (h.item?.isRanged && h.item?.handsHeld === 1 && h.item?.ammo)))
+            .map(a=>[a, `${a.item.name} Throw`])
+
+        weapons = weapons.concat(comboThrows).concat(throws);
+    }
+
+
+    return weapons
+};
 
 async function doubleSlice(actor) {
     if ( !actor ) { ui.notifications.info("Please select 1 token"); return;}
@@ -14,14 +28,27 @@ async function doubleSlice(actor) {
     }
 
     const weapons = doubleSliceWeapons(actor);
-    if (weapons.length != 2) {
+    if (new Set(weapons.map(a=>a[0].item.uuid)).size < 2) {
         ui.notifications.warn(`${actor.name} needs only 2 one-handed melee weapons can be equipped at a time.'`);
         return;
     }
 
-    const { map } = await Dialog.wait({
+    let weaponOptions = '';
+    let weaponOptions2 = '';
+    for (const [i, value] of weapons.entries()) {
+        weaponOptions += `<option value=${i}>${value[1]}</option>`
+        weaponOptions2 += `<option value=${i} ${i === 1 ? 'selected':''}>${value[1]}</option>`
+    }
+
+    const { weapon1, weapon2, map } = await Dialog.wait({
         title:"Double Slice",
         content: `
+        <div class="row-flurry"><div class="column-flurry first-flurry"><h3>First Attack</h3><select id="fob1" autofocus>
+                ${weaponOptions}
+            </select></div><div class="column-flurry second-flurry"><h3>Second Attack</h3>
+            <select id="fob2">
+                ${weaponOptions2}
+            </select></div></div><hr>
             <h3>Multiple Attack Penalty</h3>
                 <select id="map">
                 <option value=0>No MAP</option>
@@ -33,7 +60,11 @@ async function doubleSlice(actor) {
                 ok: {
                     label: "Attack",
                     icon: "<i class='fa-solid fa-hand-fist'></i>",
-                    callback: (html) => { return { map: parseInt(html[0].querySelector("#map").value)} }
+                    callback: (html) => { return {
+                        map: parseInt(html[0].querySelector("#map").value),
+                        weapon1: $(html[0]).find("#fob1").val(),
+                        weapon2: $(html[0]).find("#fob2").val(),
+                    } }
                 },
                 cancel: {
                     label: "Cancel",
@@ -45,15 +76,14 @@ async function doubleSlice(actor) {
         },
         default: "ok"
     });
-
-    if ( map === undefined ) { return; }
-
-    let primary =  actor.system.actions.find( w => w.item.id === weapons[0].item.id );
-    let secondary =  actor.system.actions.find( w => w.item.id === weapons[1].item.id );
-    if (primary.item.system.traits.value.includes("agile")) {
-        primary =  actor.system.actions.find( w => w.item.id === weapons[1].item.id );
-        secondary =  actor.system.actions.find( w => w.item.id === weapons[0].item.id );
+    if ( weapon1 === undefined || weapon2 === undefined || map === undefined ) { return; }
+    if ( weapon1 === weapon2) {
+        ui.notifications.info("Need to select different weapons");
+        return;
     }
+
+    let primary =  weapons[weapon1][0];
+    let secondary =  weapons[weapon2][0];
 
     combinedDamage("Double Slice", primary, secondary, ["double-slice-second"], map, map);
 }

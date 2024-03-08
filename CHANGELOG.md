@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.2.73
+- Add Dual Thrower
+
 ## Version 0.2.72
 - Fix paired shot
 
