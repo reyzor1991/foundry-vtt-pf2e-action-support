@@ -627,13 +627,21 @@ async function rollDCBane(combatants,dc,item, origin) {
     })
 }
 
+function isActorCharacter(actor) {
+    return ["character", "npc", "familiar"].includes(actor?.type) && actor?.alliance === "party";
+}
+
+function enemyCombatants(actor) {
+  return game.combat ? game.combat.turns.filter((a) => a.actor.isEnemyOf(actor)) : [];
+}
+
 async function bane(message, _obj) {
     if (_obj.slug === "bane") {
         setEffectToActor(message.actor, "Compendium.pf2e-action-support.action-support.Item.FcUe8TT7bhqlURIf").then(()=> {
             if (_obj.spellcasting.statistic.dc.value) {
                 const dc = _obj.spellcasting.statistic.dc.value;
                 const baneLevel = hasEffect(message.actor, "effect-aura-bane")?.system?.badge?.value ?? 1;
-                const all = (isActorCharacter(message.actor) ? enemyCombatant() :allyCombatant())
+                const all = enemyCombatants(message.actor)
                     .filter(a=>!hasEffect(a.actor, "spell-effect-bane"))
                     .filter(a=>!hasEffect(a.actor, "effect-bane-immunity"))
                     .filter(a=>distanceIsCorrect(message.token, a.token, 10 * baneLevel))

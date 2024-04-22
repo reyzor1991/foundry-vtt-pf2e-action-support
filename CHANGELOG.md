@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.2.74
+- Fix base immunity
+
 ## Version 0.2.73
 - Add Dual Thrower
 
