@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.2.76
+- Fix double slice
+
+## Version 0.2.75
+- Adapt macros for NPC
+
 ## Version 0.2.74
 - Fix base immunity
 

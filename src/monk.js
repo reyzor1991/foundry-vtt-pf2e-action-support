@@ -1,6 +1,7 @@
 function flurryOfBlowsWeapons(actor) {
-    let weapons = actor.system.actions.filter( h => h.ready && h.visible && h.item?.isMelee && h.item?.system?.traits?.value?.includes("unarmed") );
-
+    let weapons = actor.system.actions.filter( h => h.item?.isMelee && h.item?.system?.traits?.value?.includes("unarmed")
+        && ( h.visible || actor.isOfType('npc'))
+    );
     if ( actor.system.actions.some( e => e.visible && e.origin?.type === "effect" && e.origin?.slug.includes("stance") ) ) {
         weapons = actor.system.actions.filter( e => h.ready && e.visible && e.origin?.type === "effect" && e.origin?.slug.includes("stance") ).concat(actor.system.actions.filter( h => h.visible && h.item?.isMelee && h.item?.system?.traits?.value?.includes("unarmed") && h.origin?.type !== "effect" ));
     }

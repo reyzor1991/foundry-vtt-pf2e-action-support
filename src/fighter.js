@@ -1,10 +1,14 @@
 function doubleSliceWeapons(actor) {
     let weapons =  actor.system.actions
-        .filter( h => h.ready && h.item?.isMelee && h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1 && !h.item?.system?.traits?.value?.includes("unarmed") )
+        .filter( h => h.ready && h.item?.isMelee && !h.item?.system?.traits?.value?.includes("unarmed")
+            && (
+                (h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1)  || actor.isOfType('npc')
+            )
+         )
         .map(a=>[a, a.item.name]);
 
     //Dual Thrower
-    if (actorFeat(actor, "dual-thrower" )) {
+    if (hasFeatBySourceId(actor, 'Compendium.pf2e.feats-srd.Item.zfTmb78yGZzNpgU3')) {
         let comboThrows = actor.system.actions.filter( h => h.ready && h.altUsages?.[0]?.item.isThrown)
             .map(a=>[a.altUsages?.[0], `${a.altUsages?.[0].item.name} Throw`])
 
@@ -22,7 +26,7 @@ async function doubleSlice(actor) {
     if ( !actor ) { ui.notifications.info("Please select 1 token"); return;}
     if (game.user.targets.size != 1) { ui.notifications.info(`Need to select 1 token as target`);return; }
 
-    if ( !actorFeat(actor, "double-slice" ) ) {
+    if ( !actorFeat(actor, "double-slice" ) && !actorAction(actor, "double-slice") ) {
         ui.notifications.warn(`${actor.name} does not have Double Slice!`);
         return;
     }
@@ -91,14 +95,21 @@ async function doubleSlice(actor) {
 
 
 function knockdownWeapons(actor) {
-    return actor.system.actions.filter( h => h.ready && h.visible && h.item?.isMelee && h.item?.isHeld && !h.item?.system?.traits?.value?.includes("unarmed")  );
+    return actor.system.actions.filter( h => h.ready  && h.item?.isMelee && !h.item?.system?.traits?.value?.includes("unarmed")
+        && (
+            ( h.item?.isHeld && h.visible) || actor.isOfType('npc')
+        )
+     );
 };
 
 async function knockdown(actor) {
     if ( !actor ) { ui.notifications.info("Please select 1 token"); return;}
     if (game.user.targets.size != 1) { ui.notifications.info(`Need to select 1 token as target`);return; }
 
-    if ( !actor?.itemTypes?.feat?.find(c => "knockdown" === c.slug) && !actor?.itemTypes?.feat?.find(c => "slam-down" === c.slug) ) {
+    if (
+        !actorAction(actor, "knockdown") &&  !actorAction(actor, "slam-down")
+        && !actorFeat(actor, "knockdown") &&  !actorFeat(actor, "slam-down")
+    ) {
         ui.notifications.warn(`${actor.name} does not have Knockdown/Slam Down!`);
         return;
     }

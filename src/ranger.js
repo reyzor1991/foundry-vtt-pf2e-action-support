@@ -1,12 +1,20 @@
 function huntedShotWeapons(actor) {
     return actor.system.actions
-        .filter( h => h.ready && h.visible && h.item?.isRanged && (h.item?.ammo || h.item?.isThrowable))
-        .filter( h => "0" === h?.item?.reload);
+        .filter(
+            h => h.ready && h.item?.isRanged && (
+                (h.visible && "0" === h?.item?.reload && (h.item?.ammo || h.item?.isThrowable)) || actor.isOfType('npc')
+            )
+        );
 };
 
 function twinTakedownWeapons(actor) {
     return actor.system.actions
-        .filter( h => h.ready && (h.item?.isMelee || (h?.item?.isRanged && h.altUsages[0]?.options?.includes('melee') )) && h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1 && !h.item?.system?.traits?.value?.includes("unarmed") );
+        .filter( h => h.ready && (h.item?.isMelee || (h?.item?.isRanged && h.altUsages[0]?.options?.includes('melee') ))  && !h.item?.system?.traits?.value?.includes("unarmed")
+            && (
+                (h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1)
+                 || actor.isOfType('npc')
+            )
+        );
 };
 
 async function huntedShot(actor) {
@@ -71,7 +79,7 @@ async function twinTakedown(actor) {
     if ( !actor ) { ui.notifications.info("Please select 1 token"); return;}
     if (game.user.targets.size != 1) { ui.notifications.info(`Need to select 1 token as target`);return; }
 
-    if ( !actorFeat(actor, "twin-takedown" ) ) {
+    if ( !actorFeat(actor, "twin-takedown" ) && !actorAction(actor, "twin-takedown" ) ) {
         ui.notifications.warn(`${actor.name} does not have Twin Takedown!`);
         return;
     }

@@ -187,6 +187,11 @@ async function _socketCreateFeintEffectOnTarget(effect, targetId) {
     await (await fromUuid(targetId)).createEmbeddedDocuments("Item", [effect]);
 }
 
+function hasFeatBySourceId(actor, eff) {
+    return actor?.itemTypes?.feat?.find((c) => eff === c.sourceId);
+}
+
+
 function failureMessageOutcome(message) {
     return "failure" === message?.flags?.pf2e?.context?.outcome;
 }
@@ -393,7 +398,7 @@ async function setEffectToActor(
   optionalData = { name: undefined, icon: undefined, origin: undefined, duplication: false }
 ) {
   if (!hasPermissions(actor)) {
-    socketlibSocket._sendRequest("createEffects", [{'actorUuid': actor.uuid, 'eff': eff, "level": level}], 0)
+    socketlibSocket._sendRequest("createEffects", [{'actorUuid': actor.uuid, 'eff': effUuid, "level": level}], 0)
     return;
   }
 
