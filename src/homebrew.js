@@ -167,7 +167,7 @@ class PF2eActionSupportHomebrewSettings extends FormApplication {
     }
 
     static get defaultOptions() {
-        return mergeObject(super.defaultOptions, {
+        return foundry.utils.mergeObject(super.defaultOptions, {
             title: "Homebrew Settings",
             id: `${moduleName}-homebrew-settings`,
             classes: ['settings-menu'],
@@ -198,7 +198,7 @@ class PF2eActionSupportHomebrewSettings extends FormApplication {
     }
 
     getData() {
-        return mergeObject(super.getData(), {
+        return foundry.utils.mergeObject(super.getData(), {
             homebrews: this.homebrews,
             triggerChoices: Trigger,
             targetChoices: Target,

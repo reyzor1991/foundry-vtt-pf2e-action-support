@@ -177,7 +177,7 @@ Hooks.once("init", () => {
         return r;
     }
 
-    game.actionsupport = mergeObject(game.actionsupport ?? {}, {
+    game.actionsupport = foundry.utils.mergeObject(game.actionsupport ?? {}, {
         "huntedShot": huntedShot,
         "twinTakedown": twinTakedown,
         "rangerLink": rangerLink,

@@ -347,7 +347,7 @@ async function createDialogDamageOrTempHP(message, spell, damageEff, selfSpells,
     const eff = "Compendium.pf2e-action-support.action-support.Item.yYvPtdlew2YctMgt";
 
     const aEffect = (await fromUuid(eff)).toObject();
-    aEffect.flags = mergeObject(aEffect.flags ?? {}, { core: { sourceId: eff } });
+    aEffect.flags = foundry.utils.mergeObject(aEffect.flags ?? {}, { core: { sourceId: eff } });
 
     aEffect.system.rules[0].value = message?.item?.level ?? 0;
 

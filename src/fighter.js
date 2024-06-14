@@ -185,7 +185,7 @@ async function knockdown(actor) {
 }
 
 Hooks.once("init", () => {
-    game.actionsupport = mergeObject(game.actionsupport ?? {}, {
+    game.actionsupport = foundry.utils.mergeObject(game.actionsupport ?? {}, {
         "doubleSlice": doubleSlice,
         "knockdown": knockdown,
     })

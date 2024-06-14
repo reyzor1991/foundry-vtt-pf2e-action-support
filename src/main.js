@@ -95,7 +95,7 @@ Hooks.on('deleteItem', async (effect, data, id) => {
 async function createEffects(data) {
     const actor = await fromUuid(data.actorUuid);
     const source = (await fromUuid(data.eff)).toObject();
-    source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: data.eff } });
+    source.flags = foundry.utils.mergeObject(source.flags ?? {}, { core: { sourceId: data.eff } });
     if (data.level) {
         source.system.level = {'value': data.level};
     }
@@ -338,10 +338,10 @@ async function setFeintEffect(message, isCrit=false, isCritFail=false) {
     const target = isCritFail?message.actor:message.target.actor;
 
     const effect = (await fromUuid(isCrit?effect_feint_critical_success:effect_feint_success)).toObject();
-    effect.flags = mergeObject(effect.flags ?? {}, { core: { sourceId: effect.id } });
+    effect.flags = foundry.utils.mergeObject(effect.flags ?? {}, { core: { sourceId: effect.id } });
     effect.system.slug = effect.system.slug.replace("attacker", actor.id)
     effect.name += ` ${actor.name}`
-    effect.system.context = mergeObject(effect.system.context ?? {}, {
+    effect.system.context = foundry.utils.mergeObject(effect.system.context ?? {}, {
         "origin": {
             "actor": message.actor.uuid,
             "item": message?.item?.uuid,
@@ -416,12 +416,12 @@ async function setEffectToActor(
     if (optionalData?.icon) {
       source.img = optionalData.icon;
     }
-    source.flags = mergeObject(source.flags ?? {}, { core: { sourceId: effUuid } });
+    source.flags = foundry.utils.mergeObject(source.flags ?? {}, { core: { sourceId: effUuid } });
     if (level) {
       source.system.level = { value: level };
     }
     if (optionalData?.origin) {
-      source.system.context = mergeObject(source.system.context ?? {}, {
+      source.system.context = foundry.utils.mergeObject(source.system.context ?? {}, {
         origin: optionalData?.origin,
       });
     }
@@ -575,7 +575,7 @@ async function deleteFeintEffects(message) {
 async function guidanceEffect(message, target) {
     const aEffect = (await fromUuid("Compendium.pf2e.spell-effects.Item.3qHKBDF7lrHw8jFK")).toObject();
 
-    aEffect.system.context = mergeObject(aEffect.system.context ?? {}, {
+    aEffect.system.context = foundry.utils.mergeObject(aEffect.system.context ?? {}, {
         "origin": {
             "actor": message.actor.uuid,
             "item": message.item.uuid,
@@ -610,7 +610,7 @@ async function effectWithActorNextTurnST(message, uuid) {
 async function effectWithActorNextTurn(message, target, uuid, optionalName=undefined, ownerIcon=false) {
     const aEffect = (await fromUuid(uuid)).toObject();
 
-    aEffect.system.context = mergeObject(aEffect.system.context ?? {}, {
+    aEffect.system.context = foundry.utils.mergeObject(aEffect.system.context ?? {}, {
         "origin": {
             "actor": message.actor.uuid,
             "item": message?.item?.uuid,
@@ -639,7 +639,7 @@ async function huntedPreyEffect(message, _obj) {
         const aEffect = (await fromUuid(effect_hunt_prey)).toObject();
         aEffect.name = aEffect.name.replace("Actor", message.actor.name)
         aEffect.img = message.token.texture.src
-        aEffect.system.context = mergeObject(aEffect.system.context ?? {}, {
+        aEffect.system.context = foundry.utils.mergeObject(aEffect.system.context ?? {}, {
             "origin": {
                 "actor": message.actor.uuid,
                 "item": message?.item?.uuid,

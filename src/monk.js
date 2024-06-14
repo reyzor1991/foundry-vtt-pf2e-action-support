@@ -198,7 +198,7 @@ async function addImmunity(_token, target) {
 }
 
 Hooks.once("init", () => {
-    game.actionsupport = mergeObject(game.actionsupport ?? {}, {
+    game.actionsupport = foundry.utils.mergeObject(game.actionsupport ?? {}, {
         "flurryOfBlows": flurryOfBlows,
         "scareToDeath": scareToDeath,
     })
