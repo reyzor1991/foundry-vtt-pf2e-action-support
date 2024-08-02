@@ -678,7 +678,9 @@ async function handleBattleFeats(message, _obj) {
 
 async function handleBattleSpells(message, _obj) {
     if (_obj.slug === "inspire-courage" || _obj.slug === "courageous-anthem") {
-        if (await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")) {
+        if (await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.KIPV1TiPCzlhuAzo")) {
+            setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.KIPV1TiPCzlhuAzo")
+        } else if (await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")) {
             setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.MRmGlGAFd3tSJioo")
         } else {
             game.user.targets.forEach(tt => {
@@ -688,7 +690,9 @@ async function handleBattleSpells(message, _obj) {
             });
         }
     } else if (_obj.slug === "inspire-defense" || _obj.slug === "rallying-anthem") {
-        if (await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")) {
+        if (await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.tcnjhVxyRchqjt71")) {
+            setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.tcnjhVxyRchqjt71")
+        } else if (await fromUuid("Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")) {
             setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.89T07EBAgn78RBbJ")
         } else {
             game.user.targets.forEach(tt => {
@@ -706,7 +710,12 @@ async function handleBattleSpells(message, _obj) {
             setEffectToActor(message.actor, "Compendium.xdy-pf2e-workbench.xdy-pf2e-workbench-items.Item.wOcAf3pf04cTM4Uk")
         }
     } else if (_obj.slug === "lingering-composition") {
-        const macLC = await fromUuid('Compendium.xdy-pf2e-workbench.asymonous-benefactor-macros-internal.Macro.5CLSiG3QPj5xbhBk');
+
+        let macLC = await fromUuid('Compendium.xdy-pf2e-workbench.asymonous-benefactor-macros-internal.Macro.GyrbqKFvWLGHfRg9');
+        if (!macLC) {
+            macLC = await fromUuid('Compendium.xdy-pf2e-workbench.asymonous-benefactor-macros-internal.Macro.5CLSiG3QPj5xbhBk');
+        }
+
         if (macLC) {
             macLC.execute();
         }
