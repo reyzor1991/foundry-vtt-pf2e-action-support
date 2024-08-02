@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.3.2
+- Update pf2e workbench aura UUIDs
+
 ## Version 0.3.1
 - V12 Compatibility
 
