@@ -77,7 +77,7 @@ const battleSelfEffectMap = {
 function tumbleThrough(message) {
     if (message?.target && hasOption(message, "action:tumble-through")) {
         if (anySuccessMessageOutcome(message)) {
-            if (actorFeat(message?.actor, "tumble-behind-rogue") && !hasEffect(message.target.actor, "effect-off-guard-tumble-behind")) {
+            if ((actorFeat(message?.actor, "tumble-behind-rogue") || actorFeat(message?.actor, "tumble-behind-swashbuckler")) && !hasEffect(message.target.actor, "effect-off-guard-tumble-behind")) {
                 effectWithActorNextTurn(message, message.target.actor, effect_off_guard)
             }
             if (actorFeat(message?.actor, "panache") && !hasEffect(message.actor, "effect-panache")) {
