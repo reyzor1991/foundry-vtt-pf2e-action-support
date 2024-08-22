@@ -1,23 +1,22 @@
 function doubleSliceWeapons(actor) {
-    let weapons =  actor.system.actions
-        .filter( h => h.ready && h.item?.isMelee && !h.item?.system?.traits?.value?.includes("unarmed")
+    let weapons = actor.system.actions
+        .filter(h => h.ready && h.item?.isMelee && !h.item?.system?.traits?.value?.includes("unarmed")
             && (
-                (h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1)  || actor.isOfType('npc')
+                (h.item?.isHeld && h.item?.hands === "1" && h.item?.handsHeld === 1) || actor.isOfType('npc')
             )
-         )
-        .map(a=>[a, a.item.name]);
+        )
+        .map(a => [a, a.item.name]);
 
     //Dual Thrower
     if (hasFeatBySourceId(actor, 'Compendium.pf2e.feats-srd.Item.zfTmb78yGZzNpgU3')) {
-        let comboThrows = actor.system.actions.filter( h => h.ready && h.altUsages?.[0]?.item.isThrown)
-            .map(a=>[a.altUsages?.[0], `${a.altUsages?.[0].item.name} Throw`])
+        let comboThrows = actor.system.actions.filter(h => h.ready && h.altUsages?.[0]?.item.isThrown)
+            .map(a => [a.altUsages?.[0], `${a.altUsages?.[0].item.name} Throw`])
 
-        let throws = actor.system.actions.filter( h => h.ready && (h.item.isThrown || (h.item?.isRanged && h.item?.handsHeld === 1 && h.item?.ammo)))
-            .map(a=>[a, `${a.item.name} Throw`])
+        let throws = actor.system.actions.filter(h => h.ready && (h.item.isThrown || (h.item?.isRanged && h.item?.handsHeld === 1 && h.item?.ammo)))
+            .map(a => [a, `${a.item.name} Throw`])
 
         weapons = weapons.concat(comboThrows).concat(throws);
     }
-
 
     return weapons
 };

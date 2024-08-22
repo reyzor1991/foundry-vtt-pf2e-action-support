@@ -85,14 +85,36 @@ async function twinTakedown(actor) {
     }
 
     const weapons = twinTakedownWeapons(actor);
-    if (weapons.length != 2) {
+    if (weapons.length < 2) {
         ui.notifications.warn(`${actor.name} needs only 2 one-handed melee weapons can be equipped at a time.'`);
         return;
     }
 
-    const { map } = await Dialog.wait({
-        title:"Twin Takedown",
+    let weaponOptions = '';
+    let weaponOptions2 = '';
+    for (const [i, value] of weapons.entries()) {
+        weaponOptions += `<option value=${i}>${value.item.name}</option>`
+        weaponOptions2 += `<option value=${i} ${i === 1 || value.item?.traits.has('agile') ? 'selected' : ''}>${value.item.name}</option>`
+    }
+
+    const {map, weapon1, weapon2} = await Dialog.wait({
+        title: "Twin Takedown",
         content: `
+            <div style="display: flex; justify-content: space-between;">
+                <div>
+                    <h3>First Attack</h3>
+                    <select id="fob1" autofocus>
+                        ${weaponOptions}
+                    </select>
+                </div>
+                <div>
+                    <h3>Second Attack</h3>
+                    <select id="fob2">
+                        ${weaponOptions2}
+                    </select>
+                </div>
+            </div>
+            <hr>
             <h3>Multiple Attack Penalty</h3>
                 <select id="map">
                 <option value=0>No MAP</option>
@@ -101,15 +123,21 @@ async function twinTakedown(actor) {
             </select><hr>
         `,
         buttons: {
-                ok: {
-                    label: "Attack",
-                    icon: "<i class='fa-solid fa-hand-fist'></i>",
-                    callback: (html) => { return { map: parseInt(html[0].querySelector("#map").value)} }
-                },
-                cancel: {
-                    label: "Cancel",
-                    icon: "<i class='fa-solid fa-ban'></i>",
+            ok: {
+                label: "Attack",
+                icon: "<i class='fa-solid fa-hand-fist'></i>",
+                callback: (html) => {
+                    return {
+                        map: parseInt(html[0].querySelector("#map").value),
+                        weapon1: parseInt($(html[0]).find("#fob1").val()),
+                        weapon2: parseInt($(html[0]).find("#fob2").val()),
+                    }
                 }
+            },
+            cancel: {
+                label: "Cancel",
+                icon: "<i class='fa-solid fa-ban'></i>",
+            }
         },
         render: (html) => {
             html.parent().parent()[0].style.cssText += 'box-shadow: 0 0 30px green;';
@@ -117,17 +145,12 @@ async function twinTakedown(actor) {
         default: "ok"
     });
 
-    if ( map === undefined ) { return; }
+    if (map === undefined) {
+        return;
+    }
     const map2 = map === 2 ? map : map + 1;
 
-    let primary = weapons[0].item.isMelee ? weapons[0] : weapons[0].altUsages[0] ;
-    let secondary = weapons[1].item.isMelee ? weapons[1] : weapons[1].altUsages[0] ;
-    if (primary.item.system.traits.value.includes("agile")) {
-        primary = weapons[1].item.isMelee ? weapons[1] : weapons[1].altUsages[0] ;
-        secondary = weapons[0].item.isMelee ? weapons[0] : weapons[0].altUsages[0] ;
-    }
-
-    combinedDamage("Twin Takedown", primary, secondary, [], map, map2);
+    combinedDamage("Twin Takedown", weapons[weapon1], weapons[weapon2], [], map, map2);
 }
 
 async function rangerLink(actor) {

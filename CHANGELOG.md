@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.4.0
+- Twin Takedown
+- Root to Life
+
 ## Version 0.3.3
 - Tumble Behind Swashbuckler
 

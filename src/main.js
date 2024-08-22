@@ -167,8 +167,25 @@ const setupSocket = () => {
       socketlibSocket.register("deleteEffect", _socketDeleteEffect);
       socketlibSocket.register("sendGMNotification", sendGMNotification);
       socketlibSocket.register("toggleConditions", toggleConditions);
+      socketlibSocket.register("removeConditionFromActorId", removeConditionFromActorId);
+
   }
   return !!globalThis.socketlib
+}
+
+
+
+async function removeConditionFromActorId(actorId, condition, forceRemove = false) {
+    await removeConditionFromActor(await fromUuid(actorId), condition, forceRemove);
+}
+
+async function removeConditionFromActor(actor, condition, forceRemove = false) {
+    if (!hasPermissions(actor)) {
+        socketlibSocket._sendRequest("removeConditionFromActorId", [actor.uuid, condition, forceRemove], 0);
+        return;
+    }
+
+    await actor.decreaseCondition(condition, {forceRemove: forceRemove});
 }
 
 Hooks.once('setup', function () {
